@@ -9,6 +9,8 @@
 #include <utils/ctimer.h>
 #include <utils/utils.h>
 
+#include <cs2surf.h>
+
 PLUGIN_GLOBALVARS();
 
 template<typename T>
@@ -170,6 +172,8 @@ static void Hook_ClientCommand(CPlayerSlot slot, const CCommand& args) {
 
 SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t &, ISource2WorldSession *, const char *);
 static void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*) {
+	SurfPlugin()->AddonInit();
+
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnStartupServer(META_IFACEPTR(INetworkServerService), config);
 	}

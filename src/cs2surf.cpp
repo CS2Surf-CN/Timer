@@ -14,6 +14,12 @@
 
 #include <utils/utils.h>
 
+#include <surf/api.h>
+
+#include <vendor/MultiAddonManager/public/imultiaddonmanager.h>
+
+IMultiAddonManager* g_pMultiAddonManager;
+
 CSurfPlugin g_SurfPlugin;
 
 PLUGIN_EXPOSE(CSurfPlugin, g_SurfPlugin);
@@ -39,6 +45,26 @@ bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, b
 	FORWARD_POST(CCoreForward, OnPluginStart);
 
 	return true;
+}
+
+void CSurfPlugin::AllPluginsLoaded() {
+	g_pMultiAddonManager = (IMultiAddonManager*)g_SMAPI->MetaFactory(MULTIADDONMANAGER_INTERFACE, nullptr, nullptr);
+}
+
+void CSurfPlugin::AddonInit() {
+	static bool addonLoaded;
+	if (g_pMultiAddonManager != nullptr && !addonLoaded) {
+		g_pMultiAddonManager->AddAddon(SURF_WORKSHOP_ADDONS_ID);
+		g_pMultiAddonManager->RefreshAddons();
+		addonLoaded = true;
+	}
+}
+
+bool CSurfPlugin::IsAddonMounted() {
+	if (g_pMultiAddonManager != nullptr) {
+		return g_pMultiAddonManager->IsAddonMounted(SURF_WORKSHOP_ADDONS_ID);
+	}
+	return false;
 }
 
 const char* CSurfPlugin::GetAuthor() {
