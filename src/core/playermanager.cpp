@@ -206,7 +206,7 @@ void CPlayerManager::OnClientDisconnect(ISource2GameClients* pClient, CPlayerSlo
 
 void CPlayerManager::OnClientActive(ISource2GameClients* pClient, CPlayerSlot slot, bool bLoadGame, const char* pszName, uint64 xuid) {
 	int iSlot = slot.Get();
-	CPlayer* player = m_pPlayers[iSlot].get();
+	CPlayer* player = m_pPlayers.at(iSlot).get();
 	if (player) {
 		player->Init(iSlot);
 		player->SetUnauthenticatedSteamID(xuid);

@@ -4,8 +4,8 @@
 #include <utils/utils.h>
 #include <sdk/entity/cbaseentity.h>
 
-constexpr float g_fMenuOffsetX = -11.8f;
-constexpr float g_fMenuOffsetY = -6.4f;
+constexpr float g_fMenuOffsetX = -11.6f;
+constexpr float g_fMenuOffsetY = -6.1f;
 
 static Vector GetAimPoint(const Vector& eyePosition, const QAngle& eyeAngles, float distanceToTarget = 100.0) {
 	double pitch = eyeAngles.x * (M_PI / 180.0);
@@ -37,7 +37,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	int fontSize = 40;
 	kv->SetColor("color", Color(255, 255, 255, 255));
 	kv->SetBool("enabled", true);
-	kv->SetFloat("world_units_per_pixel", 0.00025 * fontSize);
+	kv->SetFloat("world_units_per_pixel", (0.25 / 1000) * fontSize);
 	kv->SetFloat("depth_render_offset", 0.125);
 	kv->SetInt("justify_horizontal", 0); // 0代表左对齐
 	kv->SetInt("justify_vertical", 1);   // 1代表垂直居中
@@ -50,7 +50,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	pPawn->m_pViewModelServices()->SetViewModel(1, pViewModel);
 	Vector& vmPos = pViewModel->GetAbsOrigin();
 	QAngle& vmAng = pViewModel->GetAbsAngles();
-	Vector panelPos = GetAimPoint(vmPos, vmAng, 7.15f);
+	Vector panelPos = GetAimPoint(vmPos, vmAng, 7.0f);
 	QAngle panelAng = vmAng;
 	panelAng.y -= 90.0f;
 	panelAng.z += 90.0f;
@@ -67,7 +67,7 @@ CCMD_CALLBACK(MENU_TEST) {
 
 	menuEntity->m_hOwnerEntity(pViewModel->GetRefEHandle());
 
-	constexpr const char* s_pszTestMsg = "1.fk valve\n2.fk valve\n3.fk valve\n4.fk valve\n5.fk valve\n6.fk valve\n\n7.上一页\n8.下一页\n\n9.退出";
+	constexpr const char* s_pszTestMsg = "Title:asd\n\n1.fk valve\n2.fk valve\n3.fk valve\n4.fk valve\n5.fk valve\n6.fk valve\n\n7.上一页\n8.下一页\n9.退出";
 
 	menuEntity->SetText(s_pszTestMsg);
 
@@ -87,7 +87,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	AngleVectors(panelAng, &rig, &dwn, nullptr);
 
 	rig *= g_fMenuOffsetX;
-	dwn *= g_fMenuOffsetY + 2.0f;
+	dwn *= g_fMenuOffsetY + 1.85f;
 
 	panelPos += rig + dwn;
 	menuEntity->Teleport(&panelPos, nullptr, nullptr);
@@ -105,7 +105,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	}
 
 	int bgFontSize = 80;
-	bgKV->SetColor("color", Color(50, 50, 50, 210));
+	bgKV->SetColor("color", Color(50, 50, 50, 100));
 	bgKV->SetBool("enabled", true);
 	bgKV->SetFloat("world_units_per_pixel", (0.25 / 300) * bgFontSize);
 	bgKV->SetFloat("depth_render_offset", 0.125);
@@ -115,7 +115,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	bgKV->SetInt("fullbright", 1);
 	bgKV->SetFloat("font_size", bgFontSize);
 
-	Vector bgPos = GetAimPoint(vmPos, vmAng, 7.29f);
+	Vector bgPos = GetAimPoint(vmPos, vmAng, 7.09f);
 	QAngle bgAng = vmAng;
 	bgAng.y -= 90.0f;
 	bgAng.z += 90.0f;
@@ -124,7 +124,7 @@ CCMD_CALLBACK(MENU_TEST) {
 	AngleVectors(bgAng, &rig, &dwn, nullptr);
 
 	rig *= (g_fMenuOffsetX - 0.2f);
-	dwn *= (g_fMenuOffsetY + 2.0f);
+	dwn *= (g_fMenuOffsetY + 1.64f);
 
 	bgPos += rig + dwn;
 	bgKV->SetVector("origin", bgPos);
