@@ -282,7 +282,7 @@ static int Hook_OnTakeDamage(CCSPlayer_DamageReactServices* pService, CTakeDamag
 		return 1;
 	}
 
-	auto ret = MEM::SDKCall<int>(MEM::TRAMPOLINE::g_fnWeaponDrop, pService, info);
+	auto ret = MEM::SDKCall<int>(MEM::TRAMPOLINE::g_fnTakeDamage, pService, info);
 
 	FORWARD_POST(CCoreForward, OnTakeDamagePost, pVictim, info);
 
