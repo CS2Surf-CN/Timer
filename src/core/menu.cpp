@@ -2,6 +2,7 @@
 #include <core/memory.h>
 #include <core/concmdmanager.h>
 #include <utils/utils.h>
+#include <utils/print.h>
 #include <sdk/entity/cbaseentity.h>
 
 constexpr float g_fMenuOffsetX = -11.6f;
@@ -136,10 +137,19 @@ CCMD_CALLBACK(MENU_TEST) {
 	bgEntity->SetText("█");
 }
 
+CCMD_CALLBACK(MENU_SELECT) {
+	int num = -1;
+	if (vArgs.size() > 0) {
+		num = V_StringToInt32(vArgs[0].c_str(), -1);
+	}
+	UTIL::PrintChat(pController, "select menu %d\n", num);
+}
+
 class TestMenu : CCoreForward {
 private:
 	virtual void OnPluginStart() {
 		CONCMD::RegConsoleCmd("sm_mtest", MENU_TEST);
+		CONCMD::RegConsoleCmd("sm_menu_select", MENU_SELECT);
 	}
 };
 

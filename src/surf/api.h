@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr auto SURF_WORKSHOP_ADDONS_ID = "3377250885";
+
 #include <surf/zones/surf_zones.h>
 
 class CSurfForward : public CBaseForward<CSurfForward> {
