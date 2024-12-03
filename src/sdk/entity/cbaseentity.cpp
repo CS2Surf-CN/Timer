@@ -38,3 +38,18 @@ Vector& CBaseEntity::GetOrigin() {
 
 	return pNode->m_vecOrigin();
 }
+
+QAngle& CBaseEntity::GetAbsAngles() {
+	static QAngle null(0.0f, 0.0f, 0.0f);
+	auto pBodyComponent = m_CBodyComponent();
+	if (!pBodyComponent) {
+		return null;
+	}
+
+	auto pNode = pBodyComponent->m_pSceneNode();
+	if (!pNode) {
+		return null;
+	}
+
+	return pNode->m_angAbsRotation();
+}

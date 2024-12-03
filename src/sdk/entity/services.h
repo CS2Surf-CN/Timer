@@ -115,3 +115,13 @@ class CCSPlayer_DamageReactServices : public CPlayerPawnComponent {
 public:
 	DECLARE_SCHEMA_CLASS(CCSPlayer_DamageReactServices);
 };
+
+class CCSPlayer_ViewModelServices : public CPlayer_ViewModelServices {
+public:
+	DECLARE_SCHEMA_CLASS(CCSPlayer_ViewModelServices);
+
+	SCHEMA_FIELD_POINTER(CHandle<CBaseViewModel>, m_hViewModel);
+
+	CBaseViewModel* GetViewModel(int iIndex = 0);
+	void SetViewModel(int iIndex, CBaseViewModel* pViewModel);
+};

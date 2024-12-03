@@ -166,6 +166,10 @@ public:
 		CALL_VIRTUAL(bool, GAMEDATA::GetOffset("Teleport"), this, newPosition, newAngles, newVelocity);
 	}
 
+	void Kill() {
+		this->AcceptInput("kill");
+	}
+
 	void AcceptInput(const char* pInputName, variant_t value = variant_t(""), CEntityInstance* pActivator = nullptr,
 					 CEntityInstance* pCaller = nullptr);
 
@@ -173,6 +177,7 @@ public:
 
 	Vector& GetAbsOrigin();
 	Vector& GetOrigin();
+	QAngle& GetAbsAngles();
 };
 
 class CBaseModelEntity : public CBaseEntity {
@@ -229,4 +234,20 @@ public:
 class CBaseTrigger : public CBaseToggle {
 public:
 	DECLARE_SCHEMA_CLASS(CBaseTrigger);
+};
+
+class CModelPointEntity : public CBaseModelEntity {
+public:
+	DECLARE_SCHEMA_CLASS(CModelPointEntity);
+};
+
+class CPointWorldText : public CModelPointEntity {
+public:
+	DECLARE_SCHEMA_CLASS(CPointWorldText);
+
+	SCHEMA_FIELD_POINTER(char, m_messageText);
+
+	void SetText(const char* msg) {
+		strcpy_s(m_messageText(), 512, msg);
+	}
 };
