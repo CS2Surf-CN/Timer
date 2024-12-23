@@ -28,7 +28,7 @@
 			"environment": {
 				"GAME_ROOT": "/home/cs2/game",
 				"CS2_BIN": "$env{GAME_ROOT}/bin/linuxsteamrt64/cs2",
-				"SURF_BIN_DIR": "$env{SURF_ROOT}/bin/linuxsteamrt64"
+				"SURF_BIN_DIR": "$env{SURF_ROOT}/bin"
 			},
 			"vendor": {
 				"microsoft.com/VisualStudioSettings/CMake/1.0": {
@@ -58,7 +58,7 @@
 			"environment": {
 				"GAME_ROOT": "E:/Steam/steamapps/common/Counter-Strike Global Offensive/game",
 				"CS2_BIN": "$env{GAME_ROOT}/bin/win64/cs2.exe",
-				"SURF_BIN_DIR": "$env{SURF_ROOT}/bin/win64"
+				"SURF_BIN_DIR": "$env{SURF_ROOT}/bin"
 			},
 			"vendor": {
 				"microsoft.com/VisualStudioSettings/CMake/1.0": {

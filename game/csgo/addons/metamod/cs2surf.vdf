@@ -1,5 +1,5 @@
 "Metamod Plugin"
 {
 	"alias"	"CS2SURF"
-	"file"	"addons\cs2surf\bin\win64\cs2surf"
+	"file"	"addons/cs2surf/bin/cs2surf"
 }
