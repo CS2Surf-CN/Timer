@@ -2598,15 +2598,14 @@ class CNETMsg_Tick :
   enum : int {
     kExpectedLongTickReasonFieldNumber = 11,
     kTickFieldNumber = 1,
-    kHostFrametimeFieldNumber = 2,
-    kHostFrametimeStdDeviationFieldNumber = 3,
     kHostComputationtimeFieldNumber = 4,
     kHostComputationtimeStdDeviationFieldNumber = 5,
-    kHostFramestarttimeStdDeviationFieldNumber = 6,
-    kHostLossFieldNumber = 7,
+    kLegacyHostLossFieldNumber = 7,
     kHostUnfilteredFrametimeFieldNumber = 8,
     kHltvReplayFlagsFieldNumber = 9,
     kExpectedLongTickFieldNumber = 10,
+    kHostFrameDroppedPctX10FieldNumber = 12,
+    kHostFrameIrregularArrivalPctX10FieldNumber = 13,
   };
   // optional string expected_long_tick_reason = 11;
   bool has_expected_long_tick_reason() const;
@@ -2639,32 +2638,6 @@ class CNETMsg_Tick :
   void _internal_set_tick(uint32_t value);
   public:
 
-  // optional uint32 host_frametime = 2;
-  bool has_host_frametime() const;
-  private:
-  bool _internal_has_host_frametime() const;
-  public:
-  void clear_host_frametime();
-  uint32_t host_frametime() const;
-  void set_host_frametime(uint32_t value);
-  private:
-  uint32_t _internal_host_frametime() const;
-  void _internal_set_host_frametime(uint32_t value);
-  public:
-
-  // optional uint32 host_frametime_std_deviation = 3;
-  bool has_host_frametime_std_deviation() const;
-  private:
-  bool _internal_has_host_frametime_std_deviation() const;
-  public:
-  void clear_host_frametime_std_deviation();
-  uint32_t host_frametime_std_deviation() const;
-  void set_host_frametime_std_deviation(uint32_t value);
-  private:
-  uint32_t _internal_host_frametime_std_deviation() const;
-  void _internal_set_host_frametime_std_deviation(uint32_t value);
-  public:
-
   // optional uint32 host_computationtime = 4;
   bool has_host_computationtime() const;
   private:
@@ -2691,30 +2664,17 @@ class CNETMsg_Tick :
   void _internal_set_host_computationtime_std_deviation(uint32_t value);
   public:
 
-  // optional uint32 host_framestarttime_std_deviation = 6;
-  bool has_host_framestarttime_std_deviation() const;
+  // optional uint32 legacy_host_loss = 7;
+  bool has_legacy_host_loss() const;
   private:
-  bool _internal_has_host_framestarttime_std_deviation() const;
+  bool _internal_has_legacy_host_loss() const;
   public:
-  void clear_host_framestarttime_std_deviation();
-  uint32_t host_framestarttime_std_deviation() const;
-  void set_host_framestarttime_std_deviation(uint32_t value);
+  void clear_legacy_host_loss();
+  uint32_t legacy_host_loss() const;
+  void set_legacy_host_loss(uint32_t value);
   private:
-  uint32_t _internal_host_framestarttime_std_deviation() const;
-  void _internal_set_host_framestarttime_std_deviation(uint32_t value);
-  public:
-
-  // optional uint32 host_loss = 7;
-  bool has_host_loss() const;
-  private:
-  bool _internal_has_host_loss() const;
-  public:
-  void clear_host_loss();
-  uint32_t host_loss() const;
-  void set_host_loss(uint32_t value);
-  private:
-  uint32_t _internal_host_loss() const;
-  void _internal_set_host_loss(uint32_t value);
+  uint32_t _internal_legacy_host_loss() const;
+  void _internal_set_legacy_host_loss(uint32_t value);
   public:
 
   // optional uint32 host_unfiltered_frametime = 8;
@@ -2756,6 +2716,32 @@ class CNETMsg_Tick :
   void _internal_set_expected_long_tick(uint32_t value);
   public:
 
+  // optional uint32 host_frame_dropped_pct_x10 = 12;
+  bool has_host_frame_dropped_pct_x10() const;
+  private:
+  bool _internal_has_host_frame_dropped_pct_x10() const;
+  public:
+  void clear_host_frame_dropped_pct_x10();
+  uint32_t host_frame_dropped_pct_x10() const;
+  void set_host_frame_dropped_pct_x10(uint32_t value);
+  private:
+  uint32_t _internal_host_frame_dropped_pct_x10() const;
+  void _internal_set_host_frame_dropped_pct_x10(uint32_t value);
+  public:
+
+  // optional uint32 host_frame_irregular_arrival_pct_x10 = 13;
+  bool has_host_frame_irregular_arrival_pct_x10() const;
+  private:
+  bool _internal_has_host_frame_irregular_arrival_pct_x10() const;
+  public:
+  void clear_host_frame_irregular_arrival_pct_x10();
+  uint32_t host_frame_irregular_arrival_pct_x10() const;
+  void set_host_frame_irregular_arrival_pct_x10(uint32_t value);
+  private:
+  uint32_t _internal_host_frame_irregular_arrival_pct_x10() const;
+  void _internal_set_host_frame_irregular_arrival_pct_x10(uint32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:CNETMsg_Tick)
  private:
   class _Internal;
@@ -2768,15 +2754,14 @@ class CNETMsg_Tick :
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr expected_long_tick_reason_;
     uint32_t tick_;
-    uint32_t host_frametime_;
-    uint32_t host_frametime_std_deviation_;
     uint32_t host_computationtime_;
     uint32_t host_computationtime_std_deviation_;
-    uint32_t host_framestarttime_std_deviation_;
-    uint32_t host_loss_;
+    uint32_t legacy_host_loss_;
     uint32_t host_unfiltered_frametime_;
     uint32_t hltv_replay_flags_;
     uint32_t expected_long_tick_;
+    uint32_t host_frame_dropped_pct_x10_;
+    uint32_t host_frame_irregular_arrival_pct_x10_;
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_networkbasetypes_2eproto;
@@ -7433,65 +7418,9 @@ inline void CNETMsg_Tick::set_tick(uint32_t value) {
   // @@protoc_insertion_point(field_set:CNETMsg_Tick.tick)
 }
 
-// optional uint32 host_frametime = 2;
-inline bool CNETMsg_Tick::_internal_has_host_frametime() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CNETMsg_Tick::has_host_frametime() const {
-  return _internal_has_host_frametime();
-}
-inline void CNETMsg_Tick::clear_host_frametime() {
-  _impl_.host_frametime_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
-inline uint32_t CNETMsg_Tick::_internal_host_frametime() const {
-  return _impl_.host_frametime_;
-}
-inline uint32_t CNETMsg_Tick::host_frametime() const {
-  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_frametime)
-  return _internal_host_frametime();
-}
-inline void CNETMsg_Tick::_internal_set_host_frametime(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.host_frametime_ = value;
-}
-inline void CNETMsg_Tick::set_host_frametime(uint32_t value) {
-  _internal_set_host_frametime(value);
-  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_frametime)
-}
-
-// optional uint32 host_frametime_std_deviation = 3;
-inline bool CNETMsg_Tick::_internal_has_host_frametime_std_deviation() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool CNETMsg_Tick::has_host_frametime_std_deviation() const {
-  return _internal_has_host_frametime_std_deviation();
-}
-inline void CNETMsg_Tick::clear_host_frametime_std_deviation() {
-  _impl_.host_frametime_std_deviation_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000008u;
-}
-inline uint32_t CNETMsg_Tick::_internal_host_frametime_std_deviation() const {
-  return _impl_.host_frametime_std_deviation_;
-}
-inline uint32_t CNETMsg_Tick::host_frametime_std_deviation() const {
-  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_frametime_std_deviation)
-  return _internal_host_frametime_std_deviation();
-}
-inline void CNETMsg_Tick::_internal_set_host_frametime_std_deviation(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000008u;
-  _impl_.host_frametime_std_deviation_ = value;
-}
-inline void CNETMsg_Tick::set_host_frametime_std_deviation(uint32_t value) {
-  _internal_set_host_frametime_std_deviation(value);
-  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_frametime_std_deviation)
-}
-
 // optional uint32 host_computationtime = 4;
 inline bool CNETMsg_Tick::_internal_has_host_computationtime() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
   return value;
 }
 inline bool CNETMsg_Tick::has_host_computationtime() const {
@@ -7499,7 +7428,7 @@ inline bool CNETMsg_Tick::has_host_computationtime() const {
 }
 inline void CNETMsg_Tick::clear_host_computationtime() {
   _impl_.host_computationtime_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000010u;
+  _impl_._has_bits_[0] &= ~0x00000004u;
 }
 inline uint32_t CNETMsg_Tick::_internal_host_computationtime() const {
   return _impl_.host_computationtime_;
@@ -7509,7 +7438,7 @@ inline uint32_t CNETMsg_Tick::host_computationtime() const {
   return _internal_host_computationtime();
 }
 inline void CNETMsg_Tick::_internal_set_host_computationtime(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_._has_bits_[0] |= 0x00000004u;
   _impl_.host_computationtime_ = value;
 }
 inline void CNETMsg_Tick::set_host_computationtime(uint32_t value) {
@@ -7519,7 +7448,7 @@ inline void CNETMsg_Tick::set_host_computationtime(uint32_t value) {
 
 // optional uint32 host_computationtime_std_deviation = 5;
 inline bool CNETMsg_Tick::_internal_has_host_computationtime_std_deviation() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
   return value;
 }
 inline bool CNETMsg_Tick::has_host_computationtime_std_deviation() const {
@@ -7527,7 +7456,7 @@ inline bool CNETMsg_Tick::has_host_computationtime_std_deviation() const {
 }
 inline void CNETMsg_Tick::clear_host_computationtime_std_deviation() {
   _impl_.host_computationtime_std_deviation_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000008u;
 }
 inline uint32_t CNETMsg_Tick::_internal_host_computationtime_std_deviation() const {
   return _impl_.host_computationtime_std_deviation_;
@@ -7537,7 +7466,7 @@ inline uint32_t CNETMsg_Tick::host_computationtime_std_deviation() const {
   return _internal_host_computationtime_std_deviation();
 }
 inline void CNETMsg_Tick::_internal_set_host_computationtime_std_deviation(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000008u;
   _impl_.host_computationtime_std_deviation_ = value;
 }
 inline void CNETMsg_Tick::set_host_computationtime_std_deviation(uint32_t value) {
@@ -7545,65 +7474,37 @@ inline void CNETMsg_Tick::set_host_computationtime_std_deviation(uint32_t value)
   // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_computationtime_std_deviation)
 }
 
-// optional uint32 host_framestarttime_std_deviation = 6;
-inline bool CNETMsg_Tick::_internal_has_host_framestarttime_std_deviation() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
+// optional uint32 legacy_host_loss = 7;
+inline bool CNETMsg_Tick::_internal_has_legacy_host_loss() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
-inline bool CNETMsg_Tick::has_host_framestarttime_std_deviation() const {
-  return _internal_has_host_framestarttime_std_deviation();
+inline bool CNETMsg_Tick::has_legacy_host_loss() const {
+  return _internal_has_legacy_host_loss();
 }
-inline void CNETMsg_Tick::clear_host_framestarttime_std_deviation() {
-  _impl_.host_framestarttime_std_deviation_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000040u;
+inline void CNETMsg_Tick::clear_legacy_host_loss() {
+  _impl_.legacy_host_loss_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
-inline uint32_t CNETMsg_Tick::_internal_host_framestarttime_std_deviation() const {
-  return _impl_.host_framestarttime_std_deviation_;
+inline uint32_t CNETMsg_Tick::_internal_legacy_host_loss() const {
+  return _impl_.legacy_host_loss_;
 }
-inline uint32_t CNETMsg_Tick::host_framestarttime_std_deviation() const {
-  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_framestarttime_std_deviation)
-  return _internal_host_framestarttime_std_deviation();
+inline uint32_t CNETMsg_Tick::legacy_host_loss() const {
+  // @@protoc_insertion_point(field_get:CNETMsg_Tick.legacy_host_loss)
+  return _internal_legacy_host_loss();
 }
-inline void CNETMsg_Tick::_internal_set_host_framestarttime_std_deviation(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000040u;
-  _impl_.host_framestarttime_std_deviation_ = value;
+inline void CNETMsg_Tick::_internal_set_legacy_host_loss(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000010u;
+  _impl_.legacy_host_loss_ = value;
 }
-inline void CNETMsg_Tick::set_host_framestarttime_std_deviation(uint32_t value) {
-  _internal_set_host_framestarttime_std_deviation(value);
-  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_framestarttime_std_deviation)
-}
-
-// optional uint32 host_loss = 7;
-inline bool CNETMsg_Tick::_internal_has_host_loss() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
-  return value;
-}
-inline bool CNETMsg_Tick::has_host_loss() const {
-  return _internal_has_host_loss();
-}
-inline void CNETMsg_Tick::clear_host_loss() {
-  _impl_.host_loss_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000080u;
-}
-inline uint32_t CNETMsg_Tick::_internal_host_loss() const {
-  return _impl_.host_loss_;
-}
-inline uint32_t CNETMsg_Tick::host_loss() const {
-  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_loss)
-  return _internal_host_loss();
-}
-inline void CNETMsg_Tick::_internal_set_host_loss(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000080u;
-  _impl_.host_loss_ = value;
-}
-inline void CNETMsg_Tick::set_host_loss(uint32_t value) {
-  _internal_set_host_loss(value);
-  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_loss)
+inline void CNETMsg_Tick::set_legacy_host_loss(uint32_t value) {
+  _internal_set_legacy_host_loss(value);
+  // @@protoc_insertion_point(field_set:CNETMsg_Tick.legacy_host_loss)
 }
 
 // optional uint32 host_unfiltered_frametime = 8;
 inline bool CNETMsg_Tick::_internal_has_host_unfiltered_frametime() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline bool CNETMsg_Tick::has_host_unfiltered_frametime() const {
@@ -7611,7 +7512,7 @@ inline bool CNETMsg_Tick::has_host_unfiltered_frametime() const {
 }
 inline void CNETMsg_Tick::clear_host_unfiltered_frametime() {
   _impl_.host_unfiltered_frametime_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline uint32_t CNETMsg_Tick::_internal_host_unfiltered_frametime() const {
   return _impl_.host_unfiltered_frametime_;
@@ -7621,7 +7522,7 @@ inline uint32_t CNETMsg_Tick::host_unfiltered_frametime() const {
   return _internal_host_unfiltered_frametime();
 }
 inline void CNETMsg_Tick::_internal_set_host_unfiltered_frametime(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.host_unfiltered_frametime_ = value;
 }
 inline void CNETMsg_Tick::set_host_unfiltered_frametime(uint32_t value) {
@@ -7631,7 +7532,7 @@ inline void CNETMsg_Tick::set_host_unfiltered_frametime(uint32_t value) {
 
 // optional uint32 hltv_replay_flags = 9;
 inline bool CNETMsg_Tick::_internal_has_hltv_replay_flags() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline bool CNETMsg_Tick::has_hltv_replay_flags() const {
@@ -7639,7 +7540,7 @@ inline bool CNETMsg_Tick::has_hltv_replay_flags() const {
 }
 inline void CNETMsg_Tick::clear_hltv_replay_flags() {
   _impl_.hltv_replay_flags_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000200u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline uint32_t CNETMsg_Tick::_internal_hltv_replay_flags() const {
   return _impl_.hltv_replay_flags_;
@@ -7649,7 +7550,7 @@ inline uint32_t CNETMsg_Tick::hltv_replay_flags() const {
   return _internal_hltv_replay_flags();
 }
 inline void CNETMsg_Tick::_internal_set_hltv_replay_flags(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.hltv_replay_flags_ = value;
 }
 inline void CNETMsg_Tick::set_hltv_replay_flags(uint32_t value) {
@@ -7659,7 +7560,7 @@ inline void CNETMsg_Tick::set_hltv_replay_flags(uint32_t value) {
 
 // optional uint32 expected_long_tick = 10;
 inline bool CNETMsg_Tick::_internal_has_expected_long_tick() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline bool CNETMsg_Tick::has_expected_long_tick() const {
@@ -7667,7 +7568,7 @@ inline bool CNETMsg_Tick::has_expected_long_tick() const {
 }
 inline void CNETMsg_Tick::clear_expected_long_tick() {
   _impl_.expected_long_tick_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline uint32_t CNETMsg_Tick::_internal_expected_long_tick() const {
   return _impl_.expected_long_tick_;
@@ -7677,7 +7578,7 @@ inline uint32_t CNETMsg_Tick::expected_long_tick() const {
   return _internal_expected_long_tick();
 }
 inline void CNETMsg_Tick::_internal_set_expected_long_tick(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   _impl_.expected_long_tick_ = value;
 }
 inline void CNETMsg_Tick::set_expected_long_tick(uint32_t value) {
@@ -7751,6 +7652,62 @@ inline void CNETMsg_Tick::set_allocated_expected_long_tick_reason(std::string* e
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:CNETMsg_Tick.expected_long_tick_reason)
+}
+
+// optional uint32 host_frame_dropped_pct_x10 = 12;
+inline bool CNETMsg_Tick::_internal_has_host_frame_dropped_pct_x10() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  return value;
+}
+inline bool CNETMsg_Tick::has_host_frame_dropped_pct_x10() const {
+  return _internal_has_host_frame_dropped_pct_x10();
+}
+inline void CNETMsg_Tick::clear_host_frame_dropped_pct_x10() {
+  _impl_.host_frame_dropped_pct_x10_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
+}
+inline uint32_t CNETMsg_Tick::_internal_host_frame_dropped_pct_x10() const {
+  return _impl_.host_frame_dropped_pct_x10_;
+}
+inline uint32_t CNETMsg_Tick::host_frame_dropped_pct_x10() const {
+  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_frame_dropped_pct_x10)
+  return _internal_host_frame_dropped_pct_x10();
+}
+inline void CNETMsg_Tick::_internal_set_host_frame_dropped_pct_x10(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_.host_frame_dropped_pct_x10_ = value;
+}
+inline void CNETMsg_Tick::set_host_frame_dropped_pct_x10(uint32_t value) {
+  _internal_set_host_frame_dropped_pct_x10(value);
+  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_frame_dropped_pct_x10)
+}
+
+// optional uint32 host_frame_irregular_arrival_pct_x10 = 13;
+inline bool CNETMsg_Tick::_internal_has_host_frame_irregular_arrival_pct_x10() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
+  return value;
+}
+inline bool CNETMsg_Tick::has_host_frame_irregular_arrival_pct_x10() const {
+  return _internal_has_host_frame_irregular_arrival_pct_x10();
+}
+inline void CNETMsg_Tick::clear_host_frame_irregular_arrival_pct_x10() {
+  _impl_.host_frame_irregular_arrival_pct_x10_ = 0u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
+}
+inline uint32_t CNETMsg_Tick::_internal_host_frame_irregular_arrival_pct_x10() const {
+  return _impl_.host_frame_irregular_arrival_pct_x10_;
+}
+inline uint32_t CNETMsg_Tick::host_frame_irregular_arrival_pct_x10() const {
+  // @@protoc_insertion_point(field_get:CNETMsg_Tick.host_frame_irregular_arrival_pct_x10)
+  return _internal_host_frame_irregular_arrival_pct_x10();
+}
+inline void CNETMsg_Tick::_internal_set_host_frame_irregular_arrival_pct_x10(uint32_t value) {
+  _impl_._has_bits_[0] |= 0x00000200u;
+  _impl_.host_frame_irregular_arrival_pct_x10_ = value;
+}
+inline void CNETMsg_Tick::set_host_frame_irregular_arrival_pct_x10(uint32_t value) {
+  _internal_set_host_frame_irregular_arrival_pct_x10(value);
+  // @@protoc_insertion_point(field_set:CNETMsg_Tick.host_frame_irregular_arrival_pct_x10)
 }
 
 // -------------------------------------------------------------------

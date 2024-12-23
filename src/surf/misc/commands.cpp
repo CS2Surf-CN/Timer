@@ -33,7 +33,7 @@ static void Command_ShowTrigger(CCSPlayerController* pController, const std::vec
 void RegisterCommands() {
 	CONCMD::RegConsoleCmd("sm_hideleg", Command_HideLegs);
 	CONCMD::RegConsoleCmd("sm_hidelegs", Command_HideLegs);
-	// CONCMD::RegConsoleCmd("sm_st", Command_ShowTrigger);
-	// CONCMD::RegConsoleCmd("sm_showtrigger", Command_ShowTrigger);
-	// CONCMD::RegConsoleCmd("sm_showtriggers", Command_ShowTrigger);
+	CONCMD::RegConsoleCmd("sm_st", Command_ShowTrigger);
+	CONCMD::RegConsoleCmd("sm_showtrigger", Command_ShowTrigger);
+	CONCMD::RegConsoleCmd("sm_showtriggers", Command_ShowTrigger);
 }

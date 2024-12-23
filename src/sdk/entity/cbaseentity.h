@@ -190,7 +190,7 @@ public:
 
 	SCHEMA_FIELD_POINTER(CCollisionProperty, m_Collision);
 	SCHEMA_FIELD(Color, m_clrRender);
-	SCHEMA_FIELD(uint8, m_nRenderMode);
+	SCHEMA_FIELD(RenderMode_t, m_nRenderMode);
 	SCHEMA_FIELD(float, m_fadeMinDist);
 };
 

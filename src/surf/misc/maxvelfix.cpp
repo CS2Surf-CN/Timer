@@ -6,7 +6,7 @@ class CMaxVelocityFix : CCoreForward {
 	virtual void OnPluginStart() override;
 };
 
-CMaxVelocityFix g_MaxVelocityFix;
+//CMaxVelocityFix g_MaxVelocityFix;
 
 void CMaxVelocityFix::OnPluginStart() {
 	float* min = (float*)GAMEDATA::GetAddress("m_vecVelocity_min");

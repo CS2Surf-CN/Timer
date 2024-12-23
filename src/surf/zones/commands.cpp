@@ -91,8 +91,57 @@ CCMD_CALLBACK(Command_TPStart) {
 	player->GetPlayerPawn()->Teleport(&SurfZonePlugin()->m_vecTestStartZone, nullptr, nullptr);
 }
 
+class CDynamicProp : public CBaseEntity {
+public:
+	DECLARE_SCHEMA_CLASS(CDynamicProp);
+
+	SCHEMA_FIELD(bool, m_bUseAnimGraph);
+};
+
 void RegisterCommand() {
 	CONCMD::RegConsoleCmd("sm_zones", Command_Zones);
 	CONCMD::RegConsoleCmd("sm_editzone", Command_EditZone);
 	CONCMD::RegConsoleCmd("sm_r", Command_TPStart);
+	CONCMD::RegConsoleCmd(
+		"sm_ktest", CCMD_CALLBACK_L() {
+			CBaseEntity* ent = MEM::CALL::CreateEntityByName("point_worldtext");
+			CCSPlayerPawn* player = pController->GetPlayerPawn();
+			if (!player) {
+				return;
+			}
+
+			CEntityKeyValues* ent_kv = new CEntityKeyValues();
+			Color text_color(128, 255, 124, 255);
+			ent_kv->SetColor("color", text_color);
+			ent_kv->SetBool("enabled", true);
+			ent_kv->SetString("message", "v she ni ma si le");
+			ent_kv->SetString("font_name", "Arial Black");
+			ent_kv->SetFloat("world_units_per_pixel", 0.25f);
+			ent_kv->SetFloat("depth_render_offset", 0.125f);
+			ent_kv->SetInt("justify_horizontal", 0);
+			ent_kv->SetInt("justify_vertical", 1);
+			ent_kv->SetFloat("font_size", 40.0f);
+			// ent_kv->SetString("scales", "20.0 1.0 1.0");
+
+			CBaseViewModel* viewmodel = player->m_pViewModelServices()->GetViewModel();
+			// if (!viewmodel) {
+			//	return;
+			// }
+
+			QAngle ang = viewmodel->GetAbsAngles();
+			ang.z = 90.0f;
+			ang.y -= 90.0f;
+
+			Vector fwd, right, up;
+			AngleVectors(ang, &fwd, &right, &up);
+			VectorNormalize(fwd);
+
+			Vector origin = player->GetAbsOrigin();
+			origin = origin + fwd * (-32.0f) + up * -16.0f;
+			ent_kv->SetQAngle("angles", ang);
+			ent_kv->SetVector("origin", origin);
+			ent->DispatchSpawn(ent_kv);
+
+			ent->SetParent(viewmodel);
+		});
 }

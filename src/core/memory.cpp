@@ -170,8 +170,9 @@ static void Hook_ClientCommand(CPlayerSlot slot, const CCommand& args) {
 SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t &, ISource2WorldSession *, const char *);
 static void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*) {
 	SurfPlugin()->AddonInit();
-	GameEntitySystem()->RemoveListenerEntity(&g_EntityListener);
-	GameEntitySystem()->AddListenerEntity(&g_EntityListener);
+	auto entitySystem = GameEntitySystem();
+	entitySystem->RemoveListenerEntity(&g_EntityListener);
+	entitySystem->AddListenerEntity(&g_EntityListener);
 
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnStartupServer(META_IFACEPTR(INetworkServerService), config);

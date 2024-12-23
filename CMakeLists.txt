@@ -63,9 +63,9 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE "${SURFTIMER_SRC}/pch.h")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-set(OUT_DIR "NULL" CACHE PATH "SurfTimer binary directory for post-build file copy")
+set(OUT_DIR "" CACHE PATH "SurfTimer binary directory for post-build file copy")
 
-if (EXISTS ${OUT_DIR})
+if (NOT ${OUT_DIR} STREQUAL "")
 	add_custom_command(
 		TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy

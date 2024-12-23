@@ -35,7 +35,6 @@ CWorldTextMenu::CWorldTextMenu(MenuHandler pFnHandler, std::string sTitle) : CBa
 	}
 
 	int fontSize = 40;
-	pMenuKV->SetColor("color", Color(255, 255, 255, 255));
 	pMenuKV->SetBool("enabled", false);
 	pMenuKV->SetFloat("world_units_per_pixel", (0.25 / 1000) * fontSize);
 	pMenuKV->SetFloat("depth_render_offset", 0.125);
@@ -45,6 +44,7 @@ CWorldTextMenu::CWorldTextMenu(MenuHandler pFnHandler, std::string sTitle) : CBa
 	pMenuKV->SetInt("fullbright", 1);
 	pMenuKV->SetFloat("font_size", fontSize);
 	pMenuKV->SetString("font_name", "Consolas");
+	pMenuKV->SetColor("color", Color(255, 100, 255, 255));
 
 	pMenuEntity->DispatchSpawn(pMenuKV);
 	this->m_hWorldText.Set(pMenuEntity);

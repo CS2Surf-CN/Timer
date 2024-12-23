@@ -6,9 +6,9 @@
 #include <sdk/entity/ccsplayercontroller.h>
 
 #define CCMD_CALLBACK(fn)    static void fn(CCSPlayerController* pController, const std::vector<std::string>& vArgs)
-#define CCMD_CALLBACK_L(...) [__VA_ARGS__](CCSPlayerController * pController, const std::vector<std::string>& vArgs)
+#define CCMD_CALLBACK_L(...) [__VA_ARGS__](CCSPlayerController * pController, const std::vector<std::string>& vArgs) -> void
 #define SCMD_CALLBACK(fn)    static void fn(const std::vector<std::string>& vArgs)
-#define SCMD_CALLBACK_L(...) [__VA_ARGS__](const std::vector<std::string>& vArgs)
+#define SCMD_CALLBACK_L(...) [__VA_ARGS__](const std::vector<std::string>& vArgs) -> void
 
 using ConCmd_Callback = std::function<void(CCSPlayerController* pController, const std::vector<std::string>& vArgs)>;
 using SrvCmd_Callback = std::function<void(const std::vector<std::string>& vArgs)>;
