@@ -36,7 +36,6 @@
 				"+developer 5",
 				"+exec server.cfg",
 				"+sv_cheats 1",
-				"+showtriggers 1",
 				"+host_workshop_map 3133346713"
 			]
 		}

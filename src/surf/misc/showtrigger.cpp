@@ -48,9 +48,9 @@ void CShowTrigger::TransmitTriggers(const std::vector<CHandle<CBaseTrigger>>& vT
 
 		//pTrigger->m_fEffects(iEffect);
 
-		auto target = (uint*)((char*)pTrigger + 0x1c0);
+		// auto target = (uint*)((char*)pTrigger + 0x1c0);
 		//_InterlockedExchange(target, iStateFlags);
-		// pTrigger->m_NetworkTransmitComponent()->m_iStateFlags(iStateFlags);
+		pTrigger->m_NetworkTransmitComponent()->m_iStateFlags(iStateFlags);
 		pTrigger->NetworkStateChanged();
 	}
 }
