@@ -84,128 +84,113 @@ void MEM::CALL::SetParent(CBaseEntity* pEnt, CBaseEntity* pParent) {
 
 #pragma region hooks
 
-// clang-format off
-SH_DECL_HOOK1_void(IGameSystem, ServerGamePostSimulate, SH_NOATTRIB, false, const EventServerGamePostSimulate_t*);
-static void Hook_OnServerGamePostSimulate(const EventServerGamePostSimulate_t* a2) {
+static void Hook_OnServerGamePostSimulate(IGameSystem* pThis, const EventServerGamePostSimulate_t* a2) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnServerGamePostSimulate(META_IFACEPTR(IGameSystem));
+		p->OnServerGamePostSimulate(pThis);
 	}
 }
 
-SH_DECL_HOOK3_void(ISource2Server, GameFrame, SH_NOATTRIB, false, bool, bool, bool);
-static void Hook_OnGameFrame(bool simulating, bool bFirstTick, bool bLastTick) {
+static void Hook_OnGameFrame(ISource2Server* pThis, bool simulating, bool bFirstTick, bool bLastTick) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnGameFrame(META_IFACEPTR(ISource2Server), simulating, bFirstTick, bLastTick);
+		p->OnGameFrame(pThis, simulating, bFirstTick, bLastTick);
 	}
 }
 
-SH_DECL_HOOK6(ISource2GameClients, ClientConnect, SH_NOATTRIB, false, bool, CPlayerSlot, const char*, uint64, const char*, bool, CBufferString*);
-static bool Hook_ClientConnect(CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, bool unk1,
+static bool Hook_ClientConnect(ISource2GameClients* pThis, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, bool unk1,
 							   CBufferString* pRejectReason) {
 	RETURN_META_VALUE(MRES_IGNORED, true);
 }
 
-SH_DECL_HOOK6_void(ISource2GameClients, OnClientConnected, SH_NOATTRIB, false, CPlayerSlot, const char *, uint64, const char *, const char *, bool);
-static void Hook_OnClientConnected(CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, const char* pszAddress,
+static void Hook_OnClientConnected(ISource2GameClients* pThis, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID,
+								   const char* pszAddress,
 								   bool bFakePlayer) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientConnected(META_IFACEPTR(ISource2GameClients), slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
+		p->OnClientConnected(pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK1_void(ISource2GameClients, ClientFullyConnect, SH_NOATTRIB, false, CPlayerSlot);
-static void Hook_ClientFullyConnect(CPlayerSlot slot) {
+static void Hook_ClientFullyConnect(ISource2GameClients* pThis, CPlayerSlot slot) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientFullyConnect(META_IFACEPTR(ISource2GameClients), slot);
+		p->OnClientFullyConnect(pThis, slot);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK4_void(ISource2GameClients, ClientPutInServer, SH_NOATTRIB, false, CPlayerSlot, char const *, int, uint64);
-static void Hook_ClientPutInServer(CPlayerSlot slot, char const* pszName, int type, uint64 xuid) {
+static void Hook_ClientPutInServer(ISource2GameClients* pThis, CPlayerSlot slot, char const* pszName, int type, uint64 xuid) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientPutInServer(META_IFACEPTR(ISource2GameClients), slot, pszName, type, xuid);
+		p->OnClientPutInServer(pThis, slot, pszName, type, xuid);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK4_void(ISource2GameClients, ClientActive, SH_NOATTRIB, false, CPlayerSlot, bool, const char *, uint64);
-static void Hook_ClientActive(CPlayerSlot slot, bool bLoadGame, const char* pszName, uint64 xuid) {
+static void Hook_ClientActive(ISource2GameClients* pThis, CPlayerSlot slot, bool bLoadGame, const char* pszName, uint64 xuid) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientActive(META_IFACEPTR(ISource2GameClients), slot, bLoadGame, pszName, xuid);
+		p->OnClientActive(pThis, slot, bLoadGame, pszName, xuid);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK5_void(ISource2GameClients, ClientDisconnect, SH_NOATTRIB, false, CPlayerSlot, ENetworkDisconnectionReason, const char *, uint64, const char *);
-static void Hook_ClientDisconnect(CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid, const char* pszNetworkID) {
+static void Hook_ClientDisconnect(ISource2GameClients* pThis, CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid,
+								  const char* pszNetworkID) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientDisconnect(META_IFACEPTR(ISource2GameClients), slot, reason, pszName, xuid, pszNetworkID);
+		p->OnClientDisconnect(pThis, slot, reason, pszName, xuid, pszNetworkID);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK1_void(ISource2GameClients, ClientVoice, SH_NOATTRIB, false, CPlayerSlot);
-static void Hook_ClientVoice(CPlayerSlot slot) {
+static void Hook_ClientVoice(ISource2GameClients* pThis, CPlayerSlot slot) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientVoice(META_IFACEPTR(ISource2GameClients), slot);
+		p->OnClientVoice(pThis, slot);
 	}
 }
 
-SH_DECL_HOOK2_void(ISource2GameClients, ClientCommand, SH_NOATTRIB, false, CPlayerSlot, const CCommand &);
-static void Hook_ClientCommand(CPlayerSlot slot, const CCommand& args) {
+static void Hook_ClientCommand(ISource2GameClients* pThis, CPlayerSlot slot, const CCommand& args) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnClientCommand(META_IFACEPTR(ISource2GameClients), slot, args);
+		p->OnClientCommand(pThis, slot, args);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t &, ISource2WorldSession *, const char *);
-static void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*) {
+static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*) {
 	SurfPlugin()->AddonInit();
 	auto entitySystem = GameEntitySystem();
 	entitySystem->RemoveListenerEntity(&g_EntityListener);
 	entitySystem->AddListenerEntity(&g_EntityListener);
 
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnStartupServer(META_IFACEPTR(INetworkServerService), config);
+		p->OnStartupServer(pThis, config);
 	}
 
 	RETURN_META(MRES_IGNORED);
 }
 
-SH_DECL_HOOK3_void(ICvar, DispatchConCommand, SH_NOATTRIB, 0, ConCommandHandle, const CCommandContext &, const CCommand &);
-static void Hook_DispatchConCommand(ConCommandHandle cmd, const CCommandContext& ctx, const CCommand& args) {
+static void Hook_DispatchConCommand(ICvar* pThis, ConCommandHandle cmd, const CCommandContext& ctx, const CCommand& args) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnDispatchConCommand(META_IFACEPTR(ICvar), cmd, ctx, args);
+		p->OnDispatchConCommand(pThis, cmd, ctx, args);
 	}
 }
 
-SH_DECL_HOOK8_void(IGameEventSystem, PostEventAbstract, SH_NOATTRIB, 0, CSplitScreenSlot, bool, int, const uint64 *, INetworkMessageInternal *, const CNetMessage *, unsigned long, NetChannelBufType_t);
-static void Hook_PostEvent(CSplitScreenSlot nSlot, bool bLocalOnly, int nClientCount, const uint64* clients, INetworkMessageInternal* pEvent,
+static void Hook_PostEvent(IGameEventSystem* pThis, CSplitScreenSlot nSlot, bool bLocalOnly, int nClientCount, const uint64* clients, INetworkMessageInternal* pEvent,
 						   const CNetMessage* pData, unsigned long nSize, NetChannelBufType_t bufType) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnPostEventAbstract(META_IFACEPTR(IGameEventSystem), nSlot, nClientCount, clients, pEvent, pData);
+		p->OnPostEventAbstract(pThis, nSlot, nClientCount, clients, pEvent, pData);
 	}
 }
 
-SH_DECL_HOOK0(CNetworkGameServerBase, ActivateServer, SH_NOATTRIB, false, bool);
-static bool Hook_ActivateServer() {
+static bool Hook_ActivateServer(CNetworkGameServerBase* pThis) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
-		p->OnActivateServer(META_IFACEPTR(CNetworkGameServerBase));
+		p->OnActivateServer(pThis);
 	}
 
 	RETURN_META_VALUE(MRES_IGNORED, true);
 }
-
-// clang-format on
 
 static IGameEvent* Hook_OnCreateEvent(IGameEventManager2* pEventManager, const char* szName, bool bForce, int* pCookie) {
 	return MEM::SDKCall<IGameEvent*>(MEM::TRAMPOLINE::g_fnCreateGameEvent, pEventManager, szName, true, pCookie);
@@ -312,7 +297,7 @@ void CEntListener::OnEntityDeleted(CEntityInstance* pEntity) {
 static bool SetupDetours() {
 	// clang-format off
 	HOOK_SIG("CCSPlayer_WeaponServices::Weapon_Drop", Hook_OnWeaponDrop, MEM::TRAMPOLINE::g_fnWeaponDrop);
-	HOOK_SIG("CCSPlayerPawn::OnTakeDamage", Hook_OnTakeDamage, MEM::TRAMPOLINE::g_fnTakeDamage)
+	HOOK_SIG("CCSPlayerPawn::OnTakeDamage", Hook_OnTakeDamage, MEM::TRAMPOLINE::g_fnTakeDamage);
 	// clang-format on
 
 	return true;
@@ -320,54 +305,48 @@ static bool SetupDetours() {
 
 static bool SetupVMTHooks() {
 	// clang-format off
-	HOOK_VMT("CGameEventManager::CreateEvent", MEM::MODULE::server, Hook_OnCreateEvent, MEM::TRAMPOLINE::g_fnCreateGameEvent);
-	HOOK_VMT("CGameEventManager::FireEvent", MEM::MODULE::server, Hook_OnFireEvent, MEM::TRAMPOLINE::g_fnFireGameEvent);
+	HOOK_VMT(IFACE::pServer, ISource2Server::GameFrame, Hook_OnGameFrame, MEM::TRAMPOLINE::g_fnGameFrame);
 
-	// clang-format on
-	return true;
-}
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientConnect, Hook_ClientConnect, MEM::TRAMPOLINE::g_fnClientConnect);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::OnClientConnected, Hook_OnClientConnected, MEM::TRAMPOLINE::g_fnClientConnected);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientFullyConnect, Hook_ClientFullyConnect, MEM::TRAMPOLINE::g_fnClientFullyConnect);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientPutInServer, Hook_ClientPutInServer, MEM::TRAMPOLINE::g_fnClientPutInServer);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientActive, Hook_ClientActive, MEM::TRAMPOLINE::g_fnClientActive);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientDisconnect, Hook_ClientDisconnect, MEM::TRAMPOLINE::g_fnClientDisconnect);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientVoice, Hook_ClientVoice, MEM::TRAMPOLINE::g_fnClientVoice);
+	HOOK_VMT(g_pSource2GameClients, ISource2GameClients::ClientCommand, Hook_ClientCommand, MEM::TRAMPOLINE::g_fnClientCommand);
 
-static bool SetupSourceHooks() {
-	SH_ADD_HOOK(ISource2Server, GameFrame, IFACE::pServer, SH_STATIC(Hook_OnGameFrame), false);
+	HOOK_VMT(IFACE::pGameEventManager, IGameEventManager2::CreateEvent, Hook_OnCreateEvent, MEM::TRAMPOLINE::g_fnCreateGameEvent);
+	HOOK_VMT(IFACE::pGameEventManager, IGameEventManager2::FireEvent, Hook_OnFireEvent, MEM::TRAMPOLINE::g_fnFireGameEvent);
 
-	SH_ADD_HOOK(ISource2GameClients, ClientConnect, g_pSource2GameClients, SH_STATIC(Hook_ClientConnect), false);
-	SH_ADD_HOOK(ISource2GameClients, OnClientConnected, g_pSource2GameClients, SH_STATIC(Hook_OnClientConnected), false);
-	SH_ADD_HOOK(ISource2GameClients, ClientFullyConnect, g_pSource2GameClients, SH_STATIC(Hook_ClientFullyConnect), false);
-	SH_ADD_HOOK(ISource2GameClients, ClientPutInServer, g_pSource2GameClients, SH_STATIC(Hook_ClientPutInServer), false);
-	SH_ADD_HOOK(ISource2GameClients, ClientActive, g_pSource2GameClients, SH_STATIC(Hook_ClientActive), false);
-	SH_ADD_HOOK(ISource2GameClients, ClientDisconnect, g_pSource2GameClients, SH_STATIC(Hook_ClientDisconnect), true);
-	SH_ADD_HOOK(ISource2GameClients, ClientVoice, g_pSource2GameClients, SH_STATIC(Hook_ClientVoice), false);
-	SH_ADD_HOOK(ISource2GameClients, ClientCommand, g_pSource2GameClients, SH_STATIC(Hook_ClientCommand), false);
+	HOOK_VMT(g_pNetworkServerService, INetworkServerService::StartupServer, Hook_StartupServer, MEM::TRAMPOLINE::g_fnStartupServer);
+	HOOK_VMT(g_pCVar, ICvar::DispatchConCommand, Hook_DispatchConCommand, MEM::TRAMPOLINE::g_fnDispatchConCommand);
 
-	SH_ADD_HOOK(INetworkServerService, StartupServer, g_pNetworkServerService, SH_STATIC(Hook_StartupServer), true);
-
-	SH_ADD_HOOK(ICvar, DispatchConCommand, g_pCVar, SH_STATIC(Hook_DispatchConCommand), false);
-
-	SH_ADD_HOOK(IGameEventSystem, PostEventAbstract, IFACE::pGameEventSystem, SH_STATIC(Hook_PostEvent), false);
-
-	// clang-format off
-	SH_ADD_DVPHOOK(IGameSystem, 
-		ServerGamePostSimulate, 
-		MEM::MODULE::server->GetVirtualTableByName("CEntityDebugGameSystem").RCast<IGameSystem*>(), 
-		SH_STATIC(Hook_OnServerGamePostSimulate), 
-		true
+	HOOK_VMT_OVERRIDE(IFACE::pGameEventSystem, IGameEventSystem, PostEventAbstract, Hook_PostEvent, MEM::TRAMPOLINE::g_fnPostEventAbstract, 
+		CSplitScreenSlot, bool, int, const uint64*, INetworkMessageInternal*, const CNetMessage*, unsigned long, NetChannelBufType_t);
+	
+	HOOK_VMT(
+		MEM::MODULE::server->GetVirtualTableByName("CEntityDebugGameSystem").RCast<IGameSystem*>(),
+		IGameSystem::ServerGamePostSimulate,
+		Hook_OnServerGamePostSimulate,
+		MEM::TRAMPOLINE::g_fnServerGamePostSimulate
 	);
 
-	SH_ADD_DVPHOOK(
-		CNetworkGameServerBase, 
-		ActivateServer,
-		MEM::MODULE::engine->GetVirtualTableByName("CNetworkGameServer").RCast<CNetworkGameServerBase*>(),
-		SH_STATIC(Hook_ActivateServer), 
-		true
+	HOOK_VMT(
+		MEM::MODULE::server->GetVirtualTableByName("CNetworkGameServer").RCast<CNetworkGameServerBase*>(),
+		CNetworkGameServerBase::ActivateServer,
+		Hook_ActivateServer,
+		MEM::TRAMPOLINE::g_fnActivateServer
 	);
+
 	// clang-format on
+
 	return true;
 }
 
 void MEM::SetupHooks() {
 	SURF_ASSERT(SetupDetours());
 	SURF_ASSERT(SetupVMTHooks());
-	SURF_ASSERT(SetupSourceHooks());
 }
 
 void MEM::MODULE::Setup() {

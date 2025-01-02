@@ -6,6 +6,7 @@
 #include <libmem/libmem_helper.h>
 #include <vendor/libmodule/module.h>
 #include <sdk/datatypes.h>
+#include <utils/vtablehelper.h>
 
 class CBasePlayerController;
 class CCSPlayerController;
@@ -16,6 +17,8 @@ class CBaseTrigger;
 
 class GameSessionConfiguration_t {};
 
+// clang-format off
+
 #define HOOK_SIG(sig, fnHook, fnTrampoline) \
 	static auto fn##fnHook = GAMEDATA::GetMemSig(sig); \
 	SURF_ASSERT(fn##fnHook); \
@@ -23,11 +26,23 @@ class GameSessionConfiguration_t {};
 		libmem::HookFunc(fn##fnHook, fnHook, fnTrampoline); \
 	}
 
-#define HOOK_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
+#define HOOK_VMT(instance, vfn, fnHook, fnTrampoline) \
+	SURF_ASSERT(libmem::VmtHookEx(instance, offsetof_vtablefn(vfn), fnHook, fnTrampoline));
+
+#define HOOK_VMT_OVERRIDE(instance, classname, vfn, fnHook, fnTrampoline, ...) \
+	SURF_ASSERT(libmem::VmtHookEx( \
+		instance, \
+		TOOLS::GetVtableIndex(static_cast<FunctionTraits<decltype(&fnHook)>::ReturnType (classname::*)(__VA_ARGS__)>(&classname::vfn)), \
+		fnHook, \
+		fnTrampoline));
+
+#define HOOK_VMTEX(gdOffsetKey, pModule, fnHook, fnTrampoline) \
 	SURF_ASSERT(MEM::VmtHookEx(GAMEDATA::GetOffset(gdOffsetKey), pModule.get(), gdOffsetKey, fnHook, fnTrampoline));
 
 #define DETOUR_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
 	SURF_ASSERT(MEM::VmtHookEx(GAMEDATA::GetOffset(gdOffsetKey), pModule.get(), gdOffsetKey, fnHook, fnTrampoline, true));
+
+// clang-format on
 
 namespace MEM {
 	namespace CALL {
@@ -58,8 +73,22 @@ namespace MEM {
 	} // namespace MODULE
 
 	namespace TRAMPOLINE {
+		inline void* g_fnGameFrame;
+		inline void* g_fnClientConnect;
+		inline void* g_fnClientConnected;
+		inline void* g_fnClientFullyConnect;
+		inline void* g_fnClientPutInServer;
+		inline void* g_fnClientActive;
+		inline void* g_fnClientDisconnect;
+		inline void* g_fnClientVoice;
+		inline void* g_fnClientCommand;
 		inline void* g_fnCreateGameEvent;
 		inline void* g_fnFireGameEvent;
+		inline void* g_fnStartupServer;
+		inline void* g_fnDispatchConCommand;
+		inline void* g_fnPostEventAbstract;
+		inline void* g_fnServerGamePostSimulate;
+		inline void* g_fnActivateServer;
 		inline void* g_fnWeaponDrop;
 		inline void* g_fnTakeDamage;
 	} // namespace TRAMPOLINE

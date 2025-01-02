@@ -310,19 +310,20 @@ namespace SourceHook {
 
 namespace TOOLS {
 	template<typename T>
-	int GetVtableIndex(T vfuncPtr) {
+	inline int GetVtableIndex(T vfuncPtr) {
 		SourceHook::MemFuncInfo info {};
 		SourceHook::GetFuncInfo(vfuncPtr, info);
 		return info.vtblindex;
 	}
 
 	template<typename X, typename Y>
-	int GetVtableIndex(X* pInstance, Y vfuncPtr) {
+	inline int GetVtableIndex(X* pInstance, Y vfuncPtr) {
 		SourceHook::MemFuncInfo info {};
 		SourceHook::GetFuncInfo(pInstance, vfuncPtr, info);
 		return info.vtblindex;
 	}
 } // namespace TOOLS
 
-#define offsetof_vtable(vfuncPtr)               TOOLS::GetVtableIndex(&vfuncPtr);
-#define offsetof_vtable_mi(pInstance, vfuncPtr) TOOLS::GetVtableIndex(pInstance, &vfuncPtr);
+#define offsetof_vtable(classname, vfn)         TOOLS::GetVtableIndex(&classname::vfn)
+#define offsetof_vtablefn(vfuncPtr)             TOOLS::GetVtableIndex(&vfuncPtr)
+#define offsetof_vtable_mi(pInstance, vfuncPtr) TOOLS::GetVtableIndex(pInstance, &vfuncPtr)
