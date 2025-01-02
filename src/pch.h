@@ -9,9 +9,6 @@
 #include <igameeventsystem.h>
 #include <iserver.h>
 
-#include <sourcehook.h>
-#include <ISmmPlugin.h>
-
 #include <sdk/common.h>
 
 #include <json.h>

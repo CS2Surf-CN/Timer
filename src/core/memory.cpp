@@ -16,8 +16,6 @@ class CEntListener : public IEntityListener {
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
 } g_EntityListener;
 
-PLUGIN_GLOBALVARS();
-
 #define CALL_SIG(sig, fnCurrent, ...) \
 	static auto fnSig = GAMEDATA::GetMemSig(sig); \
 	SURF_ASSERT(fnSig); \
@@ -88,17 +86,21 @@ static void Hook_OnServerGamePostSimulate(IGameSystem* pThis, const EventServerG
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnServerGamePostSimulate(pThis);
 	}
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnServerGamePostSimulate, pThis, a2);
 }
 
 static void Hook_OnGameFrame(ISource2Server* pThis, bool simulating, bool bFirstTick, bool bLastTick) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnGameFrame(pThis, simulating, bFirstTick, bLastTick);
 	}
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnGameFrame, pThis, simulating, bFirstTick, bLastTick);
 }
 
 static bool Hook_ClientConnect(ISource2GameClients* pThis, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID, bool unk1,
 							   CBufferString* pRejectReason) {
-	RETURN_META_VALUE(MRES_IGNORED, true);
+	return MEM::SDKCall<bool>(MEM::TRAMPOLINE::g_fnClientConnect, pThis, slot, pszName, xuid, pszNetworkID, unk1, pRejectReason);
 }
 
 static void Hook_OnClientConnected(ISource2GameClients* pThis, CPlayerSlot slot, const char* pszName, uint64 xuid, const char* pszNetworkID,
@@ -108,7 +110,7 @@ static void Hook_OnClientConnected(ISource2GameClients* pThis, CPlayerSlot slot,
 		p->OnClientConnected(pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientDisconnect, pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
 }
 
 static void Hook_ClientFullyConnect(ISource2GameClients* pThis, CPlayerSlot slot) {
@@ -116,7 +118,7 @@ static void Hook_ClientFullyConnect(ISource2GameClients* pThis, CPlayerSlot slot
 		p->OnClientFullyConnect(pThis, slot);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientFullyConnect, pThis, slot);
 }
 
 static void Hook_ClientPutInServer(ISource2GameClients* pThis, CPlayerSlot slot, char const* pszName, int type, uint64 xuid) {
@@ -124,7 +126,7 @@ static void Hook_ClientPutInServer(ISource2GameClients* pThis, CPlayerSlot slot,
 		p->OnClientPutInServer(pThis, slot, pszName, type, xuid);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientPutInServer, pThis, slot, pszName, type, xuid);
 }
 
 static void Hook_ClientActive(ISource2GameClients* pThis, CPlayerSlot slot, bool bLoadGame, const char* pszName, uint64 xuid) {
@@ -132,7 +134,7 @@ static void Hook_ClientActive(ISource2GameClients* pThis, CPlayerSlot slot, bool
 		p->OnClientActive(pThis, slot, bLoadGame, pszName, xuid);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientActive, pThis, slot, bLoadGame, pszName, xuid);
 }
 
 static void Hook_ClientDisconnect(ISource2GameClients* pThis, CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid,
@@ -141,13 +143,15 @@ static void Hook_ClientDisconnect(ISource2GameClients* pThis, CPlayerSlot slot, 
 		p->OnClientDisconnect(pThis, slot, reason, pszName, xuid, pszNetworkID);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientDisconnect, pThis, slot, reason, pszName, xuid, pszNetworkID);
 }
 
 static void Hook_ClientVoice(ISource2GameClients* pThis, CPlayerSlot slot) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnClientVoice(pThis, slot);
 	}
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientVoice, pThis, slot);
 }
 
 static void Hook_ClientCommand(ISource2GameClients* pThis, CPlayerSlot slot, const CCommand& args) {
@@ -155,10 +159,10 @@ static void Hook_ClientCommand(ISource2GameClients* pThis, CPlayerSlot slot, con
 		p->OnClientCommand(pThis, slot, args);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientCommand, pThis, slot, &args);
 }
 
-static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*) {
+static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionConfiguration_t& config, ISource2WorldSession* a3, const char* a4) {
 	SurfPlugin()->AddonInit();
 	auto entitySystem = GameEntitySystem();
 	entitySystem->RemoveListenerEntity(&g_EntityListener);
@@ -168,13 +172,15 @@ static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionCo
 		p->OnStartupServer(pThis, config);
 	}
 
-	RETURN_META(MRES_IGNORED);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnStartupServer, pThis, &config, a3, a4);
 }
 
 static void Hook_DispatchConCommand(ICvar* pThis, ConCommandHandle cmd, const CCommandContext& ctx, const CCommand& args) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnDispatchConCommand(pThis, cmd, ctx, args);
 	}
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnDispatchConCommand, pThis, cmd, &ctx, &args);
 }
 
 static void Hook_PostEvent(IGameEventSystem* pThis, CSplitScreenSlot nSlot, bool bLocalOnly, int nClientCount, const uint64* clients, INetworkMessageInternal* pEvent,
@@ -182,6 +188,8 @@ static void Hook_PostEvent(IGameEventSystem* pThis, CSplitScreenSlot nSlot, bool
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnPostEventAbstract(pThis, nSlot, nClientCount, clients, pEvent, pData);
 	}
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnPostEventAbstract, pThis, nSlot, bLocalOnly, nClientCount, clients, pEvent, pData, nSize, bufType);
 }
 
 static bool Hook_ActivateServer(CNetworkGameServerBase* pThis) {
@@ -189,7 +197,7 @@ static bool Hook_ActivateServer(CNetworkGameServerBase* pThis) {
 		p->OnActivateServer(pThis);
 	}
 
-	RETURN_META_VALUE(MRES_IGNORED, true);
+	return MEM::SDKCall<bool>(MEM::TRAMPOLINE::g_fnActivateServer, pThis);
 }
 
 static IGameEvent* Hook_OnCreateEvent(IGameEventManager2* pEventManager, const char* szName, bool bForce, int* pCookie) {

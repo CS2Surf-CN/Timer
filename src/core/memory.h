@@ -95,7 +95,7 @@ namespace MEM {
 
 	void SetupHooks();
 
-	template<typename T, typename... Args>
+	template<typename T = void, typename... Args>
 	T SDKCall(void* pAddress, Args... args) {
 		auto pFn = reinterpret_cast<T (*)(Args...)>(pAddress);
 		SURF_ASSERT((uintptr_t)pFn);

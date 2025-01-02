@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-namespace SourceHook {
+namespace Source2Hook {
 	// Don Clugston:
 	// implicit_cast< >
 	// I believe this was originally going to be in the C++ standard but
@@ -306,20 +306,20 @@ namespace SourceHook {
 		RetType (Y::*mfp2)(Params..., ...) const = mfp;
 		MFI_Impl<sizeof(mfp2)>::GetFuncInfo(mfp2, out);
 	}
-} // namespace SourceHook
+} // namespace Source2Hook
 
 namespace TOOLS {
 	template<typename T>
-	inline int GetVtableIndex(T vfuncPtr) {
-		SourceHook::MemFuncInfo info {};
-		SourceHook::GetFuncInfo(vfuncPtr, info);
+	int GetVtableIndex(T vfuncPtr) {
+		Source2Hook::MemFuncInfo info {};
+		Source2Hook::GetFuncInfo(vfuncPtr, info);
 		return info.vtblindex;
 	}
 
 	template<typename X, typename Y>
-	inline int GetVtableIndex(X* pInstance, Y vfuncPtr) {
-		SourceHook::MemFuncInfo info {};
-		SourceHook::GetFuncInfo(pInstance, vfuncPtr, info);
+	int GetVtableIndex(X* pInstance, Y vfuncPtr) {
+		Source2Hook::MemFuncInfo info {};
+		Source2Hook::GetFuncInfo(pInstance, vfuncPtr, info);
 		return info.vtblindex;
 	}
 } // namespace TOOLS
