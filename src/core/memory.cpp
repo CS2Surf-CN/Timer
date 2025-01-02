@@ -83,11 +83,11 @@ void MEM::CALL::SetParent(CBaseEntity* pEnt, CBaseEntity* pParent) {
 #pragma region hooks
 
 static void Hook_OnServerGamePostSimulate(IGameSystem* pThis, const EventServerGamePostSimulate_t* a2) {
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnServerGamePostSimulate, pThis, a2);
+
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnServerGamePostSimulate(pThis);
 	}
-
-	MEM::SDKCall(MEM::TRAMPOLINE::g_fnServerGamePostSimulate, pThis, a2);
 }
 
 static void Hook_OnGameFrame(ISource2Server* pThis, bool simulating, bool bFirstTick, bool bLastTick) {
@@ -110,7 +110,7 @@ static void Hook_OnClientConnected(ISource2GameClients* pThis, CPlayerSlot slot,
 		p->OnClientConnected(pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
 	}
 
-	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientDisconnect, pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnClientConnected, pThis, slot, pszName, xuid, pszNetworkID, pszAddress, bFakePlayer);
 }
 
 static void Hook_ClientFullyConnect(ISource2GameClients* pThis, CPlayerSlot slot) {
@@ -193,11 +193,13 @@ static void Hook_PostEvent(IGameEventSystem* pThis, CSplitScreenSlot nSlot, bool
 }
 
 static bool Hook_ActivateServer(CNetworkGameServerBase* pThis) {
+	auto ret = MEM::SDKCall<bool>(MEM::TRAMPOLINE::g_fnActivateServer, pThis);
+
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnActivateServer(pThis);
 	}
 
-	return MEM::SDKCall<bool>(MEM::TRAMPOLINE::g_fnActivateServer, pThis);
+	return ret;
 }
 
 static IGameEvent* Hook_OnCreateEvent(IGameEventManager2* pEventManager, const char* szName, bool bForce, int* pCookie) {
@@ -333,16 +335,18 @@ static bool SetupVMTHooks() {
 	HOOK_VMT_OVERRIDE(IFACE::pGameEventSystem, IGameEventSystem, PostEventAbstract, Hook_PostEvent, MEM::TRAMPOLINE::g_fnPostEventAbstract, 
 		CSplitScreenSlot, bool, int, const uint64*, INetworkMessageInternal*, const CNetMessage*, unsigned long, NetChannelBufType_t);
 	
-	HOOK_VMT(
-		MEM::MODULE::server->GetVirtualTableByName("CEntityDebugGameSystem").RCast<IGameSystem*>(),
+	HOOK_VMTEX(
+		"CEntityDebugGameSystem",
 		IGameSystem::ServerGamePostSimulate,
+		MEM::MODULE::server,
 		Hook_OnServerGamePostSimulate,
 		MEM::TRAMPOLINE::g_fnServerGamePostSimulate
 	);
 
-	HOOK_VMT(
-		MEM::MODULE::server->GetVirtualTableByName("CNetworkGameServer").RCast<CNetworkGameServerBase*>(),
+	HOOK_VMTEX(
+		"CNetworkGameServer",
 		CNetworkGameServerBase::ActivateServer,
+		MEM::MODULE::engine,
 		Hook_ActivateServer,
 		MEM::TRAMPOLINE::g_fnActivateServer
 	);

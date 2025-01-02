@@ -36,7 +36,10 @@ class GameSessionConfiguration_t {};
 		fnHook, \
 		fnTrampoline));
 
-#define HOOK_VMTEX(gdOffsetKey, pModule, fnHook, fnTrampoline) \
+#define HOOK_VMTEX(sClassname, vfn, pModule, fnHook, fnTrampoline) \
+	SURF_ASSERT(MEM::VmtHookEx(offsetof_vtablefn(vfn), pModule.get(), sClassname, fnHook, fnTrampoline));
+
+#define GAMEDATA_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
 	SURF_ASSERT(MEM::VmtHookEx(GAMEDATA::GetOffset(gdOffsetKey), pModule.get(), gdOffsetKey, fnHook, fnTrampoline));
 
 #define DETOUR_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
