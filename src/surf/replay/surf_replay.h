@@ -19,7 +19,7 @@ public:
 	using CSurfBaseService::CSurfBaseService;
 
 	void StartRecord();
-	void DoRecord(CCSPlayerPawn* pawn, const CPlayerButton* buttons, const QAngle& viewAngles);
+	void DoRecord(CCSPlayerPawn* pawn, const CInButtonState& buttons, const QAngle& viewAngles);
 	void SaveRecord();
 
 public:
@@ -30,7 +30,7 @@ public:
 class CSurfReplayPlugin : CSurfForward, CMovementForward, CCoreForward {
 private:
 	virtual void OnPluginStart() override;
-	virtual void OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CPlayerButton* buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
+	virtual void OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
 
 	virtual bool OnEnterZone(const ZoneCache_t& zone, CSurfPlayer* player) override;
 	virtual bool OnLeaveZone(const ZoneCache_t& zone, CSurfPlayer* player) override;

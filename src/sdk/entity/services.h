@@ -3,13 +3,6 @@
 #include <sdk/schema.h>
 #include <sdk/usercmd.h>
 
-class CInButtonState {
-public:
-	DECLARE_SCHEMA_CLASS(CInButtonState);
-
-	SCHEMA_FIELD_POINTER(uint64, m_pButtonStates);
-};
-
 class CTakeDamageInfo {
 public:
 	DECLARE_SCHEMA_STRUCT(CTakeDamageInfo);

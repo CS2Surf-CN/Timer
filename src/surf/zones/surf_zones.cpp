@@ -13,7 +13,7 @@ void CSurfZonePlugin::OnPluginStart() {
 	RegisterCommand();
 }
 
-void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CPlayerButton* buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
+void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
 	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pawn);
 	if (!player) {
 		return;
@@ -100,14 +100,14 @@ void CSurfZonePlugin::AddZone(const ZoneData_t& data, bool bUpload) {
 	}
 }
 
-void CSurfZoneService::EditZone(CCSPlayerPawnBase* pawn, const CPlayerButton* buttons) {
+void CSurfZoneService::EditZone(CCSPlayerPawnBase* pawn, const CInButtonState& buttons) {
 	auto& iEditStep = m_ZoneEdit.m_iStep;
 	if (m_ZoneEdit.m_bEnabled) {
 		trace_t tr;
 		UTIL::GetPlayerAiming(pawn, tr);
 		Vector& aim = tr.m_vEndPos;
 
-		if (buttons->Pressed(IN_USE)) {
+		if (buttons.Pressed(IN_USE)) {
 			iEditStep = (ZoneEditStep)(iEditStep + 1);
 
 			m_ZoneEdit.CreateEditZone(aim);

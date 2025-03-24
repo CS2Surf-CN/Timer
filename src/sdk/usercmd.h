@@ -27,12 +27,9 @@ enum InputBitMask_t : uint64_t {
 	IN_LOOK_AT_WEAPON = 0x800000000,
 };
 
-class CSGOUserCmdPB;
-
-class CPlayerButton {
+class CInButtonState {
+public:
 	void** vtable;
-	[[maybe_unused]] uint8_t unk[16];
-
 public:
 	uint64_t down;
 	uint64_t changed;
@@ -47,8 +44,6 @@ public:
 		return (down & mask) && (changed & mask);
 	}
 };
-
-static_assert(sizeof(CPlayerButton) == sizeof(CInButtonStatePB));
 
 class CUserCmdBase {
 public:
@@ -70,14 +65,16 @@ private:
 template<typename T>
 class CUserCmdBaseHost : public CUserCmdBase, public T {};
 
-class CUserCmd : public CUserCmdBaseHost<CSGOUserCmdPB> {};
-
-class PlayerCommand : public CUserCmd {
+class CUserCmd : public CUserCmdBaseHost<CSGOUserCmdPB> {
 public:
-	CPlayerButton m_Buttons;
+	CInButtonState m_buttons;
+	int m_iAttackHistory;
+	int m_nLastRealCommandNumberExecuted;
+#ifdef _WIN32
+	int m_nLastLateCommandExecuted;
+#endif
 
-	// Not part of the player message
-	uint32_t unknown[4];
-	PlayerCommand* unknowncmd;
-	PlayerCommand* unknowncmd2;
+
+	void* m_pUnk4;
+	void* m_pUnk5;
 };

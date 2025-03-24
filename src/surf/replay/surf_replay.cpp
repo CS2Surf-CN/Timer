@@ -10,7 +10,7 @@ CSurfReplayPlugin* SURF::ReplayPlugin() {
 
 void CSurfReplayPlugin::OnPluginStart() {}
 
-void CSurfReplayPlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CPlayerButton* buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
+void CSurfReplayPlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
 	if (!pawn->IsAlive()) {
 		return;
 	}

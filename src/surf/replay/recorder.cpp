@@ -4,11 +4,11 @@ void CSurfReplayService::StartRecord() {
 	m_bEnabled = true;
 }
 
-void CSurfReplayService::DoRecord(CCSPlayerPawn* pawn, const CPlayerButton* buttons, const QAngle& viewAngles) {
+void CSurfReplayService::DoRecord(CCSPlayerPawn* pawn, const CInButtonState& buttons, const QAngle& viewAngles) {
 	ReplayFrame_t frame;
 	frame.ang = viewAngles;
 	frame.pos = pawn->GetAbsOrigin();
-	frame.buttons = buttons->down | buttons->scroll;
+	frame.buttons = buttons.down | buttons.scroll;
 	frame.flags = pawn->m_fFlags();
 	frame.mt = pawn->m_MoveType();
 
