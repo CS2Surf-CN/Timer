@@ -51,6 +51,9 @@ static void* Hook_OnMovementServicesRunCmds(CPlayer_MovementServices* pMovementS
 	}
 
 	if (baseCmd) {
+		// subtick must die
+		baseCmd->clear_subtick_moves();
+
 		baseCmd->set_weaponselect(weapon);
 		baseCmd->set_legacy_command_number(cmdnum);
 		baseCmd->set_client_tick(tickcount);
@@ -61,29 +64,16 @@ static void* Hook_OnMovementServicesRunCmds(CPlayer_MovementServices* pMovementS
 		baseCmd->set_forwardmove(vec[1]);
 		baseCmd->set_upmove(vec[2]);
 
-		if (baseCmd->has_viewangles()) {
+		// unavaliable
+		/*if (baseCmd->has_viewangles()) {
 			CMsgQAngle* viewangles = baseCmd->mutable_viewangles();
 			if (viewangles) {
 				viewangles->set_x(viewAngles.x);
 				viewangles->set_y(viewAngles.y);
 				viewangles->set_z(viewAngles.z);
 			}
-		}
+		}*/
 	}
-
-	auto pPBButton = baseCmd->mutable_buttons_pb();
-	pPBButton->set_buttonstate1(1);
-
-	UTIL::PrintCentre(controller, "unk1: %u, unk2: %u, unk3: %u\nunk4: %p, unk5: %p", 
-		pUserCmd->m_iAttackHistory, pUserCmd->m_nLastRealCommandNumberExecuted, pUserCmd->m_nLastLateCommandExecuted, 
-		pUserCmd->m_pUnk4, pUserCmd->m_pUnk5);
-
-	//pUserCmd->m_buttons.down = IN_FORWARD;
-	//pUserCmd->m_buttons.changed = IN_FORWARD;
-	//pUserCmd->m_buttons.scroll = IN_JUMP;
-	//pUserCmd->m_iAttackHistory = 1;
-	//pUserCmd->m_iUnk2 = IN_FORWARD;
-	//pUserCmd->m_iUnk3 = IN_FORWARD;
 
 	if (block) {
 		return nullptr;
@@ -247,33 +237,7 @@ static float Hook_OnGetMaxSpeed(CCSPlayerPawn* pawn) {
 	return player->m_fCurrentMaxSpeed;
 }
 
-void* g_tram1;
-
-void sub_1808C59B0(CCSPlayerController* pController, CUserCmd** cmds, int numcmds, bool paused, float margin) {
-	for (int x = 0; x < numcmds; x++) {
-		CUserCmd* pCmd = reinterpret_cast<CUserCmd*>(reinterpret_cast<char*>(cmds) + (sizeof(CUserCmd) * x));
-		CBaseUserCmdPB* baseCmd = pCmd->mutable_base();
-		pCmd->mutable_base()->mutable_subtick_moves()->Clear();
-
-		// pCmd->m_button.down = IN_FORWARD;
-		// pCmd->m_button.scroll = IN_JUMP;
-		// pCmd->m_button.changed = IN_FORWARD;
-
-		if (baseCmd) {
-			auto pViewAng = baseCmd->mutable_viewangles();
-			pViewAng->set_x(pViewAng->x() + 1.0f);
-		}
-	}
-
-	return MEM::SDKCall(g_tram1, pController, cmds, numcmds, paused, margin);
-}
-
 void MOVEMENT::SetupHooks() {
-	auto fn = libmem::SignScan("48 8B C4 44 88 48 ? 44 89 40 ? 48 89 50 ? 53", LIB::server);
-	if (fn) {
-		// libmem::HookFunc(fn, sub_1808C59B0, g_tram1);
-	}
-
 	HOOK_SIG("CPlayer_MovementServices::RunCmds", Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds);
 	HOOK_SIG("CCSPlayer_MovementServices::TryPlayerMove", Hook_OnTryPlayerMove, MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove);
 	HOOK_SIG("CCSPlayer_MovementServices::CategorizePosition", Hook_OnCategorizePosition, MOVEMENT::TRAMPOLINE::g_fnCategorizePosition);

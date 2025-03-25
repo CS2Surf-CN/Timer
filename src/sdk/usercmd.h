@@ -48,7 +48,7 @@ public:
 class CUserCmdBase {
 public:
 	int cmdNum;
-	uint8_t unk[4];
+	MEM_PAD(0x4);
 
 	virtual ~CUserCmdBase();
 
@@ -69,12 +69,16 @@ class CUserCmd : public CUserCmdBaseHost<CSGOUserCmdPB> {
 public:
 	CInButtonState m_buttons;
 	int m_iAttackHistory;
-	int m_nLastRealCommandNumberExecuted;
+
+private:
+	MEM_PAD(0x4);
 #ifdef _WIN32
-	int m_nLastLateCommandExecuted;
+	MEM_PAD(0x4);
 #endif
 
-
-	void* m_pUnk4;
-	void* m_pUnk5;
+	MEM_PAD(0x10);
 };
+
+#ifdef _WIN32
+static_assert(sizeof(CUserCmd) == 152);
+#endif
