@@ -69,11 +69,11 @@ public:
 
 	virtual void OnResourcePrecache(IEntityResourceManifest* pResourceManifest) {};
 
-	virtual bool OnTakeDamage(CCSPlayerPawn* pVictim, CTakeDamageInfo* info) {
+	virtual bool OnTakeDamage(CCSPlayerPawn* pVictim, CTakeDamageInfo* pInfo) {
 		return true;
 	}
 
-	virtual void OnTakeDamagePost(CCSPlayerPawn* pVictim, CTakeDamageInfo* info) {}
+	virtual void OnTakeDamagePost(CCSPlayerPawn* pVictim, CTakeDamageInfo* pInfo) {}
 
 	virtual void OnClientSendSnapshotBefore(CServerSideClient* pClient) {}
 };

@@ -10,37 +10,37 @@ CSurfReplayPlugin* SURF::ReplayPlugin() {
 
 void CSurfReplayPlugin::OnPluginStart() {}
 
-void CSurfReplayPlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
-	if (!pawn->IsAlive()) {
-		return;
-	}
-
-	if (pawn->IsBot()) {
-		DoPlayback(pawn, pawn->m_pBot());
-	} else {
-		CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pawn);
-		if (!player) {
-			return;
-		}
-
-		auto& pReplayService = player->m_pReplayService;
-		if (pReplayService->m_bEnabled) {
-			pReplayService->DoRecord(pawn, buttons, viewAngles);
-		}
-	}
-}
-
-bool CSurfReplayPlugin::OnEnterZone(const ZoneCache_t& zone, CSurfPlayer* player) {
-	if (zone.m_iType == ZoneType::Zone_End) {
-		player->m_pReplayService->SaveRecord();
+bool CSurfReplayPlugin::OnPlayerRunCmd(CCSPlayerPawn* pPawn, CInButtonState& buttons, float (&vec)[3], QAngle& viewAngles, int& weapon, int& cmdnum, int& tickcount, int& seed, int (&mouse)[2]) {
+	if (pPawn->IsBot()) {
+		DoPlayback(pPawn, buttons);
 	}
 
 	return true;
 }
 
-bool CSurfReplayPlugin::OnLeaveZone(const ZoneCache_t& zone, CSurfPlayer* player) {
+void CSurfReplayPlugin::OnPlayerRunCmdPost(CCSPlayerPawn* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
+	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pPawn);
+	if (!player) {
+		return;
+	}
+
+	auto& pReplayService = player->m_pReplayService;
+	if (pReplayService->m_bEnabled) {
+		pReplayService->DoRecord(pPawn, buttons, viewAngles);
+	}
+}
+
+bool CSurfReplayPlugin::OnEnterZone(const ZoneCache_t& zone, CSurfPlayer* pPlayer) {
+	if (zone.m_iType == ZoneType::Zone_End) {
+		pPlayer->m_pReplayService->SaveRecord();
+	}
+
+	return true;
+}
+
+bool CSurfReplayPlugin::OnLeaveZone(const ZoneCache_t& zone, CSurfPlayer* pPlayer) {
 	if (zone.m_iType == ZoneType::Zone_Start) {
-		player->m_pReplayService->StartRecord();
+		pPlayer->m_pReplayService->StartRecord();
 	}
 
 	return true;

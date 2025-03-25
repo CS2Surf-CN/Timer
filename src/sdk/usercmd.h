@@ -27,15 +27,17 @@ enum InputBitMask_t : uint64_t {
 	IN_LOOK_AT_WEAPON = 0x800000000,
 };
 
-class CInButtonState {
-public:
-	void** vtable;
-public:
+struct CPlayerButton {
 	uint64_t down;
 	uint64_t changed;
 	uint64_t scroll;
 
-public:
+	CPlayerButton() : down(0), changed(0), scroll(0) {}
+
+	CPlayerButton(const CPlayerButton&) = default;
+
+	CPlayerButton& operator=(const CPlayerButton& other) = default;
+
 	bool Released(InputBitMask_t mask) const {
 		return !(down & mask) && (changed & mask);
 	}
@@ -43,6 +45,14 @@ public:
 	bool Pressed(InputBitMask_t mask) const {
 		return (down & mask) && (changed & mask);
 	}
+};
+
+class CInButtonState : public CPlayerButton {
+	virtual void dtor();
+
+public:
+	using CPlayerButton::CPlayerButton;
+	using CPlayerButton::operator=;
 };
 
 class CUserCmdBase {

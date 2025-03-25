@@ -170,11 +170,11 @@ public:
 
 class CMovementForward : public CBaseForward<CMovementForward> {
 public:
-	virtual bool OnPlayerRunCmd(CCSPlayerPawn* pawn, CInButtonState& buttons, float (&vec)[3], QAngle& viewAngles, int& weapon, int& cmdnum, int& tickcount, int& seed, int (&mouse)[2]) {
+	virtual bool OnPlayerRunCmd(CCSPlayerPawn* pPawn, CInButtonState& buttons, float (&vec)[3], QAngle& viewAngles, int& weapon, int& cmdnum, int& tickcount, int& seed, int (&mouse)[2]) {
 		return true;
 	}
 
-	virtual void OnPlayerRunCmdPost(CCSPlayerPawn* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {}
+	virtual void OnPlayerRunCmdPost(CCSPlayerPawn* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {}
 
 	virtual bool OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace) {
 		return true;
@@ -207,9 +207,9 @@ public:
 	virtual void OnPhysicsSimulatePost(CCSPlayerController* pController) {}
 
 public:
-	virtual void OnStartTouchGround(CMovementPlayer* player) {}
+	virtual void OnStartTouchGround(CMovementPlayer* pPlayer) {}
 
-	virtual void OnStopTouchGround(CMovementPlayer* player) {}
+	virtual void OnStopTouchGround(CMovementPlayer* pPlayer) {}
 };
 
 namespace MOVEMENT {

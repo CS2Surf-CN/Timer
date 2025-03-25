@@ -9,7 +9,7 @@
 
 static void* Hook_OnMovementServicesRunCmds(CPlayer_MovementServices* pMovementServices, CUserCmd* pUserCmd) {
 	CCSPlayerPawn* pawn = pMovementServices->GetPawn();
-	if (!pawn) {
+	if (!pawn || !pawn->IsAlive()) {
 		return MEM::SDKCall<void*>(MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds, pMovementServices, pUserCmd);
 	}
 

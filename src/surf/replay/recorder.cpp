@@ -8,7 +8,7 @@ void CSurfReplayService::DoRecord(CCSPlayerPawn* pawn, const CInButtonState& but
 	ReplayFrame_t frame;
 	frame.ang = viewAngles;
 	frame.pos = pawn->GetAbsOrigin();
-	frame.buttons = buttons.down | buttons.scroll;
+	frame.buttons = buttons;
 	frame.flags = pawn->m_fFlags();
 	frame.mt = pawn->m_MoveType();
 

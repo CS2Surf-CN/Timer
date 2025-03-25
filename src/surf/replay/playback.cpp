@@ -1,7 +1,7 @@
 #include "surf_replay.h"
 #include <utils/utils.h>
 
-void CSurfReplayPlugin::DoPlayback(CCSPlayerPawn* pBotPawn, CCSBot* pBot) {
+void CSurfReplayPlugin::DoPlayback(CCSPlayerPawn* pBotPawn, CInButtonState& buttons) {
 	auto& aFrames = m_umTrackReplays[0];
 	auto iFrameSize = aFrames.size();
 	if (iFrameSize == 0) {
@@ -20,7 +20,7 @@ void CSurfReplayPlugin::DoPlayback(CCSPlayerPawn* pBotPawn, CCSBot* pBot) {
 	auto botFlags = pBotPawn->m_fFlags();
 	pBotPawn->m_fFlags(botFlags ^= frame.flags);
 
-	pBot->m_buttonFlags(frame.buttons);
+	buttons = frame.buttons;
 	pBotPawn->SetMoveType(frame.mt);
 
 	Vector& currentPos = pBotPawn->GetAbsOrigin();

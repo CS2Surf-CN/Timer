@@ -6,23 +6,23 @@ constexpr auto SURF_WORKSHOP_ADDONS_ID = "3377250885";
 
 class CSurfForward : public CBaseForward<CSurfForward> {
 public:
-	virtual bool OnTimerStart(CSurfPlayer* player) {
+	virtual bool OnTimerStart(CSurfPlayer* pPlayer) {
 		return true;
 	}
 
-	virtual bool OnTimerEnd(CSurfPlayer* player) {
+	virtual bool OnTimerEnd(CSurfPlayer* pPlayer) {
 		return true;
 	}
 
-	virtual bool OnEnterZone(const ZoneCache_t& zone, CSurfPlayer* player) {
+	virtual bool OnEnterZone(const ZoneCache_t& zone, CSurfPlayer* pPlayer) {
 		return true;
 	}
 
-	virtual bool OnStayZone(const ZoneCache_t& zone, CSurfPlayer* player) {
+	virtual bool OnStayZone(const ZoneCache_t& zone, CSurfPlayer* pPlayer) {
 		return true;
 	}
 
-	virtual bool OnLeaveZone(const ZoneCache_t& zone, CSurfPlayer* player) {
+	virtual bool OnLeaveZone(const ZoneCache_t& zone, CSurfPlayer* pPlayer) {
 		return true;
 	}
 };
