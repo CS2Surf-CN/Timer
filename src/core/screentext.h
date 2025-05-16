@@ -99,6 +99,10 @@ public:
 	virtual CScreenTextController* ToPlayer(CBasePlayerPawn* pawn) const override {
 		return static_cast<CScreenTextController*>(CPlayerManager::ToPlayer(pawn));
 	}
+
+private:
+	virtual void OnPluginStart() override;
+	virtual bool OnPhysicsSimulate(CCSPlayerController* pController) override;
 };
 
 namespace VGUI {
