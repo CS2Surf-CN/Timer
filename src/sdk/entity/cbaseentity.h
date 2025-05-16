@@ -94,18 +94,18 @@ class CGameSceneNode {
 public:
 	DECLARE_SCHEMA_CLASS(CGameSceneNode);
 
-	SCHEMA_FIELD(CEntityInstance*, m_pOwner);
-	SCHEMA_FIELD(CGameSceneNode*, m_pParent);
-	SCHEMA_FIELD(CGameSceneNode*, m_pChild);
-	SCHEMA_FIELD(CGameSceneNode*, m_pNextSibling);
-	SCHEMA_FIELD(Vector, m_vecOrigin);
-	SCHEMA_FIELD(QAngle, m_angRotation);
-	SCHEMA_FIELD(QAngle, m_angAbsRotation);
-	SCHEMA_FIELD(float, m_flScale);
-	SCHEMA_FIELD(float, m_flAbsScale);
-	SCHEMA_FIELD(Vector, m_vecAbsOrigin);
-	SCHEMA_FIELD(Vector, m_vRenderOrigin);
-	SCHEMA_FIELD(bool, m_bForceParentToBeNetworked);
+	SCHEMA_FIELD_SKELETON(CEntityInstance*, m_pOwner);
+	SCHEMA_FIELD_SKELETON(CGameSceneNode*, m_pParent);
+	SCHEMA_FIELD_SKELETON(CGameSceneNode*, m_pChild);
+	SCHEMA_FIELD_SKELETON(CGameSceneNode*, m_pNextSibling);
+	SCHEMA_FIELD_SKELETON(Vector, m_vecOrigin);
+	SCHEMA_FIELD_SKELETON(QAngle, m_angRotation);
+	SCHEMA_FIELD_SKELETON(QAngle, m_angAbsRotation);
+	SCHEMA_FIELD_SKELETON(float, m_flScale);
+	SCHEMA_FIELD_SKELETON(float, m_flAbsScale);
+	SCHEMA_FIELD_SKELETON(Vector, m_vecAbsOrigin);
+	SCHEMA_FIELD_SKELETON(Vector, m_vRenderOrigin);
+	SCHEMA_FIELD_SKELETON(bool, m_bForceParentToBeNetworked);
 };
 
 class CModelState {

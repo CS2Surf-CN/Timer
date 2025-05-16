@@ -272,13 +272,15 @@ void CScreenTextControllerManager::OnPluginStart() {}
 
 bool CScreenTextControllerManager::OnPhysicsSimulate(CCSPlayerController* pController) {
 	auto pPawn = pController->GetObserverPawn();
-	if (pPawn) {
+	if (pPawn && pPawn->IsObserverActive()) {
 		auto pNode = pPawn->m_CBodyComponent()->m_pSceneNode();
 		auto pChild = pNode->m_pChild();
 		if (pChild) {
 			auto& viewAngles = pPawn->m_angEyeAngles();
 			pNode->m_angAbsRotation(viewAngles);
-			pNode->m_angRotation(viewAngles);
+			if (pNode->m_angRotation() != viewAngles) {
+				pNode->m_angRotation(viewAngles);
+			}
 		}
 	}
 
