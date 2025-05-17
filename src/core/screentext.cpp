@@ -150,8 +150,8 @@ void CScreenText::UpdatePos() {
 
 		Vector fwd, right;
 		AngleVectors(textAng, &fwd, &right, nullptr);
-		fwd *= m_vecPos.x;
-		right *= m_vecPos.y * -1.0f;
+		fwd *= m_vecPos.y * -1.0f;
+		// right *= m_vecPos.y * -3.0f;
 		textPos += fwd + right;
 
 		pText->Teleport(&textPos, &textAng, nullptr);
@@ -265,7 +265,7 @@ void VGUI::Cleanup(CBasePlayerController* pController) {
 
 void CScreenTextControllerManager::OnPluginStart() {}
 
-bool CScreenTextControllerManager::OnPhysicsSimulate(CCSPlayerController* pController) {
+void CScreenTextControllerManager::OnPhysicsSimulatePost(CCSPlayerController* pController) {
 	auto pPawn = pController->GetObserverPawn();
 	if (pPawn && pPawn->IsObserverActive()) {
 		auto pNode = pPawn->m_CBodyComponent()->m_pSceneNode();
@@ -278,6 +278,4 @@ bool CScreenTextControllerManager::OnPhysicsSimulate(CCSPlayerController* pContr
 			}
 		}
 	}
-
-	return true;
 }

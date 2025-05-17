@@ -103,7 +103,7 @@ public:
 
 private:
 	virtual void OnPluginStart() override;
-	virtual bool OnPhysicsSimulate(CCSPlayerController* pController) override;
+	virtual void OnPhysicsSimulatePost(CCSPlayerController* pController) override;
 };
 
 namespace VGUI {
