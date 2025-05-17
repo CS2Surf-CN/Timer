@@ -88,15 +88,8 @@ void CScreenText::Display(CBasePlayerController* pController) {
 		return;
 	}
 
-	// FIXME: check if pawn is observer
 	CCSPlayerPawnBase* pPawn = dynamic_cast<CCSPlayerPawnBase*>(pController->GetCurrentPawn());
 	if (!pPawn) {
-		SDK_ASSERT(false);
-		return;
-	}
-
-	CBaseViewModel* pViewModel = pPawn->EnsureViewModel();
-	if (!pViewModel) {
 		SDK_ASSERT(false);
 		return;
 	}
@@ -118,20 +111,9 @@ void CScreenText::Display(CBasePlayerController* pController) {
 	m_hOwner.Set(pPawn);
 
 	pText->Enable();
-	// SetScreenTextEntityTransmiter(pText, pPawn->GetController());
+	SetScreenTextEntityTransmiter(pText, pPawn->GetController());
 
 	UpdatePos();
-}
-
-static Vector GetAimPoint(const Vector& eyePosition, const QAngle& eyeAngles, float distanceToTarget) {
-	double pitch = eyeAngles.x * (M_PI / 180.0);
-	double yaw = eyeAngles.y * (M_PI / 180.0);
-
-	double targetX = eyePosition.x + distanceToTarget * std::cos(pitch) * std::cos(yaw);
-	double targetY = eyePosition.y + distanceToTarget * std::cos(pitch) * std::sin(yaw);
-	double targetZ = eyePosition.z - distanceToTarget * std::sin(pitch);
-
-	return Vector(targetX, targetY, targetZ);
 }
 
 void CScreenText::UpdatePos() {
@@ -144,39 +126,52 @@ void CScreenText::UpdatePos() {
 	CBaseEntity* pParent = pText->m_hOwnerEntity().Get();
 	bool bViewModel = dynamic_cast<CBaseViewModel*>(pParent);
 	if (bViewModel) {
-		Vector& vmPos = pParent->GetAbsOrigin();
-		Vector panelPos = GetRelativeOrigin(vmPos);
+		const Vector& vmPos = pParent->GetAbsOrigin();
+		Vector textPos = GetRelativeVMOrigin(vmPos);
 
-		Vector rig;
-		Vector up;
-		static QAngle panelAng = {0.0f, -90.0f, 90.0f};
-		AngleVectors(panelAng, &rig, &up, nullptr);
+		static QAngle textAng = {0.0f, -90.0f, 90.0f};
 
-		rig *= m_vecPos.x;
-		up *= m_vecPos.y * -1.0f;
+		Vector fwd, right;
+		AngleVectors(textAng, &fwd, &right, nullptr);
+		fwd *= m_vecPos.x;
+		right *= m_vecPos.y * -1.0f;
+		textPos += fwd + right;
 
-		panelPos += rig + up;
-		pText->Teleport(&panelPos, &panelAng, nullptr);
+		pText->Teleport(&textPos, &textAng, nullptr);
 	} else {
-		Vector& vmPos = pParent->GetAbsOrigin();
-		QAngle vmAng = reinterpret_cast<CCSPlayerPawnBase*>(pParent)->m_angEyeAngles();
-		Vector panelPos = GetAimPoint(vmPos, vmAng, 7.09f);
+		const Vector& pawnPos = pParent->GetAbsOrigin();
+		const QAngle& pawnAng = reinterpret_cast<CCSPlayerPawnBase*>(pParent)->m_angEyeAngles();
+		Vector textPos = GetRelativePawnOrigin(pawnPos, pawnAng);
 
-		QAngle panelAng = vmAng;
-		panelAng.x -= 15.0f;
-		panelAng.y -= 90.0f;
-		panelAng.z += 90.0f;
-		/*AngleVectors(panelAng, &rig, &up, nullptr);
+		QAngle textAng = pawnAng;
+		textAng.x -= 15.0f;
+		textAng.y -= 90.0f;
+		textAng.z += 90.0f;
 
-		rig *= m_vecPos.x;
-		up *= m_vecPos.y * -1.0f;*/
-		pText->Teleport(&panelPos, &panelAng, nullptr);
+		Vector fwd, right;
+		AngleVectors(textAng, &fwd, &right, nullptr);
+		fwd *= m_vecPos.x;
+		right *= m_vecPos.y * -1.0f;
+		textPos += fwd + right;
+
+		pText->Teleport(&textPos, &textAng, nullptr);
 	}
 }
 
-Vector CScreenText::GetRelativeOrigin(const Vector& eyePosition, float distanceToTarget) {
+Vector CScreenText::GetRelativeVMOrigin(const Vector& eyePosition, float distanceToTarget) {
 	return Vector(eyePosition.x + distanceToTarget, eyePosition.y, eyePosition.z);
 }
+
+Vector CScreenText::GetRelativePawnOrigin(const Vector& eyePosition, const QAngle& eyeAngles, float distanceToTarget) {
+	double pitch = eyeAngles.x * (M_PI / 180.0);
+	double yaw = eyeAngles.y * (M_PI / 180.0);
+
+	double targetX = eyePosition.x + distanceToTarget * std::cos(pitch) * std::cos(yaw);
+	double targetY = eyePosition.y + distanceToTarget * std::cos(pitch) * std::sin(yaw);
+	double targetZ = eyePosition.z - distanceToTarget * std::sin(pitch);
+
+	return Vector(targetX, targetY, targetZ);
+};
 
 CScreenTextControllerManager* VGUI::GetScreenTextManager() {
 	return &g_ScreenTextControllerManager;

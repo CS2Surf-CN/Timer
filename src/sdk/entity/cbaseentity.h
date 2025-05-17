@@ -120,7 +120,7 @@ class CSkeletonInstance : public CGameSceneNode {
 public:
 	DECLARE_SCHEMA_CLASS(CSkeletonInstance);
 
-	SCHEMA_FIELD(CModelState, m_modelState);
+	SCHEMA_FIELD_SKELETON(CModelState, m_modelState);
 };
 
 class CBodyComponent {
@@ -222,9 +222,9 @@ public:
 	void SetParent(CBaseEntity* pParent);
 	void SetName(const char* pszName, bool bCheckDuplicate = false);
 
-	Vector& GetAbsOrigin();
-	Vector& GetOrigin();
-	QAngle& GetAbsAngles();
+	const Vector& GetAbsOrigin();
+	const Vector& GetOrigin();
+	const QAngle& GetAbsAngles();
 };
 
 class CBaseModelEntity : public CBaseEntity {

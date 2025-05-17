@@ -21,46 +21,43 @@ void CBaseEntity::SetName(const char* pszName, bool bCheckDuplicate) {
 	MEM::CALL::SetEntityName(this->m_pEntity, pszName);
 }
 
-Vector& CBaseEntity::GetAbsOrigin() {
-	static Vector null(0.0f, 0.0f, 0.0f);
+const Vector& CBaseEntity::GetAbsOrigin() {
 	auto pBodyComponent = m_CBodyComponent();
 	if (!pBodyComponent) {
-		return null;
+		return vec3_origin;
 	}
 
 	auto pNode = pBodyComponent->m_pSceneNode();
 	if (!pNode) {
-		return null;
+		return vec3_origin;
 	}
 
 	return pNode->m_vecAbsOrigin();
 }
 
-Vector& CBaseEntity::GetOrigin() {
-	static Vector null(0.0f, 0.0f, 0.0f);
+const Vector& CBaseEntity::GetOrigin() {
 	auto pBodyComponent = m_CBodyComponent();
 	if (!pBodyComponent) {
-		return null;
+		return vec3_origin;
 	}
 
 	auto pNode = pBodyComponent->m_pSceneNode();
 	if (!pNode) {
-		return null;
+		return vec3_origin;
 	}
 
 	return pNode->m_vecOrigin();
 }
 
-QAngle& CBaseEntity::GetAbsAngles() {
-	static QAngle null(0.0f, 0.0f, 0.0f);
+const QAngle& CBaseEntity::GetAbsAngles() {
 	auto pBodyComponent = m_CBodyComponent();
 	if (!pBodyComponent) {
-		return null;
+		return vec3_angle;
 	}
 
 	auto pNode = pBodyComponent->m_pSceneNode();
 	if (!pNode) {
-		return null;
+		return vec3_angle;
 	}
 
 	return pNode->m_angAbsRotation();

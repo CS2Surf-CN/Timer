@@ -57,7 +57,8 @@ public:
 	}
 
 public:
-	static Vector GetRelativeOrigin(const Vector& eyePosition, float distanceToTarget = 6.7f);
+	static Vector GetRelativeVMOrigin(const Vector& eyePosition, float distanceToTarget = 6.7f);
+	static Vector GetRelativePawnOrigin(const Vector& eyePosition, const QAngle& eyeAngles, float distanceToTarget = 7.09f);
 
 public:
 	Vector2D m_vecPos;
