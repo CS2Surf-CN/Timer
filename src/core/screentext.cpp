@@ -265,13 +265,11 @@ void VGUI::Cleanup(CBasePlayerController* pController) {
 
 void CScreenTextControllerManager::OnPluginStart() {}
 
-void CScreenTextControllerManager::OnPhysicsSimulatePost(CCSPlayerController* pController) {
-	auto pPawn = pController->GetObserverPawn();
-	if (pPawn && pPawn->IsObserverActive()) {
+void CScreenTextControllerManager::OnPlayerRunCmdPost(CCSPlayerPawn* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
+	if (pPawn->IsObserver()) {
 		auto pNode = pPawn->m_CBodyComponent()->m_pSceneNode();
 		auto pChild = pNode->m_pChild();
 		if (pChild) {
-			auto& viewAngles = pPawn->m_angEyeAngles();
 			pNode->m_angAbsRotation(viewAngles);
 			if (pNode->m_angRotation() != viewAngles) {
 				pNode->m_angRotation(viewAngles);

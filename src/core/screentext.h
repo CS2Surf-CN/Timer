@@ -103,7 +103,7 @@ public:
 
 private:
 	virtual void OnPluginStart() override;
-	virtual void OnPhysicsSimulatePost(CCSPlayerController* pController) override;
+	virtual void OnPlayerRunCmdPost(CCSPlayerPawn* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
 };
 
 namespace VGUI {
