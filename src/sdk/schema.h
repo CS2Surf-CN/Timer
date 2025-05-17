@@ -54,7 +54,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 
 #define SCHEMA_GETTER(type, varName, varOffset) \
 	{ \
-		if (varOffset == 0) { \
+		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
@@ -65,7 +65,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 
 #define SCHEMA_SETTER(type, varName, varOffset, arrayIndex) \
 	{ \
-		if (varOffset == 0) { \
+		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
@@ -74,7 +74,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 				if (m_chain != 0) { \
 					schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
 				} else { \
-					if (!IsStruct) { \
+					if constexpr (!IsStruct) { \
 						((CEntityInstance*)this)->NetworkStateChanged(m_key.offset, arrayIndex, -1); \
 					} else { \
 						CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
@@ -97,7 +97,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			if (m_chain != 0) { \
 				schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset); \
 			} else { \
-				if (!IsStruct) { \
+				if constexpr (!IsStruct) { \
 					((CEntityInstance*)this)->NetworkStateChanged(m_key.offset); \
 				} else { \
 					CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
@@ -109,7 +109,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 
 #define SCHEMA_CNETWORKVAR_SETTER(type, varName, varOffset, arrayIndex, iVFunc) \
 	{ \
-		if (varOffset == 0) { \
+		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
@@ -118,7 +118,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 				if (m_chain != 0) { \
 					schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
 				} else { \
-					if (!IsStruct) { \
+					if constexpr (!IsStruct) { \
 						CALL_VIRTUAL(void, iVFunc, this, m_key.offset, 0xFFFFFFFF); \
 					} else { \
 						CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
@@ -133,7 +133,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 
 #define SCHEMA_FIELD_SETTER_IS_NOT_ENTITY(type, varName, varOffset) \
 	void varName(type val, uint16_t arrayIndex = 0xFFFF) { \
-		if (varOffset == 0) { \
+		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
@@ -157,7 +157,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 
 #define SCHEMA_FIELD_POINTER_GETTER(type, varName, varOffset) \
 	type* varName() { \
-		if (varOffset == 0) { \
+		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
