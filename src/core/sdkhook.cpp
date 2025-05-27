@@ -158,7 +158,12 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKH
 		return;
 	}
 
-	auto& listenerList = m_umSDKHooksListeners[type][post][pVtable];
+	if (!m_umSDKHooksListeners[type][post].contains(pVtable)) {
+		SDK_ASSERT(false);
+		return;
+	}
+
+	auto& listenerList = m_umSDKHooksListeners[type][post].at(pVtable);
 	auto ctx_it = std::ranges::find_if(listenerList, [pListener](const auto& pair) { return pair.second == pListener; });
 	if (ctx_it == listenerList.end()) {
 		SDK_ASSERT(false);
@@ -175,7 +180,10 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKH
 	counter--;
 	if (!counter) {
 		MEM::RemoveVMTHook(pVtable, iOffset, pCallback, m_umSDKHookTrampolines[type][pVtable]);
-		m_umSDKHookOriginals[type][pVtable] = nullptr;
+		m_umSDKHookTrampolines[type].erase(pVtable);
+		m_umSDKHookOriginals[type].erase(pVtable);
+		m_umVMTHooked.erase(pVtable);
+		m_umSDKHooksListeners[type][post].erase(pVtable);
 	}
 }
 
