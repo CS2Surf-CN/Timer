@@ -4,6 +4,8 @@
 #include <utldelegate.h>
 #include <entityinstance.h>
 
+#include <core/memory.h>
+
 struct SchemaKey {
 	int32_t offset;
 	bool networked;

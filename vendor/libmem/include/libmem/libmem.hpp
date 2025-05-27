@@ -182,9 +182,7 @@ namespace libmem {
 		Vmt() : vmt(nullptr) {};
 		Vmt(Address *vtable);
 
-		// dont use default destructor
-		// pls explicitly call Reset()
-		// ~Vmt();
+		~Vmt();
 
 		void Hook(size_t from_fn_index, Address to);
 		void Unhook(size_t fn_index);

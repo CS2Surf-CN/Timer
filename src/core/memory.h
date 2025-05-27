@@ -5,6 +5,7 @@
 #include <sdk/common.h>
 #include <sdk/datatypes.h>
 #include <sdk/server/weapon.h>
+#include <libmem/libmem.hpp>
 #include <libmem/libmem_helper.h>
 #include <libmodule/module.h>
 #include <polyhook2/Detour/NatDetour.hpp>
@@ -78,7 +79,19 @@ namespace MEM {
 
 	class CHookManager {
 	public:
+		bool IsVMTHooked(void* pVtable, uint32_t vfnIndex) const {
+			for (const auto& pair : m_VMTHookList) {
+				if (pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable) && pair.second.contains(vfnIndex)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+	public:
 		std::list<std::pair<std::unique_ptr<PLH::NatDetour>, std::uintptr_t>> m_DetourList;
+		std::list<std::pair<std::unique_ptr<libmem::Vmt>, std::unordered_set<uint32_t>>> m_VMTHookList;
 	};
 
 	extern CHookManager* GetHookManager();
@@ -110,6 +123,79 @@ namespace MEM {
 		return false;
 	}
 
+	template<typename TCallback, typename TTram>
+	bool AddVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
+		if (GetHookManager()->IsVMTHooked(pVtable, vfnIndex)) {
+			return false;
+		}
+
+		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
+		auto it = std::ranges::find_if(pVMTHookList, [pVtable](const auto& pair) { return pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable); });
+
+		if (it != pVMTHookList.end()) {
+			std::unique_ptr<libmem::Vmt>& pVMT = it->first;
+			pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
+			pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
+			it->second.insert(vfnIndex);
+		} else {
+			std::unique_ptr<libmem::Vmt> pVMT = std::make_unique<libmem::Vmt>(static_cast<libmem::Address*>(pVtable));
+			pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
+			pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
+
+			std::unordered_set<uint32_t> hookedVFn;
+			hookedVFn.insert(vfnIndex);
+
+			pVMTHookList.emplace_back(std::pair {std::move(pVMT), hookedVFn});
+		}
+
+		return true;
+	}
+
+	template<typename TCallback, typename TTram>
+	bool AddVMTInstanceHook(void* pInstance, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
+		void* pVtable = *(void**)pInstance;
+		return MEM::AddVMTHook(pVtable, vfnIndex, pCallback, pTrampoline);
+	}
+
+	template<typename TCallback, typename TTram>
+	bool AddVMTHookEx(libmodule::CModule* pModule, std::string sClassName, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline, bool bDetour = false) {
+		if (!pModule) {
+			return false;
+		}
+
+		void* pVtable = pModule->GetVirtualTableByName(sClassName);
+		if (!pVtable) {
+			return false;
+		}
+
+		if (bDetour) {
+			libmem::Vmt vmt((libmem::Address*)pVtable);
+			auto pVfunc = vmt.GetOriginal(vfnIndex);
+			MEM::AddDetour(pVfunc, pCallback, pTrampoline);
+		} else {
+			MEM::AddVMTHook(pVtable, vfnIndex, pCallback, pTrampoline);
+		}
+
+		return true;
+	}
+
+	template<typename TTram>
+	bool RemoveVMTHook(void* pVtable, uint32_t vfnIndex, TTram& pTrampoline) {
+		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
+		auto it = std::ranges::find_if(pVMTHookList, [pVtable, vfnIndex](const auto& pair) { return pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable) && pair.second.contains(vfnIndex); });
+
+		if (it != pVMTHookList.end()) {
+			it->first->Unhook();
+			if (!it->second.size()) {
+				pVMTHookList.erase(it);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 	template<typename T = void, typename... Args>
 	typename std::enable_if<!std::is_void<T>::value, T>::type SDKCall(void* pAddress, Args... args) {
 		auto pFn = reinterpret_cast<T (*)(Args...)>(pAddress);
@@ -124,33 +210,49 @@ namespace MEM {
 		pFn(args...);
 	}
 
+	template<typename T = void*>
+	T GetVMethod(uint32_t uIndex, void* pInstance) {
+		if (!pInstance) {
+			printf("vmt::GetVMethod failed: invalid instance pointer\n");
+			return T();
+		}
+
+		void** vtable = *static_cast<void***>(pInstance);
+		if (!vtable) {
+			printf("vmt::GetVMethod failed: invalid vtable pointer\n");
+			return T();
+		}
+
+		return reinterpret_cast<T>(vtable[uIndex]);
+	}
+
+	template<typename Ret = void, typename T, typename... Args>
+	inline Ret CallVirtual(uint32_t uIndex, T pClass, Args... args) {
+		auto func_ptr = GetVMethod(uIndex, pClass);
+		if (!func_ptr) {
+			printf("vmt::CallVirtual failed: invalid function pointer\n");
+			return Ret();
+		}
+
+#ifdef _WIN32
+		class VType {};
+
+		union VConverter {
+			VConverter(void* _ptr) : ptr(_ptr) {}
+
+			void* ptr;
+			Ret (__thiscall VType::*fn)(Args...);
+		} v(func_ptr);
+
+		return ((VType*)pClass->*v.fn)(args...);
+#else
+		return reinterpret_cast<Ret (*)(T, Args...)>(func_ptr)(pClass, args...);
+#endif
+	}
+
 	template<typename T, typename... Args>
 	auto GetFn(void* pAddress, Args... args) {
 		return reinterpret_cast<T (*)(Args...)>(pAddress);
-	}
-
-	template<typename T>
-	inline bool VmtHookEx(uint32_t uIndex, libmodule::CModule* pModule, const char* className, T pFunc, void*& pOriginFunc, bool allInstance = false) {
-		if (!pModule) {
-			return false;
-		}
-
-		void* vtable = pModule->GetVirtualTableByName(className);
-		if (!vtable) {
-			return false;
-		}
-
-		libmem::Vmt vmt((libmem::Address*)vtable);
-		auto from = vmt.GetOriginal(uIndex);
-
-		if (allInstance) {
-			MEM::AddDetour(from, pFunc, pOriginFunc);
-		} else {
-			vmt.Hook(uIndex, (libmem::Address)pFunc);
-			pOriginFunc = (void*)from;
-		}
-
-		return true;
 	}
 
 	template<size_t nOffset = 0>
@@ -161,6 +263,20 @@ namespace MEM {
 			libmem::SetMemory((libmem::Address)adr_patch, 0x90, nLen);
 			libmem::ProtMemory((libmem::Address)adr_patch, nLen, old_mem_prot.value());
 		}
+	}
+
+	template<size_t nOffset = 0, typename... Args>
+	inline void PatchAddress(void* pAddress, Args... args) {
+		const uint8_t bytes[] = {static_cast<uint8_t>(args)...};
+		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
+		const size_t patch_size = sizeof...(args);
+		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, patch_size, libmem::Prot::XRW);
+		for (size_t i = 0; i < patch_size; ++i) {
+			if (old_mem_prot.has_value()) {
+				adr_patch[i] = bytes[i];
+			}
+		}
+		libmem::ProtMemory((libmem::Address)adr_patch, patch_size, old_mem_prot.value());
 	}
 } // namespace MEM
 
@@ -174,22 +290,28 @@ namespace MEM {
 	}
 
 #define HOOK_VMT(instance, vfn, fnHook, fnTrampoline) \
-	SDK_ASSERT(libmem::VmtHookEx(instance, offsetof_vtablefn(vfn), fnHook, fnTrampoline));
+	SDK_ASSERT(MEM::AddVMTInstanceHook(instance, offsetof_vtablefn(vfn), fnHook, fnTrampoline));
 
 #define HOOK_VMT_OVERRIDE(instance, classname, vfn, fnHook, fnTrampoline, ...) \
-	SDK_ASSERT(libmem::VmtHookEx( \
+	SDK_ASSERT(MEM::AddVMTInstanceHook( \
 		instance, \
 		TOOLS::GetVtableIndex(static_cast<FunctionTraits<decltype(&fnHook)>::ReturnType (classname::*)(__VA_ARGS__)>(&classname::vfn)), \
 		fnHook, \
 		fnTrampoline));
 
 #define HOOK_VMTEX(sClassname, vfn, pModule, fnHook, fnTrampoline) \
-	SDK_ASSERT(MEM::VmtHookEx(offsetof_vtablefn(vfn), pModule.get(), sClassname, fnHook, fnTrampoline));
+	SDK_ASSERT(MEM::AddVMTHookEx(pModule.get(), sClassname, offsetof_vtablefn(vfn), fnHook, fnTrampoline));
 
 #define GAMEDATA_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
-	SDK_ASSERT(MEM::VmtHookEx(GAMEDATA::GetOffset(gdOffsetKey), pModule.get(), gdOffsetKey, fnHook, fnTrampoline));
+	SDK_ASSERT(MEM::AddVMTHookEx(pModule.get(), gdOffsetKey, GAMEDATA::GetOffset(gdOffsetKey), fnHook, fnTrampoline, false));
 
 #define DETOUR_VMT(gdOffsetKey, pModule, fnHook, fnTrampoline) \
-	SDK_ASSERT(MEM::VmtHookEx(GAMEDATA::GetOffset(gdOffsetKey), pModule.get(), gdOffsetKey, fnHook, fnTrampoline, true));
+	SDK_ASSERT(MEM::AddVMTHookEx(pModule.get(), gdOffsetKey, GAMEDATA::GetOffset(gdOffsetKey), fnHook, fnTrampoline, true));
+
+#define STORE_TO_ADDRESS(address, ...) MEM::PatchAddress(address, __VA_ARGS__)
+
+#define STORE_TO_ADDRESS_WITH_OFFSET(address, offset, ...) MEM::PatchAddress<offset>(address, __VA_ARGS__)
+
+#define CALL_VIRTUAL(retType, idx, ...)    MEM::CallVirtual<retType>(idx, __VA_ARGS__)
 
 // clang-format on

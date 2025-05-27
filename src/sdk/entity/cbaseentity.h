@@ -3,7 +3,6 @@
 #include <ehandle.h>
 #include <core/gamedata.h>
 #include <sdk/schema.h>
-#include <libmem/libmem_virtual.h>
 #include <sdk/entity/ccollisionproperty.h>
 
 enum S2EdictState {

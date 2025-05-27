@@ -42,6 +42,29 @@ SDKHOOK_BIND(SDKHook_EndTouch, HookTouch_t, "CBaseEntity::EndTouch");
 SDKHOOK_BIND(SDKHook_Teleport, HookTeleport_t, "CBaseEntity::Teleport");
 SDKHOOK_BIND(SDKHook_Use, HookUse_t, "CBaseEntity::Use");
 
+class SDKHookManager : CCoreForward {
+private:
+	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
+
+public:
+	bool IsVMTHooked(void* pVtable, uint32_t iOffset);
+	void AddVMTHook(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener);
+	void RemoveVMTHook(CBaseEntity* pEnt, SDKHookType type);
+
+public:
+	// vtable -> hooked vfuncs by offset
+	std::unordered_map<void*, std::unordered_set<uint32_t>> m_umVMTHooked {};
+
+	// [type][pre or post]::vtable -> registered contexts(ehandle, pCallbackList)
+	using HookRegisterCtx = std::pair<CEntityHandle, std::list<void*>>;
+	std::unordered_map<void*, std::list<void*>> m_umSDKHooks[SDKHookType::MAX_TYPE][2] {};
+
+	// [type]::vtable -> trampoline
+	std::unordered_map<void*, void*> m_umSDKHookTrampolines[SDKHookType::MAX_TYPE] {};
+
+	std::unordered_map<std::string, uint32_t> m_umVMTOffsets {};
+};
+
 namespace SDKHOOK {
 	template<SDKHookType T>
 	bool HookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Pre pCallback);
