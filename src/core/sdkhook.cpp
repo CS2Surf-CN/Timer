@@ -5,7 +5,37 @@
 #include <utility>
 #include <list>
 
-SDKHookManager g_SDKHookManager;
+class SDKHookManager : CCoreForward {
+private:
+	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
+
+public:
+	bool IsVMTHooked(void* pVtable);
+	bool IsVMTHooked(void* pVtable, uint32_t iOffset);
+	void HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener);
+	void UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener);
+	void UnhookVMT(CBaseEntity* pEnt);
+
+public:
+	// offset -> count
+	using VMTHookCounter_t = std::unordered_map<uint32_t, uint32_t>;
+	// vtable -> counter
+	std::unordered_map<void*, VMTHookCounter_t> m_umVMTHooked {};
+
+	// {ehandle, pListener}
+	using VMTHookListenerContext_t = std::pair<CEntityHandle, void*>;
+	using VMTHookListenerList_t = std::list<VMTHookListenerContext_t>;
+	// [type][pre or post]::vtable -> listener list
+	std::unordered_map<void*, VMTHookListenerList_t> m_umSDKHooksListeners[SDKHookType::MAX_TYPE][2] {};
+
+	// [type]::vtable -> internal templated-callback
+	std::unordered_map<void*, void*> m_umSDKHookCallbacks[SDKHookType::MAX_TYPE] {};
+
+	// [type]::vtable -> trampoline
+	std::unordered_map<void*, void*> m_umSDKHookTrampolines[SDKHookType::MAX_TYPE] {};
+
+	std::unordered_map<std::string, uint32_t> m_umVMTOffsets {};
+} g_SDKHookManager;
 
 namespace SDKHOOK {
 	template<SDKHookType T>
@@ -122,7 +152,7 @@ bool SDKHookManager::IsVMTHooked(void* pVtable, uint32_t iOffset) {
 	return false;
 }
 
-void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener) {
+void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener) {
 	if (!m_umVMTOffsets.contains(gdOffsetName)) {
 		m_umVMTOffsets[gdOffsetName] = GAMEDATA::GetOffset(gdOffsetName);
 	}
@@ -130,8 +160,8 @@ void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHoo
 	void* pVtable = *(void**)pEnt;
 	auto iOffset = m_umVMTOffsets.at(gdOffsetName);
 	if (!IsVMTHooked(pVtable, iOffset)) {
-		MEM::AddVMTHook(pVtable, iOffset, pCallback, m_umSDKHookTrampolines[type][pVtable]);
-		m_umSDKHookOriginals[type][pVtable] = pCallback;
+		MEM::AddVMTHook(pVtable, iOffset, pInternalCallback, m_umSDKHookTrampolines[type][pVtable]);
+		m_umSDKHookCallbacks[type][pVtable] = pInternalCallback;
 		m_umVMTHooked[pVtable][iOffset] = 1;
 	} else {
 		m_umVMTHooked[pVtable][iOffset]++;
@@ -147,7 +177,7 @@ void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHoo
 	listenerList.emplace_back(hEnt, pListener);
 }
 
-void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener) {
+void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener) {
 	if (!m_umVMTOffsets.contains(gdOffsetName)) {
 		m_umVMTOffsets[gdOffsetName] = GAMEDATA::GetOffset(gdOffsetName);
 	}
@@ -179,9 +209,9 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKH
 	auto& counter = m_umVMTHooked[pVtable][iOffset];
 	counter--;
 	if (!counter) {
-		MEM::RemoveVMTHook(pVtable, iOffset, pCallback, m_umSDKHookTrampolines[type][pVtable]);
+		MEM::RemoveVMTHook(pVtable, iOffset, pInternalCallback, m_umSDKHookTrampolines[type][pVtable]);
 		m_umSDKHookTrampolines[type].erase(pVtable);
-		m_umSDKHookOriginals[type].erase(pVtable);
+		m_umSDKHookCallbacks[type].erase(pVtable);
 		m_umVMTHooked.erase(pVtable);
 		m_umSDKHooksListeners[type][post].erase(pVtable);
 	}
@@ -198,7 +228,7 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 	}
 
 	for (int type = 0; type < SDKHookType::MAX_TYPE; type++) {
-		if (m_umSDKHookOriginals[type].contains(pVtable)) {
+		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
 			for (const auto& ctx : m_umSDKHooksListeners[type][0][pVtable]) {
 				SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
 			}
