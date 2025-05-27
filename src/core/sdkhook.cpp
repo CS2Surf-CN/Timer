@@ -194,13 +194,10 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKH
 	}
 
 	auto& listenerList = m_umSDKHooksListeners[type][post].at(pVtable);
-	auto ctx_it = std::ranges::find_if(listenerList, [pListener](const auto& pair) { return pair.second == pListener; });
+	auto hEnt = pEnt->GetRefEHandle();
+	auto ctx_it = std::ranges::find_if(listenerList, [hEnt, pListener](const auto& pair) { return pair.first != hEnt && pair.second == pListener; });
 	if (ctx_it == listenerList.end()) {
 		SDK_ASSERT(false);
-		return;
-	}
-
-	if (ctx_it->first != pEnt->GetRefEHandle() || ctx_it->second != pListener) {
 		return;
 	}
 
