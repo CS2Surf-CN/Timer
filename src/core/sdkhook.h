@@ -21,7 +21,7 @@ enum SDKHookType {
 	SDKHook_EndTouch,
 	SDKHook_Teleport,
 	SDKHook_Use,
-	MAX_TYPE
+	SDKHook_MAX_TYPE
 };
 
 template<SDKHookType T>

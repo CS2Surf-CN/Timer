@@ -26,13 +26,13 @@ public:
 	using VMTHookListenerContext_t = std::pair<CEntityHandle, void*>;
 	using VMTHookListenerList_t = std::list<VMTHookListenerContext_t>;
 	// [type][pre or post]::vtable -> listener list
-	std::unordered_map<void*, VMTHookListenerList_t> m_umSDKHooksListeners[SDKHookType::MAX_TYPE][2] {};
+	std::unordered_map<void*, VMTHookListenerList_t> m_umSDKHooksListeners[SDKHookType::SDKHook_MAX_TYPE][2] {};
 
 	// [type]::vtable -> internal templated-callback
-	std::unordered_map<void*, void*> m_umSDKHookCallbacks[SDKHookType::MAX_TYPE] {};
+	std::unordered_map<void*, void*> m_umSDKHookCallbacks[SDKHookType::SDKHook_MAX_TYPE] {};
 
 	// [type]::vtable -> trampoline
-	std::unordered_map<void*, void*> m_umSDKHookTrampolines[SDKHookType::MAX_TYPE] {};
+	std::unordered_map<void*, void*> m_umSDKHookTrampolines[SDKHookType::SDKHook_MAX_TYPE] {};
 
 	std::unordered_map<std::string, uint32_t> m_umVMTOffsets {};
 } g_SDKHookManager;
@@ -54,7 +54,7 @@ namespace SDKHOOK {
 		int dummy[] = {(InstantiateHookType<static_cast<SDKHookType>(Is)>(), 0)...};
 	}
 
-	static auto HookInstantiator = (ForceInstantiation(std::make_integer_sequence<int, SDKHookType::MAX_TYPE> {}), 0);
+	static auto HookInstantiator = (ForceInstantiation(std::make_integer_sequence<int, SDKHookType::SDKHook_MAX_TYPE> {}), 0);
 
 	template<SDKHookType T>
 	auto HookEntityT(CBaseEntity* pSelf, auto... args) {
@@ -106,7 +106,7 @@ namespace SDKHOOK {
 
 	template<SDKHookType I = (SDKHookType)0>
 	static void UninstallHookRT(SDKHookType type, CBaseEntity* pEnt, void* pListener, bool post) {
-		if constexpr (I < SDKHookType::MAX_TYPE) {
+		if constexpr (I < SDKHookType::SDKHook_MAX_TYPE) {
 			if (type == I) {
 				SDKHOOK::UninstallHook<static_cast<SDKHookType>(I)>(pEnt, pListener, post);
 			} else {
@@ -227,7 +227,7 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 		return;
 	}
 
-	for (int type = 0; type < SDKHookType::MAX_TYPE; type++) {
+	for (int type = 0; type < SDKHookType::SDKHook_MAX_TYPE; type++) {
 		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
 			for (const auto& ctx : m_umSDKHooksListeners[type][0][pVtable]) {
 				SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
