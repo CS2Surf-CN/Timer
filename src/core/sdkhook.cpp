@@ -115,7 +115,7 @@ bool SDKHookManager::IsVMTHooked(void* pVtable) {
 }
 
 bool SDKHookManager::IsVMTHooked(void* pVtable, uint32_t iOffset) {
-	if (auto it = m_umVMTHooked.find(pVtable); it != m_umVMTHooked.end()) {
+	if (auto it = m_umVMTHooked.find(pVtable); it != m_umVMTHooked.end() && it->second.contains(iOffset)) {
 		return it->second.at(iOffset) > 0;
 	}
 
@@ -138,13 +138,13 @@ void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHoo
 	}
 
 	auto& listenerList = m_umSDKHooksListeners[type][post][pVtable];
-	auto ctx_it = std::ranges::find_if(listenerList, [pListener](const auto& pair) { return pair.second == pListener; });
-	if (ctx_it == listenerList.end()) {
-		VMTHookListenerContext_t ctx;
-		ctx.first = pEnt->GetRefEHandle();
-		ctx.second = pListener;
-		listenerList.emplace_back(ctx);
+	auto hEnt = pEnt->GetRefEHandle();
+	auto same_ctx = std::ranges::find_if(listenerList, [hEnt, pListener](const auto& pair) { return pair.first == hEnt && pair.second == pListener; });
+	if (same_ctx != listenerList.end()) {
+		SDK_ASSERT(false); // design error
 	}
+
+	listenerList.emplace_back(hEnt, pListener);
 }
 
 void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener) {
