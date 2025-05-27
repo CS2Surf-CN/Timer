@@ -16,7 +16,7 @@ using HookTeleport_t = void (*)(CBaseEntity* pSelf, Vector* newPosition, QAngle*
 using HookUse_t = void (*)(CBaseEntity* pSelf, EntityInputData_t* pInput);
 
 enum SDKHookType {
-	SDKHook_StartTouch,
+	SDKHook_StartTouch = 0,
 	SDKHook_Touch,
 	SDKHook_EndTouch,
 	SDKHook_Teleport,
@@ -47,17 +47,26 @@ private:
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
 
 public:
+	bool IsVMTHooked(void* pVtable);
 	bool IsVMTHooked(void* pVtable, uint32_t iOffset);
-	void AddVMTHook(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener);
-	void RemoveVMTHook(CBaseEntity* pEnt, SDKHookType type);
+	void HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener);
+	void UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pCallback, void* pListener);
+	void UnhookVMT(CBaseEntity* pEnt);
 
 public:
-	// vtable -> hooked vfuncs by offset
-	std::unordered_map<void*, std::unordered_set<uint32_t>> m_umVMTHooked {};
+	// offset -> count
+	using VMTHookCounter_t = std::unordered_map<uint32_t, uint32_t>;
+	// vtable -> counter
+	std::unordered_map<void*, VMTHookCounter_t> m_umVMTHooked {};
 
-	// [type][pre or post]::vtable -> registered contexts(ehandle, pCallbackList)
-	using HookRegisterCtx = std::pair<CEntityHandle, std::list<void*>>;
-	std::unordered_map<void*, std::list<void*>> m_umSDKHooks[SDKHookType::MAX_TYPE][2] {};
+	// {ehandle, pCallback}
+	using VMTHookListenerContext_t = std::pair<CEntityHandle, void*>;
+	using VMTHookListenerList_t = std::list<VMTHookListenerContext_t>;
+	// [type][pre or post]::vtable -> listener list
+	std::unordered_map<void*, VMTHookListenerList_t> m_umSDKHooksListeners[SDKHookType::MAX_TYPE][2] {};
+
+	// [type]::vtable -> original
+	std::unordered_map<void*, void*> m_umSDKHookOriginals[SDKHookType::MAX_TYPE] {};
 
 	// [type]::vtable -> trampoline
 	std::unordered_map<void*, void*> m_umSDKHookTrampolines[SDKHookType::MAX_TYPE] {};
@@ -67,8 +76,14 @@ public:
 
 namespace SDKHOOK {
 	template<SDKHookType T>
-	bool HookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Pre pCallback);
+	bool HookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Pre pListener);
 
 	template<SDKHookType T>
-	bool HookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Post pCallback);
+	bool HookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Post pListener);
+
+	template<SDKHookType T>
+	bool UnhookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Pre pListener);
+
+	template<SDKHookType T>
+	bool UnhookEntity(CBaseEntity* pEnt, typename SDKHookBindings<T>::Post pListener);
 } // namespace SDKHOOK

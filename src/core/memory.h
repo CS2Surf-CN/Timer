@@ -79,19 +79,11 @@ namespace MEM {
 
 	class CHookManager {
 	public:
-		bool IsVMTHooked(void* pVtable, uint32_t vfnIndex) const {
-			for (const auto& pair : m_VMTHookList) {
-				if (pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable) && pair.second.contains(vfnIndex)) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-	public:
+		// [{pDetour, pCallback}]
 		std::list<std::pair<std::unique_ptr<PLH::NatDetour>, std::uintptr_t>> m_DetourList;
-		std::list<std::pair<std::unique_ptr<libmem::Vmt>, std::unordered_set<uint32_t>>> m_VMTHookList;
+
+		// [{pVMT, pCallback}]
+		std::list<std::pair<std::unique_ptr<libmem::Vmt>, std::uintptr_t>> m_VMTHookList;
 	};
 
 	extern CHookManager* GetHookManager();
@@ -104,19 +96,20 @@ namespace MEM {
 			return false;
 		}
 
-		GetHookManager()->m_DetourList.emplace_back(std::pair {std::move(pDetour), (uintptr_t)pOriginal});
+		GetHookManager()->m_DetourList.emplace_back(std::pair {std::move(pDetour), (uintptr_t)pCallback});
 		return true;
 	}
 
 	template<typename TOriginal, typename TTram>
-	bool RemoveDetour(TOriginal pOriginal, TTram& pTrampoline) {
-		auto pTarget = reinterpret_cast<uintptr_t>(pOriginal);
+	bool RemoveDetour(TOriginal pCallback, TTram& pTrampoline) {
+		auto pTarget = reinterpret_cast<uintptr_t>(pCallback);
 		auto& pDetourList = GetHookManager()->m_DetourList;
 		auto it = std::ranges::find_if(pDetourList, [pTarget](const auto& pair) { return pair.second == pTarget; });
 
 		if (it != pDetourList.end()) {
 			it->first->unHook();
 			pDetourList.erase(it);
+			pTrampoline = nullptr;
 			return true;
 		}
 
@@ -125,28 +118,11 @@ namespace MEM {
 
 	template<typename TCallback, typename TTram>
 	bool AddVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
-		if (GetHookManager()->IsVMTHooked(pVtable, vfnIndex)) {
-			return false;
-		}
+		std::unique_ptr<libmem::Vmt> pVMT = std::make_unique<libmem::Vmt>(static_cast<libmem::Address*>(pVtable));
+		pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
+		pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
 
-		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
-		auto it = std::ranges::find_if(pVMTHookList, [pVtable](const auto& pair) { return pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable); });
-
-		if (it != pVMTHookList.end()) {
-			std::unique_ptr<libmem::Vmt>& pVMT = it->first;
-			pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
-			pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
-			it->second.insert(vfnIndex);
-		} else {
-			std::unique_ptr<libmem::Vmt> pVMT = std::make_unique<libmem::Vmt>(static_cast<libmem::Address*>(pVtable));
-			pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
-			pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
-
-			std::unordered_set<uint32_t> hookedVFn;
-			hookedVFn.insert(vfnIndex);
-
-			pVMTHookList.emplace_back(std::pair {std::move(pVMT), hookedVFn});
-		}
+		GetHookManager()->m_VMTHookList.emplace_back(std::pair {std::move(pVMT), (uintptr_t)pCallback});
 
 		return true;
 	}
@@ -179,21 +155,26 @@ namespace MEM {
 		return true;
 	}
 
-	template<typename TTram>
-	bool RemoveVMTHook(void* pVtable, uint32_t vfnIndex, TTram& pTrampoline) {
+	template<typename TCallback, typename TTram>
+	bool RemoveVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
+		auto pTarget = reinterpret_cast<uintptr_t>(pCallback);
 		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
-		auto it = std::ranges::find_if(pVMTHookList, [pVtable, vfnIndex](const auto& pair) { return pair.first->Convert() == reinterpret_cast<libmem::Address>(pVtable) && pair.second.contains(vfnIndex); });
+		auto it = std::ranges::find_if(pVMTHookList, [pTarget](const auto& pair) { return pair.second == pTarget; });
 
 		if (it != pVMTHookList.end()) {
-			it->first->Unhook();
-			if (!it->second.size()) {
-				pVMTHookList.erase(it);
-			}
-
+			it->first->Unhook(vfnIndex);
+			pVMTHookList.erase(it);
+			pTrampoline = nullptr;
 			return true;
 		}
 
 		return false;
+	}
+
+	template<typename TCallback, typename TTram>
+	bool RemoveVMTInstanceHook(void* pInstance, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
+		void* pVtable = *(void**)pInstance;
+		return MEM::RemoveVMTHook(pVtable, vfnIndex, pCallback, pTrampoline);
 	}
 
 	template<typename T = void, typename... Args>
