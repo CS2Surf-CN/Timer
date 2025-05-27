@@ -237,5 +237,5 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 }
 
 void SDKHookManager::OnEntityDeleted(CEntityInstance* pEntity) {
-	UnhookVMT(dynamic_cast<CBaseEntity*>(pEntity));
+	UnhookVMT(static_cast<CBaseEntity*>(pEntity));
 }
