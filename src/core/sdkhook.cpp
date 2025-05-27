@@ -1,5 +1,7 @@
 #include "sdkhook.h"
 #include <core/memory.h>
+#include <utils/utils.h>
+#include <sdk/entity/ccsplayercontroller.h>
 
 #include <unordered_set>
 #include <utility>
@@ -224,13 +226,18 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 		return;
 	}
 
+	auto hEnt = pEnt->GetRefEHandle();
 	for (int type = 0; type < SDKHookType::SDKHook_MAX_TYPE; type++) {
 		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
 			for (const auto& ctx : m_umSDKHooksListeners[type][0][pVtable]) {
-				SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
+				if (ctx.first == hEnt) {
+					SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
+				}
 			}
 			for (const auto& ctx : m_umSDKHooksListeners[type][1][pVtable]) {
-				SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, true);
+				if (ctx.first == hEnt) {
+					SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, true);
+				}
 			}
 		}
 	}
