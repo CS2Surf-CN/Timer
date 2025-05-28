@@ -106,15 +106,13 @@ namespace SDKHOOK {
 		g_SDKHookManager.UnhookVMT(pEnt, Traits::OffsetName, T, post, (void*)pHook, pListener);
 	}
 
-	template<SDKHookType I = (SDKHookType)0>
+	template<int... Is>
+	static void UninstallHookAuto(SDKHookType type, CBaseEntity* pEnt, void* pListener, bool post, std::integer_sequence<int, Is...>) {
+		((type == static_cast<SDKHookType>(Is) ? (SDKHOOK::UninstallHook<static_cast<SDKHookType>(Is)>(pEnt, pListener, post), true) : false) || ...);
+	}
+
 	static void UninstallHookRT(SDKHookType type, CBaseEntity* pEnt, void* pListener, bool post) {
-		if constexpr (I < SDKHookType::SDKHook_MAX_TYPE) {
-			if (type == I) {
-				SDKHOOK::UninstallHook<static_cast<SDKHookType>(I)>(pEnt, pListener, post);
-			} else {
-				SDKHOOK::UninstallHookRT<static_cast<SDKHookType>(I + 1)>(type, pEnt, pListener, post);
-			}
-		}
+		UninstallHookAuto(type, pEnt, pListener, post, std::make_integer_sequence<int, SDKHookType::SDKHook_MAX_TYPE> {});
 	}
 
 	template<SDKHookType T>
@@ -234,14 +232,19 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 	auto hEnt = pEnt->GetRefEHandle();
 	for (int type = 0; type < SDKHookType::SDKHook_MAX_TYPE; type++) {
 		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
-			for (const auto& ctx : m_umSDKHooksListeners[type][0][pVtable]) {
-				if (ctx.first == hEnt) {
-					SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
+			if (m_umSDKHooksListeners[type][0].contains(pVtable)) {
+				for (const auto& ctx : m_umSDKHooksListeners[type][0].at(pVtable)) {
+					if (ctx.first == hEnt) {
+						SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
+					}
 				}
 			}
-			for (const auto& ctx : m_umSDKHooksListeners[type][1][pVtable]) {
-				if (ctx.first == hEnt) {
-					SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, true);
+
+			if (m_umSDKHooksListeners[type][1].contains(pVtable)) {
+				for (const auto& ctx : m_umSDKHooksListeners[type][1].at(pVtable)) {
+					if (ctx.first == hEnt) {
+						SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, true);
+					}
 				}
 			}
 		}
