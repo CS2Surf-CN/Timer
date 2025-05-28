@@ -174,6 +174,7 @@ void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHoo
 	auto same_ctx = std::ranges::find_if(listenerList, [hEnt, pListener](const auto& pair) { return pair.first == hEnt && pair.second == pListener; });
 	if (same_ctx != listenerList.end()) {
 		SDK_ASSERT(false); // design error
+		Plat_FatalErrorFunc("Hooking the same entity and listener is not allowed");
 	}
 
 	listenerList.emplace_back(hEnt, pListener);
