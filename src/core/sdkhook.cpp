@@ -229,21 +229,15 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 		return;
 	}
 
-	auto hEnt = pEnt->GetRefEHandle();
+	auto hTargetEnt = pEnt->GetRefEHandle();
 	for (int type = 0; type < SDKHookType::SDKHook_MAX_TYPE; type++) {
 		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
-			if (m_umSDKHooksListeners[type][0].contains(pVtable)) {
-				for (const auto& ctx : m_umSDKHooksListeners[type][0].at(pVtable)) {
-					if (ctx.first == hEnt) {
-						SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, false);
-					}
-				}
-			}
-
-			if (m_umSDKHooksListeners[type][1].contains(pVtable)) {
-				for (const auto& ctx : m_umSDKHooksListeners[type][1].at(pVtable)) {
-					if (ctx.first == hEnt) {
-						SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, ctx.second, true);
+			for (int i = 0; i <= 1; i++) {
+				if (m_umSDKHooksListeners[type][i].contains(pVtable)) {
+					for (const auto& [hEnt, pListener] : m_umSDKHooksListeners[type][i].at(pVtable)) {
+						if (hEnt == hTargetEnt) {
+							SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, pListener, i);
+						}
 					}
 				}
 			}
