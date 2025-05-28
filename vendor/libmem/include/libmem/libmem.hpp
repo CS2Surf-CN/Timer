@@ -198,6 +198,11 @@ namespace libmem {
 			return (Address)vmt;
 		}
 
+		inline Address GetVTable()
+		{
+			return *(Address*)vmt;
+		}
+
 		void Reset();
 	};
 

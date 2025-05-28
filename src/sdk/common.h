@@ -30,8 +30,14 @@ typedef double f64;
 #endif
 #endif
 
-#ifndef SDK_ASSERT
+#ifndef SDK_DEBUG
 #if defined(_DEBUG) || defined(_OD)
+#define SDK_DEBUG
+#endif
+#endif
+
+#ifndef SDK_ASSERT
+#ifdef SDK_DEBUG
 #define SDK_ASSERT(EXPRESSION) static_cast<void>(!!(EXPRESSION) || (SDK_DEBUG_BREAK(), 0))
 #else
 // disable assertion for release builds

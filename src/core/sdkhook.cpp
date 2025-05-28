@@ -211,8 +211,12 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKH
 		MEM::RemoveVMTHook(pVtable, iOffset, pInternalCallback, m_umSDKHookTrampolines[type][pVtable]);
 		m_umSDKHookTrampolines[type].erase(pVtable);
 		m_umSDKHookCallbacks[type].erase(pVtable);
-		m_umVMTHooked.erase(pVtable);
 		m_umSDKHooksListeners[type][post].erase(pVtable);
+		m_umVMTHooked[pVtable].erase(iOffset);
+	}
+
+	if (m_umVMTHooked[pVtable].empty()) {
+		m_umVMTHooked.erase(pVtable);
 	}
 }
 

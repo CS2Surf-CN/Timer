@@ -118,6 +118,17 @@ namespace MEM {
 
 	template<typename TCallback, typename TTram>
 	bool AddVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
+#ifdef SDK_DEBUG
+		auto& hooklist = GetHookManager()->m_VMTHookList;
+		for (const auto& [vmt, _] : hooklist) {
+			auto vtb = *(libmem::Address**)vmt->Convert();
+			void* pCurrentFn = *reinterpret_cast<void**>(vtb + vfnIndex);
+			if (pCurrentFn == (void*)pCallback && vtb == pVtable) {
+				SDK_ASSERT(false);
+			}
+		}
+#endif
+
 		std::unique_ptr<libmem::Vmt> pVMT = std::make_unique<libmem::Vmt>(static_cast<libmem::Address*>(pVtable));
 		pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
 		pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
@@ -159,7 +170,7 @@ namespace MEM {
 	bool RemoveVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
 		auto pTarget = reinterpret_cast<uintptr_t>(pCallback);
 		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
-		auto it = std::ranges::find_if(pVMTHookList, [pTarget](const auto& pair) { return pair.second == pTarget; });
+		auto it = std::ranges::find_if(pVMTHookList, [pVtable, pTarget](const auto& pair) { return (void*)pair.first->GetVTable() == pVtable && pair.second == pTarget; });
 
 		if (it != pVMTHookList.end()) {
 			it->first->Unhook(vfnIndex);
