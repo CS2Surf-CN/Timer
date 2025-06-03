@@ -46,11 +46,11 @@ jobs:
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: cs2surf-win
-      #     path: ./build/package
+      #     path: ./build/cs2surf.dll
 
   build-linux:
     name: Linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -74,4 +74,4 @@ jobs:
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: cs2surf-linux
-      #     path: ./build/package
+      #     path: ./build/cs2surf.so
