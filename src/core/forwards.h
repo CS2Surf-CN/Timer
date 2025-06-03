@@ -43,6 +43,8 @@ public:
 
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) {}
 
+	virtual void OnMapEnd() {}
+
 	virtual void OnApplyGameSettings(ISource2Server* pServer, KeyValues* pKV) {}
 
 	virtual void OnGameFrame(ISource2Server* pServer, bool simulating, bool bFirstTick, bool bLastTick) {}

@@ -44,10 +44,13 @@ void CSurfMiscPlugin::TweakCvars() {
 void CSurfMiscPlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	IFACE::pEngine->ServerCommand("exec cs2surf.cfg");
 
-	m_vTriggers.clear();
-
 	// Restart round to ensure settings (e.g. mp_weapons_allow_map_placed) are applied
 	IFACE::pEngine->ServerCommand("mp_restartgame 1");
+}
+
+void CSurfMiscPlugin::OnMapEnd() {
+	m_vTriggers.clear();
+	m_vTeleDestination.clear();
 }
 
 void CSurfMiscPlugin::OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon, const int& iDropType, const Vector* targetPos) {

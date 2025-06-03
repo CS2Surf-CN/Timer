@@ -17,6 +17,7 @@ void CSurfZonePlugin::OnPluginStart() {
 
 void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	RefreshZones();
+	HandleMappingZones();
 }
 
 void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
@@ -161,13 +162,10 @@ void CSurfZonePlugin::RefreshZones() {
 void CSurfZonePlugin::UpsertZone(const ZoneData_t& data, bool bUpload) {
 	DeleteZone(data, false);
 
-	CBaseEntity* pZone = CreateNormalZone(data.m_vecMins, data.m_vecMaxs);
-	ZoneCache_t cache(data);
-	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
-	m_hZones[pZone->GetRefEHandle()] = cache;
+	CreateNormalZone(data);
 
 	if (bUpload) {
-		SURF::GLOBALAPI::MAP::zoneinfo_t info(cache);
+		SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
 		SURF::GLOBALAPI::MAP::UpdateZone(
 			info, HTTPRES_CALLBACK_L() {
 				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}更新区域失败."));
@@ -358,9 +356,9 @@ void CSurfZonePlugin::CreateBeams(const Vector& vecMin, const Vector& vecMax, st
 	}
 }
 
-CBaseEntity* CSurfZonePlugin::CreateNormalZone(const Vector& vecMins, const Vector& vecMaxs) {
-	Vector vecCenter = SURF::ZONE::GetCenter(vecMins, vecMaxs);
-	Vector mins(vecMins), maxs(vecMaxs);
+CBaseEntity* CSurfZonePlugin::CreateNormalZone(const ZoneData_t& data) {
+	Vector vecCenter = SURF::ZONE::GetCenter(data.m_vecMins, data.m_vecMaxs);
+	Vector mins(data.m_vecMins), maxs(data.m_vecMaxs);
 	SURF::ZONE::FillBoxMinMax(mins, maxs, true);
 	auto pZone = MEM::CALL::CreateAABBTrigger(vecCenter, mins, maxs);
 	if (!pZone) {
@@ -375,7 +373,22 @@ CBaseEntity* CSurfZonePlugin::CreateNormalZone(const Vector& vecMins, const Vect
 
 	pZone->SetName("surf_zone");
 
+	ZoneCache_t cache(data);
+	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
+	m_hZones[pZone->GetRefEHandle()] = cache;
+
 	return pZone;
+}
+
+void CSurfZonePlugin::CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data) {
+	SDKHOOK::HookEntity<SDKHook_StartTouch>(pEnt, SURF::ZONE::HOOK::OnStartTouch);
+	SDKHOOK::HookEntity<SDKHook_StartTouch>(pEnt, SURF::ZONE::HOOK::OnStartTouchPost);
+	SDKHOOK::HookEntity<SDKHook_Touch>(pEnt, SURF::ZONE::HOOK::OnTouchPost);
+	SDKHOOK::HookEntity<SDKHook_EndTouch>(pEnt, SURF::ZONE::HOOK::OnEndTouchPost);
+
+	ZoneCache_t cache(data);
+	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
+	m_hZones[pEnt->GetRefEHandle()] = cache;
 }
 
 void CSurfZonePlugin::KillZone(const std::pair<CZoneHandle, ZoneCache_t>& zone) {

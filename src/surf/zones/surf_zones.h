@@ -66,11 +66,13 @@ public:
 	void DeleteZone(const ZoneData_t& data, bool bUpload = true);
 	void DeleteAllZones(bool bUpload = true);
 	void CreateBeams(const Vector& vecMin, const Vector& vecMax, std::array<CHandle<CBeam>, 12>& out);
-	CBaseEntity* CreateNormalZone(const Vector& vecMins, const Vector& vecMaxs);
+	CBaseEntity* CreateNormalZone(const ZoneData_t& data);
+	void CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data);
 	void KillZone(const std::pair<CZoneHandle, ZoneCache_t>& zone);
 
 private:
 	void RegisterCommand();
+	void HandleMappingZones();
 
 public:
 	std::unordered_map<CZoneHandle, ZoneCache_t> m_hZones;

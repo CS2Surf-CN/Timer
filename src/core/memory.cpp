@@ -205,6 +205,12 @@ static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionCo
 	MEM::SDKCall(MEM::TRAMPOLINE::g_fnStartupServer, pThis, &config, a3, a4);
 }
 
+static void Hook_OnLoopDeactivate(ILoopMode* pThis, const EngineLoopState_t& state, CEventDispatcher<CEventIDManager_Default>* pEventDispatcher) {
+	FORWARD_POST(CCoreForward, OnMapEnd);
+
+	MEM::SDKCall(MEM::TRAMPOLINE::g_fnLoopDeactivate, pThis, &state, pEventDispatcher);
+}
+
 static void Hook_DispatchConCommand(ICvar* pThis, ConCommandRef cmd, const CCommandContext& ctx, const CCommand& args) {
 	bool block = false;
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
@@ -404,6 +410,14 @@ static bool SetupVMTHooks() {
 		MEM::MODULE::engine,
 		Hook_ActivateServer,
 		MEM::TRAMPOLINE::g_fnActivateServer
+	);
+
+	HOOK_VMTEX(
+		"CLoopModeGame",
+		ILoopMode::OnLoopDeactivate,
+		MEM::MODULE::server,
+		Hook_OnLoopDeactivate,
+		MEM::TRAMPOLINE::g_fnLoopDeactivate
 	);
 
 	// clang-format on
