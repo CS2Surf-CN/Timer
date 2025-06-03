@@ -17,7 +17,20 @@ void CSurfZonePlugin::OnPluginStart() {
 
 void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	RefreshZones();
-	HandleMappingZones();
+	// HandleMappingZones();
+
+	m_bMapStarted = true;
+}
+
+void CSurfZonePlugin::OnMapEnd() {
+	m_bMapStarted = false;
+}
+
+void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity) {
+	auto pszClassname = pEntity->GetClassname();
+	if (!m_bMapStarted && V_strstr(pszClassname, "trigger_")) {
+		int a = 1;
+	}
 }
 
 void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
@@ -387,7 +400,7 @@ void CSurfZonePlugin::CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data) 
 	SDKHOOK::HookEntity<SDKHook_EndTouch>(pEnt, SURF::ZONE::HOOK::OnEndTouchPost);
 
 	ZoneCache_t cache(data);
-	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
+	// CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
 	m_hZones[pEnt->GetRefEHandle()] = cache;
 }
 
