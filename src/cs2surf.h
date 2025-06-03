@@ -23,6 +23,7 @@ public:
 public:
 	bool simulatingPhysics = false;
 	CGlobalVars serverGlobals;
+	std::string m_sCurrentMap;
 };
 
 extern CSurfPlugin* SurfPlugin();

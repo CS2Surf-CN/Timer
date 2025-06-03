@@ -85,6 +85,7 @@ namespace UTIL {
 	CUtlVector<CServerSideClient*>* GetClientList();
 	CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 	CCSGameRules* GetGameRules();
+	std::string GetCurrentMap();
 
 	bool TraceLine(const Vector& vecStart, const Vector& vecEnd, CEntityInstance* ignore1, CGameTrace* tr, uint64 traceLayer, uint64 excludeLayer = 0);
 	void GetPlayerAiming(CCSPlayerPawnBase* pPlayer, CGameTrace& ret);

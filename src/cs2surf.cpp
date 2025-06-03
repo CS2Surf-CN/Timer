@@ -60,6 +60,8 @@ void CSurfPlugin::AllPluginsLoaded() {
 }
 
 void CSurfPlugin::OnLevelInit(char const* pMapName, char const* pMapEntities, char const* pOldLevel, char const* pLandmarkName, bool loadGame, bool background) {
+	m_sCurrentMap = pMapName;
+
 	FORWARD_POST(CCoreForward, OnLevelInit, pMapName);
 }
 

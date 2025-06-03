@@ -50,6 +50,7 @@ public:
 class CSurfZonePlugin : CMovementForward, CCoreForward {
 private:
 	virtual void OnPluginStart() override;
+	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
 	virtual void OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
 	virtual bool ProcessSayCommand(CCSPlayerController* pController) override;
 	virtual bool OnSayCommand(CCSPlayerController* pController, const std::vector<std::string>& vArgs) override;

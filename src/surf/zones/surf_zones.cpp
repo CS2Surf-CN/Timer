@@ -3,6 +3,7 @@
 #include <core/sdkhook.h>
 #include <core/menu.h>
 #include <surf/global/surf_global.h>
+#include <surf/api.h>
 
 CSurfZonePlugin g_SurfZonePlugin;
 
@@ -12,6 +13,10 @@ CSurfZonePlugin* SURF::ZonePlugin() {
 
 void CSurfZonePlugin::OnPluginStart() {
 	RegisterCommand();
+}
+
+void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
+	RefreshZones();
 }
 
 void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
@@ -125,10 +130,15 @@ void CSurfZonePlugin::ClearZones() {
 }
 
 void CSurfZonePlugin::RefreshZones() {
-	UTIL::CPrintChatAll("开始刷新区域...");
+	SURF::CPrintChatAll("{grey}开始刷新区域...");
 
-	SURF::GLOBALAPI::MAP::PullZone(HTTPRES_CALLBACK_L() {
-		GAPIRES_CHECK(res, r, UTIL::CPrintChatAll("刷新区域失败."));
+	std::string sLastQueryMap = UTIL::GetCurrentMap();
+	SURF::GLOBALAPI::MAP::PullZone(HTTPRES_CALLBACK_L(sLastQueryMap) {
+		if (sLastQueryMap != UTIL::GetCurrentMap()) {
+			return;
+		}
+
+		GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}刷新区域失败."));
 
 		SURF::ZonePlugin()->ClearZones();
 
@@ -144,7 +154,7 @@ void CSurfZonePlugin::RefreshZones() {
 			SURF::ZonePlugin()->UpsertZone(info, false);
 		}
 
-		UTIL::CPrintChatAll("刷新区域成功!");
+		SURF::CPrintChatAll("{grey}刷新区域成功!");
 	});
 }
 
@@ -160,8 +170,8 @@ void CSurfZonePlugin::UpsertZone(const ZoneData_t& data, bool bUpload) {
 		SURF::GLOBALAPI::MAP::zoneinfo_t info(cache);
 		SURF::GLOBALAPI::MAP::UpdateZone(
 			info, HTTPRES_CALLBACK_L() {
-				GAPIRES_CHECK(res, r, UTIL::CPrintChatAll("更新区域失败."));
-				UTIL::CPrintChatAll("更新区域成功!");
+				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}更新区域失败."));
+				SURF::CPrintChatAll("{grey}更新区域成功!");
 			});
 	}
 }
@@ -171,8 +181,8 @@ void CSurfZonePlugin::DeleteZone(const ZoneData_t& data, bool bUpload) {
 		SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
 		SURF::GLOBALAPI::MAP::DeleteZone(
 			info, HTTPRES_CALLBACK_L() {
-				GAPIRES_CHECK(res, r, UTIL::CPrintChatAll("删除区域失败."));
-				UTIL::CPrintChatAll("删除区域成功!");
+				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}删除区域失败."));
+				SURF::CPrintChatAll("{grey}删除区域成功!");
 			});
 	}
 
@@ -188,8 +198,8 @@ void CSurfZonePlugin::DeleteZone(const ZoneData_t& data, bool bUpload) {
 void CSurfZonePlugin::DeleteAllZones(bool bUpload) {
 	if (bUpload) {
 		SURF::GLOBALAPI::MAP::DeleteAllZones(HTTPRES_CALLBACK_L() {
-			GAPIRES_CHECK(res, r, UTIL::CPrintChatAll("删除所有区域失败."));
-			UTIL::CPrintChatAll("删除所有区域成功!");
+			GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}删除所有区域失败."));
+			SURF::CPrintChatAll("{grey}删除所有区域成功!");
 		});
 	}
 

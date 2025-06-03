@@ -173,6 +173,10 @@ CCSGameRules* UTIL::GetGameRules() {
 	return nullptr;
 }
 
+std::string UTIL::GetCurrentMap() {
+	return SurfPlugin()->m_sCurrentMap;
+}
+
 bool UTIL::TraceLine(const Vector& vecStart, const Vector& vecEnd, CEntityInstance* ignore1, CGameTrace* tr, uint64 traceLayer, uint64 excludeLayer) {
 	Ray_t ray;
 	CTraceFilter filter;
