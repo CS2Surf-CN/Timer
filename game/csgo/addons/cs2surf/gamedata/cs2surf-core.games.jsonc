@@ -4,6 +4,10 @@
 			"windows": 88,
 			"linux": 80
 		},
+		"CBaseEntity::GetHammerUniqueId": {
+			"windows": 109,
+			"linux": 108
+		},
 		// 9 functions after one with "CBasePlayerPawn::PhysicsSimulate"
 		"IsEntityPawn": {
 			"windows": 161,
