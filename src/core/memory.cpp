@@ -18,6 +18,8 @@ class CEntListener : public IEntityListener {
 
 MEM::CHookManager g_HookManager;
 
+bool g_bMapStarted = false;
+
 #define CALL_SIG(sig, fnCurrent, ...) \
 	static auto fnSig = GAMEDATA::GetMemSig(sig); \
 	SDK_ASSERT(fnSig); \
@@ -100,7 +102,7 @@ bool MEM::CALL::BotAddCommand(int team, bool isFromConsole, const char* profileN
 
 void CEntListener::OnEntitySpawned(CEntityInstance* pEntity) {
 	if (pEntity) {
-		FORWARD_POST(CCoreForward, OnEntitySpawned, pEntity);
+		FORWARD_POST(CCoreForward, OnEntitySpawned, pEntity, g_bMapStarted);
 	}
 }
 
@@ -208,6 +210,8 @@ static void Hook_StartupServer(INetworkServerService* pThis, const GameSessionCo
 static void Hook_OnLoopDeactivate(ILoopMode* pThis, const EngineLoopState_t& state, CEventDispatcher<CEventIDManager_Default>* pEventDispatcher) {
 	FORWARD_POST(CCoreForward, OnMapEnd);
 
+	g_bMapStarted = false;
+
 	MEM::SDKCall(MEM::TRAMPOLINE::g_fnLoopDeactivate, pThis, &state, pEventDispatcher);
 }
 
@@ -239,6 +243,8 @@ static bool Hook_ActivateServer(CNetworkGameServerBase* pThis) {
 	for (auto p = CCoreForward::m_pFirst; p; p = p->m_pNext) {
 		p->OnActivateServer(pThis);
 	}
+
+	g_bMapStarted = true;
 
 	return ret;
 }

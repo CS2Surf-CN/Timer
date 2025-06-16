@@ -9,7 +9,7 @@ private:
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
 	virtual void OnMapEnd() override;
 	virtual void OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon, const int& iDropType, const Vector* targetPos) override;
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 	virtual void OnClientDisconnect(ISource2GameClients* pClient, CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid, const char* pszNetworkID) override;
 	virtual bool OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveData* mv) override;
 	virtual bool OnTakeDamage(CCSPlayerPawnBase* pVictim, CTakeDamageInfo* info) override;

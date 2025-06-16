@@ -57,13 +57,15 @@ void CSurfMiscPlugin::OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBase
 	pWeapon->AcceptInput("kill");
 }
 
-void CSurfMiscPlugin::OnEntitySpawned(CEntityInstance* pEntity) {
-	const char* sClassname = pEntity->GetClassname();
-	if (V_strstr(sClassname, "trigger_")) {
-		m_vTriggers.emplace_back(pEntity->GetRefEHandle());
-	}
-	if (!V_strcmp(sClassname, "info_teleport_destination") || !V_strcmp(sClassname, "info_target")) {
-		m_vTeleDestination.emplace_back(pEntity->GetRefEHandle());
+void CSurfMiscPlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
+	if (bMapStarted) {
+		const char* sClassname = pEntity->GetClassname();
+		if (V_strstr(sClassname, "trigger_")) {
+			m_vTriggers.emplace_back(pEntity->GetRefEHandle());
+		}
+		if (!V_strcmp(sClassname, "info_teleport_destination") || !V_strcmp(sClassname, "info_target")) {
+			m_vTeleDestination.emplace_back(pEntity->GetRefEHandle());
+		}
 	}
 }
 

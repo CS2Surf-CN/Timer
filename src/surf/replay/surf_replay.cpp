@@ -32,7 +32,7 @@ void CSurfReplayPlugin::OnClientPutInServer(ISource2GameClients* pClient, CPlaye
 	}
 }
 
-void CSurfReplayPlugin::OnEntitySpawned(CEntityInstance* pEntity) {
+void CSurfReplayPlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
 	const char* sClassname = pEntity->GetClassname();
 	if (V_strstr(sClassname, "trigger_") || V_strstr(sClassname, "_door")) {
 		SDKHOOK::HookEntity<SDKHookType::SDKHook_StartTouch>((CBaseEntity*)pEntity, SURF::REPLAY::HOOK::OnBotTrigger);

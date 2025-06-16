@@ -130,7 +130,7 @@ private:
 	virtual void OnPluginStart() override;
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
 	virtual void OnClientPutInServer(ISource2GameClients* pClient, CPlayerSlot slot, char const* pszName, int type, uint64 xuid) override;
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 
 	virtual bool OnPlayerRunCmd(CCSPlayerPawnBase* pPawn, CInButtonState& buttons, float (&vec)[3], QAngle& viewAngles, int& weapon, int& cmdnum, int& tickcount, int& seed, int (&mouse)[2]) override;
 	virtual void OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;

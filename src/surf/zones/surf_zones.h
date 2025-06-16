@@ -52,7 +52,7 @@ private:
 	virtual void OnPluginStart() override;
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
 	virtual void OnMapEnd() override;
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 	virtual void OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
 	virtual bool ProcessSayCommand(CCSPlayerController* pController) override;
 	virtual bool OnSayCommand(CCSPlayerController* pController, const std::vector<std::string>& vArgs) override;
@@ -78,9 +78,6 @@ private:
 
 public:
 	std::unordered_map<CZoneHandle, ZoneCache_t> m_hZones;
-
-private:
-	bool m_bMapStarted {};
 };
 
 namespace SURF {

@@ -18,18 +18,17 @@ void CSurfZonePlugin::OnPluginStart() {
 void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	RefreshZones();
 	// HandleMappingZones();
-
-	m_bMapStarted = true;
 }
 
-void CSurfZonePlugin::OnMapEnd() {
-	m_bMapStarted = false;
-}
+void CSurfZonePlugin::OnMapEnd() {}
 
-void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity) {
+void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
 	auto pszClassname = pEntity->GetClassname();
-	if (!m_bMapStarted && V_strstr(pszClassname, "trigger_")) {
-		int a = 1;
+	if (bMapStarted && V_strstr(pszClassname, "trigger_")) {
+		auto pszHammerid = reinterpret_cast<CBaseEntity*>(pEntity)->m_sUniqueHammerID().Get();
+		if (pszHammerid) {
+			int a = 1;
+		}
 	}
 }
 
