@@ -207,7 +207,7 @@ CCMD_CALLBACK(Command_BuildMappingZones) {
 							SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
 							SURF::GLOBALAPI::MAP::UpdateZone(
 								info, HTTPRES_CALLBACK_L(&data, iZonesToUpload, &iUploaded) {
-									GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}上传失败, 区域: %s.", data.m_sHookHammerid.c_str()));
+									GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}上传失败, hammerid: %s, name: %s.", data.m_sHookHammerid.c_str(), data.m_sHookName.c_str()));
 									iUploaded++;
 
 									if (iUploaded == iZonesToUpload) {
