@@ -61,6 +61,7 @@ public:
 	std::optional<ZoneCache_t> FindZone(CBaseEntity* pEnt);
 	std::optional<std::pair<CZoneHandle, ZoneCache_t>> FindZone(TimerTrack_t track, EZoneType type, i32 value);
 	int GetZoneCount(TimerTrack_t track, EZoneType type);
+	int GetHookZoneCount(TimerTrack_t track, EZoneType type);
 	std::vector<ZoneCache_t> GetZones(TimerTrack_t track, EZoneType type);
 	void ClearZones();
 	void RefreshZones();
@@ -80,7 +81,7 @@ private:
 public:
 	std::unordered_map<CZoneHandle, ZoneCache_t> m_hZones;
 
-	// Triggers somehow prespawn before OnActivateServer 
+	// Triggers somehow prespawn before OnActivateServer
 	// Then got deleted and respawn on map fully inited (server no longer hibernation)
 	// Cache them to avoid unknown issues
 	std::vector<ZoneData_t> m_vPrecacheHookZones;

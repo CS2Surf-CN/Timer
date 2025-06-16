@@ -197,7 +197,7 @@ CCMD_CALLBACK(Command_BuildMappingZones) {
 }
 
 void CSurfZonePlugin::RegisterCommand() {
-	CONCMD::RegConsoleCmd("sm_zones", Command_Zones);
-	CONCMD::RegConsoleCmd("sm_editzone", Command_EditZone);
-	CONCMD::RegConsoleCmd("sm_buildmapping", Command_BuildMappingZones);
+	CONCMD::RegAdminCmd("sm_zones", Command_Zones, AdminFlag::Generic);
+	CONCMD::RegAdminCmd("sm_editzone", Command_EditZone, AdminFlag::Generic);
+	CONCMD::RegAdminCmd("sm_buildmapping", Command_BuildMappingZones, AdminFlag::Generic);
 }

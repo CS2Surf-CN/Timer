@@ -3,7 +3,6 @@
 #include <regex>
 
 // regex copy from: https://github.com/CS2Surf/Timer/blob/main/src/ST-Map/Map.cs
-// TODO: fix FIXMEs, optimize, move to command and backend
 void CSurfZonePlugin::BuildMappingZones() {
 	for (const auto& hTrigger : SURF::MiscPlugin()->m_vTriggers) {
 		auto pTrigger = hTrigger.Get();
@@ -39,11 +38,11 @@ void CSurfZonePlugin::BuildMappingZones() {
 			if (bMapStartZone) {
 				data.m_iTrack = EZoneTrack::Track_Main;
 				data.m_iType = EZoneType::Zone_Start;
-				data.m_iValue = 0; // FIXME: multi start
+				data.m_iValue = GetHookZoneCount(data.m_iTrack, data.m_iType);
 			} else if (bMapEndZone) {
 				data.m_iTrack = EZoneTrack::Track_Main;
 				data.m_iType = EZoneType::Zone_End;
-				data.m_iValue = 0; // FIXME: multi end
+				data.m_iValue = GetHookZoneCount(data.m_iTrack, data.m_iType);
 			} else if (bStage) {
 				data.m_iTrack = EZoneTrack::Track_Main;
 				data.m_iType = EZoneType::Zone_Stage;
@@ -70,7 +69,7 @@ void CSurfZonePlugin::BuildMappingZones() {
 				}
 
 				data.m_iType = EZoneType::Zone_Start;
-				data.m_iValue = 0; // FIXME: multi start
+				data.m_iValue = GetHookZoneCount(data.m_iTrack, data.m_iType);
 			} else if (bBonusEndZone) {
 				std::smatch matches;
 				std::string sToMatch(sTargetName);
@@ -79,7 +78,7 @@ void CSurfZonePlugin::BuildMappingZones() {
 				}
 
 				data.m_iType = EZoneType::Zone_End;
-				data.m_iValue = 0; // FIXME: multi start
+				data.m_iValue = GetHookZoneCount(data.m_iTrack, data.m_iType);
 			}
 
 			PrecacheHookZone(data);

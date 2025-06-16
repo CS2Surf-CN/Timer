@@ -121,6 +121,19 @@ int CSurfZonePlugin::GetZoneCount(TimerTrack_t track, EZoneType type) {
 	return count;
 }
 
+int CSurfZonePlugin::GetHookZoneCount(TimerTrack_t track, EZoneType type) {
+	int count = GetZoneCount(track, type);
+	if (!count) {
+		for (const auto& data : m_vPrecacheHookZones) {
+			if (data.m_iTrack == track && data.m_iType == type) {
+				count++;
+			}
+		}
+	}
+
+	return count;
+}
+
 std::vector<ZoneCache_t> CSurfZonePlugin::GetZones(TimerTrack_t track, EZoneType type) {
 	std::vector<ZoneCache_t> vZones;
 	for (const auto& [_, data] : m_hZones) {
