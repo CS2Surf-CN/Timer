@@ -4,7 +4,7 @@
 
 // regex copy from: https://github.com/CS2Surf/Timer/blob/main/src/ST-Map/Map.cs
 // TODO: fix FIXMEs, optimize, move to command and backend
-void CSurfZonePlugin::HandleMappingZones() {
+void CSurfZonePlugin::BuildMappingZones() {
 	for (const auto& hTrigger : SURF::MiscPlugin()->m_vTriggers) {
 		auto pTrigger = hTrigger.Get();
 		if (!pTrigger) {
@@ -28,9 +28,11 @@ void CSurfZonePlugin::HandleMappingZones() {
 
 		if (bMatchMappingZone) {
 			ZoneData_t data;
-			data.m_vecMins = pTrigger->m_pCollision()->m_vecMins();
-			data.m_vecMaxs = pTrigger->m_pCollision()->m_vecMaxs();
 			data.EnsureDestination();
+			if (data.m_vecDestination.Length() == 0.0f) {
+				data.m_vecDestination = pTrigger->GetAbsOrigin();
+			}
+
 			data.m_sHookName = sTargetName;
 			data.m_sHookHammerid = pTrigger->m_sUniqueHammerID();
 
@@ -64,7 +66,7 @@ void CSurfZonePlugin::HandleMappingZones() {
 				std::smatch matches;
 				std::string sToMatch(sTargetName);
 				if (!std::regex_search(sToMatch, matches, std::regex("[0-9][0-9]?"))) {
-					data.m_iTrack = (EZoneTrack)std::stoi(matches.str());
+					data.m_iTrack = static_cast<EZoneTrack>(std::stoi(matches.str()));
 				}
 
 				data.m_iType = EZoneType::Zone_Start;
@@ -73,14 +75,14 @@ void CSurfZonePlugin::HandleMappingZones() {
 				std::smatch matches;
 				std::string sToMatch(sTargetName);
 				if (!std::regex_search(sToMatch, matches, std::regex("[0-9][0-9]?"))) {
-					data.m_iTrack = (EZoneTrack)std::stoi(matches.str());
+					data.m_iTrack = static_cast<EZoneTrack>(std::stoi(matches.str()));
 				}
 
 				data.m_iType = EZoneType::Zone_End;
 				data.m_iValue = 0; // FIXME: multi start
 			}
 
-			CreateHookZone(pTrigger, data);
+			PrecacheHookZone(data);
 		}
 	}
 }

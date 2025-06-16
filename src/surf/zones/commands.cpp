@@ -185,7 +185,19 @@ CCMD_CALLBACK(Command_EditZone) {
 	ZoneMenu_Edit(player);
 }
 
+CCMD_CALLBACK(Command_BuildMappingZones) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
+		return;
+	}
+
+	pPlayer->m_pZoneService->Print("预建地图区域中...");
+	SURF::ZonePlugin()->BuildMappingZones();
+	pPlayer->m_pZoneService->Print("预建地图完成!");
+}
+
 void CSurfZonePlugin::RegisterCommand() {
 	CONCMD::RegConsoleCmd("sm_zones", Command_Zones);
 	CONCMD::RegConsoleCmd("sm_editzone", Command_EditZone);
+	CONCMD::RegConsoleCmd("sm_buildmapping", Command_BuildMappingZones);
 }

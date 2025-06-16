@@ -44,6 +44,10 @@ struct ZoneData_t {
 		return (m_vecMins + m_vecMaxs) / 2.0f;
 	}
 
+	bool IsHookZone() const {
+		return !m_sHookHammerid.empty();
+	}
+
 	void EnsureDestination();
 
 	EZoneTrack m_iTrack;
