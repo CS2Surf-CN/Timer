@@ -222,14 +222,13 @@ void CSurfZonePlugin::DeleteAllZones(bool bUpload) {
 }
 
 void CSurfZoneService::EditZone(CCSPlayerPawnBase* pawn, const CInButtonState& buttons) {
-	auto& iEditStep = m_ZoneEdit.m_iStep;
 	if (m_ZoneEdit.m_bEnabled) {
 		trace_t tr;
 		UTIL::GetPlayerAiming(pawn, tr);
 		Vector& aim = tr.m_vEndPos;
 
 		if (buttons.Pressed(IN_USE)) {
-			iEditStep += 1;
+			m_ZoneEdit.m_iStep += 1;
 
 			m_ZoneEdit.CreateEditZone(aim);
 		}
