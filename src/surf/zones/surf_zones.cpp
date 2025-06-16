@@ -20,7 +20,9 @@ void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	RefreshZones();
 }
 
-void CSurfZonePlugin::OnMapEnd() {}
+void CSurfZonePlugin::OnMapEnd() {
+	ClearZones();
+}
 
 void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
 	if (m_vPrecacheHookZones.empty()) {
