@@ -23,6 +23,10 @@ void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 void CSurfZonePlugin::OnMapEnd() {}
 
 void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
+	if (m_vPrecacheHookZones.empty()) {
+		return;
+	}
+
 	auto pszClassname = pEntity->GetClassname();
 	if (bMapStarted && V_strstr(pszClassname, "trigger_")) {
 		auto pszHammerid = reinterpret_cast<CBaseEntity*>(pEntity)->m_sUniqueHammerID().Get();
