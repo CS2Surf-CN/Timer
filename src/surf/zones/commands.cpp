@@ -4,6 +4,7 @@
 #include <core/menu.h>
 #include <utils/utils.h>
 #include <fmt/format.h>
+#include <surf/global/surf_global.h>
 
 static void ZoneMenu_SelectType(CSurfPlayer* pPlayer) {
 	auto wpMenu = MENU::Create(
@@ -192,8 +193,50 @@ CCMD_CALLBACK(Command_BuildMappingZones) {
 	}
 
 	pPlayer->m_pZoneService->Print("预建地图区域中...");
-	SURF::ZonePlugin()->BuildMappingZones();
+	auto& vHookZones = SURF::ZonePlugin()->BuildMappingZones();
 	pPlayer->m_pZoneService->Print("预建地图完成!");
+
+	auto wpMenu = MENU::Create(
+		pController, MENU_CALLBACK_L(pPlayer, vHookZones) {
+			if (action == EMenuAction::SelectItem) {
+				switch (iItem) {
+					case 0: {
+						int iUploaded = 0;
+						for (const auto& data : vHookZones) {
+							const int iZonesToUpload = vHookZones.size();
+							SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
+							SURF::GLOBALAPI::MAP::UpdateZone(
+								info, HTTPRES_CALLBACK_L(&data, iZonesToUpload, &iUploaded) {
+									GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}上传失败, 区域: %s.", data.m_sHookHammerid.c_str()));
+									iUploaded++;
+
+									if (iUploaded == iZonesToUpload) {
+										SURF::CPrintChatAll("{grey}所有区域已上传成功!");
+									}
+								});
+						}
+						break;
+					}
+					case 1: {
+						pPlayer->m_pZoneService->Print("已取消.");
+						break;
+					}
+				}
+
+				hMenu.Close();
+			}
+		});
+
+	if (wpMenu.expired()) {
+		SDK_ASSERT(false);
+		return;
+	}
+
+	auto pMenu = wpMenu.lock();
+	pMenu->SetTitle("是否上传至后台?");
+	pMenu->AddItem("是");
+	pMenu->AddItem("否");
+	pMenu->Display();
 }
 
 void CSurfZonePlugin::RegisterCommand() {

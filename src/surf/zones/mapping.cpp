@@ -3,12 +3,15 @@
 #include <regex>
 
 // regex copy from: https://github.com/CS2Surf/Timer/blob/main/src/ST-Map/Map.cs
-void CSurfZonePlugin::BuildMappingZones() {
+std::vector<ZoneData_t>& CSurfZonePlugin::BuildMappingZones() {
+	static std::vector<ZoneData_t> ret;
+	ret.clear();
+
 	for (const auto& hTrigger : SURF::MiscPlugin()->m_vTriggers) {
 		auto pTrigger = hTrigger.Get();
 		if (!pTrigger) {
 			SDK_ASSERT(false);
-			return;
+			return ret;
 		}
 
 		auto pszClassName = pTrigger->GetClassname();
@@ -82,6 +85,9 @@ void CSurfZonePlugin::BuildMappingZones() {
 			}
 
 			PrecacheHookZone(data);
+			ret.emplace_back(data);
 		}
 	}
+
+	return ret;
 }

@@ -73,7 +73,7 @@ public:
 	void CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data);
 	void PrecacheHookZone(const ZoneData_t& data);
 	void KillZone(const std::pair<CZoneHandle, ZoneCache_t>& zone);
-	void BuildMappingZones();
+	std::vector<ZoneData_t>& BuildMappingZones();
 
 private:
 	void RegisterCommand();
