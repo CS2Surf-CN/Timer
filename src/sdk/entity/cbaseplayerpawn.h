@@ -28,7 +28,7 @@ public:
 	}
 
 	bool IsBot() {
-		return !!(this->m_fFlags() & FL_PAWN_FAKECLIENT);
+		return !!(this->m_fFlags() & FL_BOT);
 	}
 
 	bool IsObserver() {

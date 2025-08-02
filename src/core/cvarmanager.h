@@ -13,7 +13,7 @@ namespace CVAR {
 	ConVarRefAbstract* Register(const char* name, T defaultValue, const char* helpString,
 								TMin minValue = std::nullopt,
 								TMax maxValue = std::nullopt,
-								typename CConVar<T>::FnChangeCallback_t callback = nullptr) {
+								typename FnTypedChangeCallback_t<T> callback = nullptr) {
 		auto hasValue = [](auto& v) -> bool {
 			using RawType = std::decay_t<decltype(v)>;
 			return std::is_same_v<RawType, T>;

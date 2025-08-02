@@ -93,7 +93,7 @@ void CSurfCheckpointService::SaveCheckpoint() {
 	cache.m_nActualMoveType = pTargetPawn->m_nActualMoveType();
 	cache.m_fGravity = pTargetPawn->m_flGravityScale();
 	cache.m_fSpeed = pTargetPawn->m_flVelocityModifier();
-	cache.m_iFlags = pTargetPawn->m_fFlags() & ~(FL_ATCONTROLS | FL_PAWN_FAKECLIENT);
+	cache.m_iFlags = pTargetPawn->m_fFlags() & ~(FL_ATCONTROLS | FL_BOT);
 
 	if (pTargetController->IsBot()) {
 		cache.m_hGroundEntity.Term();
