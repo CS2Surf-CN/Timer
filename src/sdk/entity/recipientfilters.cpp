@@ -1,33 +1,15 @@
 #include "recipientfilters.h"
 #include <utils/utils.h>
 
-void CRecipientFilter::AddRecipient(CPlayerSlot slot) {
-	// Don't add if it already exists
-	if (m_Recipients.Find(slot) != m_Recipients.InvalidIndex()) {
-		return;
-	}
-
-	m_Recipients.AddToTail(slot);
-}
-
 void CRecipientFilter::AddAllPlayers() {
-	m_Recipients.RemoveAll();
-	if (!GameEntitySystem()) {
-		return;
-	}
+	m_Recipients.ClearAll();
 
-	for (int i = 0; i <= UTIL::GetServerGlobals()->maxClients; i++) {
-		CBaseEntity* ent = static_cast<CBaseEntity*>(GameEntitySystem()->GetEntityInstance(CEntityIndex(i + 1)));
-		if (ent) {
-			AddRecipient(i);
-		}
-	}
-}
+	auto pClientList = UTIL::GetClientList();
 
-CCopyRecipientFilter::CCopyRecipientFilter(IRecipientFilter* source, int iExcept) {
-	for (int i = 0; i < source->GetRecipientCount(); i++) {
-		if (source->GetRecipientIndex(i).Get() != iExcept) {
-			this->AddRecipient(source->GetRecipientIndex(i));
+	for (int i = 0; i < pClientList->Count(); i++) {
+		auto pClient = pClientList->Element(i);
+		if (pClient->IsInGame()) {
+			AddRecipient(pClient->GetPlayerSlot());
 		}
 	}
 }

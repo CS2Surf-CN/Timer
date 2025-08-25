@@ -21,23 +21,21 @@ private:
 	CEntityInstance* m_pObj;
 
 public:
-	struct ChainUpdatePropagationLL_t {
-		ChainUpdatePropagationLL_t* pNext;
-		CUtlDelegate<void(const CNetworkVarChainer&)> updateDelegate;
-	};
-
 	uint8_t unk[24];
 	ChangeAccessorFieldPathIndex_t m_PathIndex;
-	ChainUpdatePropagationLL_t* m_pPropagationList;
 };
 
 static_assert(offsetof(CNetworkVarChainer, m_PathIndex) == 32);
+static_assert(sizeof(CNetworkVarChainer) == 40);
 
 namespace schema {
-	int16_t FindChainOffset(const char* className);
+	int16 FindChainOffset(const char* className);
 	SchemaKey GetOffset(const char* className, const char* memberName);
-	SchemaKey GetOffset(const char* className, uint32_t classKey, const char* memberName, uint32_t memberKey);
-	void NetworkStateChanged(int64 chainEntity, uint32 nLocalOffset, int nArrayIndex = -1);
+	SchemaKey GetOffset(const char* className, uint32 classKey, const char* memberName, uint32 memberKey);
+	void NetworkVarStateChanged(void* pNetworkVar, int iVfuncOffset, uint32 nLocalOffset, uint16 nArrayIndex = -1);
+	void ChainEntityNetworkStateChanged(uintptr_t pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex = -1);
+	void EntityNetworkStateChanged(CEntityInstance* pEntity, uint32 nLocalOffset, uint16 nArrayIndex = -1);
+	void StructNetworkStateChanged(void* pNetworkStruct, uint32 nLocalOffset);
 	size_t GetClassSize(const char* className);
 } // namespace schema
 
@@ -74,12 +72,12 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 			if (m_key.networked) { \
 				if (m_chain != 0) { \
-					schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
+					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
 				} else { \
 					if constexpr (!IsStruct) { \
-						((CEntityInstance*)this)->NetworkStateChanged(m_key.offset, arrayIndex, -1); \
+						schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset, arrayIndex); \
 					} else { \
-						CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
+						schema::StructNetworkStateChanged((void*)this, m_key.offset); \
 					} \
 				} \
 			} \
@@ -97,12 +95,12 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 		static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 		if (m_key.networked) { \
 			if (m_chain != 0) { \
-				schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset); \
+				schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset); \
 			} else { \
 				if constexpr (!IsStruct) { \
-					((CEntityInstance*)this)->NetworkStateChanged(m_key.offset); \
+					schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset); \
 				} else { \
-					CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
+					schema::StructNetworkStateChanged((void*)this, m_key.offset); \
 				} \
 			} \
 		} \
@@ -118,12 +116,12 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 			if (m_key.networked) { \
 				if (m_chain != 0) { \
-					schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
+					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
 				} else { \
 					if constexpr (!IsStruct) { \
-						CALL_VIRTUAL(void, iVFunc, this, m_key.offset, 0xFFFFFFFF); \
+						schema::NetworkVarStateChanged(this, iVFunc, m_key.offset, arrayIndex); \
 					} else { \
-						CALL_VIRTUAL(void, 1, this, m_key.offset, 0xFFFFFFFF, 0xFFFFFFFF); \
+						schema::StructNetworkStateChanged((void*)this, m_key.offset); \
 					} \
 				} \
 			} \

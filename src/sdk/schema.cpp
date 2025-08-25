@@ -4,8 +4,8 @@
 #include <interfaces/interfaces.h>
 #include <schemasystem/schemasystem.h>
 
-using SchemaKeyValueMap_t = CUtlMap<uint32_t, SchemaKey>;
-using SchemaTableMap_t = CUtlMap<uint32_t, SchemaKeyValueMap_t*>;
+using SchemaKeyValueMap_t = CUtlMap<uint32, SchemaKey>;
+using SchemaTableMap_t = CUtlMap<uint32, SchemaKeyValueMap_t*>;
 
 static bool IsFieldNetworked(SchemaClassFieldData_t& field) {
 	for (int i = 0; i < field.m_nStaticMetadataCount; i++) {
@@ -18,7 +18,7 @@ static bool IsFieldNetworked(SchemaClassFieldData_t& field) {
 	return false;
 }
 
-static bool InitSchemaFieldsForClass(SchemaTableMap_t* tableMap, const char* className, uint32_t classKey) {
+static bool InitSchemaFieldsForClass(SchemaTableMap_t* tableMap, const char* className, uint32 classKey) {
 	CSchemaSystemTypeScope* pType = g_pSchemaSystem->FindTypeScopeForModule(LIB::server);
 
 	if (!pType) {
@@ -28,7 +28,7 @@ static bool InitSchemaFieldsForClass(SchemaTableMap_t* tableMap, const char* cla
 	SchemaClassInfoData_t* pClassInfo = pType->FindDeclaredClass(className).Get();
 
 	if (!pClassInfo) {
-		SchemaKeyValueMap_t* map = new SchemaKeyValueMap_t(0, 0, DefLessFunc(uint32_t));
+		SchemaKeyValueMap_t* map = new SchemaKeyValueMap_t(0, 0, DefLessFunc(uint32));
 		tableMap->Insert(classKey, map);
 
 		Warning("InitSchemaFieldsForClass(): '%s' was not found!\n", className);
@@ -38,7 +38,7 @@ static bool InitSchemaFieldsForClass(SchemaTableMap_t* tableMap, const char* cla
 	short fieldsSize = pClassInfo->m_nFieldCount;
 	SchemaClassFieldData_t* pFields = pClassInfo->m_pFields;
 
-	SchemaKeyValueMap_t* keyValueMap = new SchemaKeyValueMap_t(0, 0, DefLessFunc(uint32_t));
+	SchemaKeyValueMap_t* keyValueMap = new SchemaKeyValueMap_t(0, 0, DefLessFunc(uint32));
 	keyValueMap->EnsureCapacity(fieldsSize);
 	tableMap->Insert(classKey, keyValueMap);
 
@@ -83,8 +83,8 @@ SchemaKey schema::GetOffset(const char* className, const char* memberName) {
 	return schema::GetOffset(className, hash_32_fnv1a_const(className), memberName, hash_32_fnv1a_const(memberName));
 }
 
-SchemaKey schema::GetOffset(const char* className, uint32_t classKey, const char* memberName, uint32_t memberKey) {
-	static SchemaTableMap_t schemaTableMap(0, 0, DefLessFunc(uint32_t));
+SchemaKey schema::GetOffset(const char* className, uint32 classKey, const char* memberName, uint32 memberKey) {
+	static SchemaTableMap_t schemaTableMap(0, 0, DefLessFunc(uint32));
 	int16_t tableMapIndex = schemaTableMap.Find(classKey);
 	if (!schemaTableMap.IsValidIndex(tableMapIndex)) {
 		if (InitSchemaFieldsForClass(&schemaTableMap, className, classKey)) {
@@ -105,12 +105,28 @@ SchemaKey schema::GetOffset(const char* className, uint32_t classKey, const char
 	return tableMap->Element(memberIndex);
 }
 
-void schema::NetworkStateChanged(int64 chainEntity, uint32 nLocalOffset, int nArrayIndex) {
-	CNetworkVarChainer* chainEnt = reinterpret_cast<CNetworkVarChainer*>(chainEntity);
+void schema::NetworkVarStateChanged(void* pNetworkVar, int iVfuncOffset, uint32 nLocalOffset, uint16 nArrayIndex) {
+	NetworkStateChangedData data(nLocalOffset, nArrayIndex);
+	CALL_VIRTUAL(void, iVfuncOffset, pNetworkVar, &data);
+}
+
+void schema::ChainEntityNetworkStateChanged(uintptr_t pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex) {
+	CNetworkVarChainer* chainEnt = reinterpret_cast<CNetworkVarChainer*>(pChainEntity);
 	CEntityInstance* entity = chainEnt->GetObj();
 	if (entity && !(entity->m_pEntity->m_flags & EF_IS_CONSTRUCTION_IN_PROGRESS)) {
-		entity->NetworkStateChanged(nLocalOffset, nArrayIndex, chainEnt->m_PathIndex.m_Value);
+		NetworkStateChangedData data(nLocalOffset, nArrayIndex, chainEnt->m_PathIndex.m_Value);
+		entity->NetworkStateChanged(data);
 	}
+}
+
+void schema::EntityNetworkStateChanged(CEntityInstance* pEntity, uint32 nLocalOffset, uint16 nArrayIndex) {
+	NetworkStateChangedData data(nLocalOffset, nArrayIndex);
+	pEntity->NetworkStateChanged(data);
+}
+
+void schema::StructNetworkStateChanged(void* pNetworkStruct, uint32 nLocalOffset) {
+	NetworkStateChangedData data(nLocalOffset);
+	CALL_VIRTUAL(void, 1, pNetworkStruct, &data);
 }
 
 size_t schema::GetClassSize(const char* className) {
