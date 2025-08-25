@@ -2,12 +2,17 @@
 
 #include <gametrace.h>
 
+class CBasePlayerPawn;
+
 struct touchlist_t {
 	Vector deltavelocity;
 	trace_t trace;
 };
 
-class CTraceFilterPlayerMovementCS : public CTraceFilter {};
+class CTraceFilterPlayerMovementCS : public CTraceFilter {
+public:
+	CTraceFilterPlayerMovementCS(CBasePlayerPawn* pawn);
+};
 
 // Doesn't really match with source2sdk
 template<typename T>
@@ -15,7 +20,8 @@ class CWeakHandle {
 public:
 	CWeakHandle() = default;
 
-	CWeakHandle(const std::shared_ptr<T>& pData) : m_wpData(pData) {}
+	CWeakHandle(const std::shared_ptr<T>& pData)
+		: m_wpData(pData) {}
 
 	operator bool() const {
 		return IsValid();
@@ -50,7 +56,8 @@ public:
 typedef uint32 SoundEventGuid_t;
 
 struct SndOpEventGuid_t {
-	SndOpEventGuid_t() : m_nGuid(0), m_hStackHash(-1) {}
+	SndOpEventGuid_t()
+		: m_nGuid(0), m_hStackHash(-1) {}
 
 	SoundEventGuid_t m_nGuid;
 	uint32 m_hStackHash;

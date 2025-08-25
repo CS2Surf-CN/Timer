@@ -23,7 +23,7 @@ bool IFACE::Setup(ISmmAPI* ismm, char* error, size_t maxlen) {
 
 bool IFACE::PostSetup() {
 	IFACE::pGameEventManager = (IGameEventManager2*)GAMEDATA::GetAddress("GetGameEventManager");
-	IFACE::pGameTraceService = (CGameTraceService*)GAMEDATA::GetAddress("GetGameTraceService");
+	IFACE::pEngineTrace = (CGameTraceService*)GAMEDATA::GetAddress("g_pEngineTrace");
 
 	return true;
 }

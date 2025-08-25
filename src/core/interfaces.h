@@ -16,7 +16,7 @@ namespace IFACE {
 	inline ISource2Server* pServer = nullptr;
 	inline IGameEventManager2* pGameEventManager = nullptr;
 	inline IGameEventSystem* pGameEventSystem = nullptr;
-	inline CGameTraceService* pGameTraceService = nullptr;
+	inline CGameTraceService* pEngineTrace = nullptr;
 
 	bool Setup(ISmmAPI* ismm, char* error, size_t maxlen);
 	bool PostSetup();

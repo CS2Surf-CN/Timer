@@ -98,6 +98,25 @@ static void Hook_OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, 
 	FORWARD_POST(CMovementForward, OnTryPlayerMovePost, ms, mv, pFirstDest, pFirstTrace);
 }
 
+static bool Hook_OnPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv) {
+	bool block = false;
+	for (auto p = CMovementForward::m_pFirst; p; p = p->m_pNext) {
+		if (!p->OnPlayerMove(ms, mv)) {
+			block = true;
+		}
+	}
+
+	if (block) {
+		return false;
+	}
+
+	auto ret = MEM::SDKCall<bool>(MOVEMENT::TRAMPOLINE::g_fnPlayerMove, ms, mv);
+
+	FORWARD_POST(CMovementForward, OnPlayerMovePost, ms, mv);
+
+	return ret;
+}
+
 static void Hook_OnCategorizePosition(CCSPlayer_MovementServices* ms, CMoveData* mv, bool bStayOnGround) {
 	bool block = false;
 	for (auto p = CMovementForward::m_pFirst; p; p = p->m_pNext) {
@@ -227,23 +246,14 @@ static void Hook_OnPhysicsSimulate(CCSPlayerController* pController) {
 	FORWARD_POST(CMovementForward, OnPhysicsSimulatePost, pController);
 }
 
-static float Hook_OnGetMaxSpeed(CCSPlayerPawn* pawn) {
-	CMovementPlayer* player = MOVEMENT::GetPlayerManager()->ToPlayer(pawn);
-	if (!player) {
-		return MEM::SDKCall<float>(MOVEMENT::TRAMPOLINE::g_fnGetMaxSpeed, pawn);
-	}
-
-	return player->m_fCurrentMaxSpeed;
-}
-
 void MOVEMENT::SetupHooks() {
 	HOOK_SIG("CPlayer_MovementServices::RunCmds", Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds);
 	HOOK_SIG("CCSPlayer_MovementServices::TryPlayerMove", Hook_OnTryPlayerMove, MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove);
+	HOOK_SIG("CCSPlayer_MovementServices::PlayerMove", Hook_OnPlayerMove, MOVEMENT::TRAMPOLINE::g_fnPlayerMove);
 	HOOK_SIG("CCSPlayer_MovementServices::CategorizePosition", Hook_OnCategorizePosition, MOVEMENT::TRAMPOLINE::g_fnCategorizePosition);
 	HOOK_SIG("CCSPlayer_MovementServices::OnJump", Hook_OnJump, MOVEMENT::TRAMPOLINE::g_fnJump);
 	HOOK_SIG("CCSPlayer_MovementServices::ProcessMovement", Hook_OnProcessMovement, MOVEMENT::TRAMPOLINE::g_fnProcessMovement);
 	HOOK_SIG("CCSPlayerController::PhysicsSimulate", Hook_OnPhysicsSimulate, MOVEMENT::TRAMPOLINE::g_fnPhysicsSimulate);
-	HOOK_SIG("CCSPlayerPawn::GetMaxSpeed", Hook_OnGetMaxSpeed, MOVEMENT::TRAMPOLINE::g_fnGetMaxSpeed);
 }
 
 // copy from cs2kz.

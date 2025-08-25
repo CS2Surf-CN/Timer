@@ -84,8 +84,7 @@ bool CRampfix::OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Ve
 		bounds.maxs.z = 54.0f;
 	}
 
-	CTraceFilterPlayerMovementCS filter;
-	MEM::CALL::InitPlayerMovementTraceFilter(filter, pawn, pawn->m_Collision()->m_collisionAttribute().m_nInteractsWith(), COLLISION_GROUP_PLAYER_MOVEMENT);
+	CTraceFilterPlayerMovementCS filter(pawn);
 
 	bool potentiallyStuck {};
 
@@ -294,8 +293,7 @@ bool CRampfix::OnCategorizePosition(CCSPlayer_MovementServices* ms, CMoveData* m
 		bounds.maxs.z = 54.0f;
 	}
 
-	CTraceFilterPlayerMovementCS filter;
-	MEM::CALL::InitPlayerMovementTraceFilter(filter, pawn, pawn->m_Collision()->m_collisionAttribute().m_nInteractsWith(), COLLISION_GROUP_PLAYER_MOVEMENT);
+	CTraceFilterPlayerMovementCS filter(pawn);
 
 	trace_t trace;
 	Vector origin, groundOrigin;

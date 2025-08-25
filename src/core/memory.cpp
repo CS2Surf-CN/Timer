@@ -43,15 +43,11 @@ IGameEventListener2* MEM::CALL::GetLegacyGameEventListener(CPlayerSlot slot) {
 }
 
 bool MEM::CALL::TraceShape(const Ray_t& ray, const Vector& vecStart, const Vector& vecEnd, const CTraceFilter& filter, CGameTrace* tr) {
-	CALL_SIG("TraceShape", TraceShape, IFACE::pGameTraceService, &ray, &vecStart, &vecEnd, &filter, tr);
+	CALL_SIG("TraceShape", TraceShape, IFACE::pEngineTrace, &ray, &vecStart, &vecEnd, &filter, tr);
 }
 
 void MEM::CALL::TracePlayerBBox(const Vector& start, const Vector& end, const bbox_t& bounds, CTraceFilter* filter, trace_t& pm) {
 	CALL_SIG("TracePlayerBBox", TracePlayerBBox, &start, &end, &bounds, filter, &pm);
-}
-
-void MEM::CALL::InitPlayerMovementTraceFilter(CTraceFilterPlayerMovementCS& pFilter, CEntityInstance* pHandleEntity, uint64 interactWith, int collisionGroup) {
-	CALL_SIG("InitPlayerMovementTraceFilter", InitPlayerMovementTraceFilter, &pFilter, pHandleEntity, interactWith, collisionGroup);
 }
 
 void MEM::CALL::SnapViewAngles(CBasePlayerPawn* pawn, const QAngle& angle) {

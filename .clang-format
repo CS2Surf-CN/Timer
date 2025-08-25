@@ -16,7 +16,7 @@ BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 AlwaysBreakTemplateDeclarations: true
-ColumnLimit: 999
+ColumnLimit: 0
 CompactNamespaces: false
 EmptyLineBeforeAccessModifier: Always
 IncludeBlocks: Preserve
@@ -49,3 +49,4 @@ SpacesInSquareBrackets: false
 UseTab: ForContinuationAndIndentation
 IndentWidth: 4
 TabWidth: 4
+LambdaBodyIndentation: OuterScope
