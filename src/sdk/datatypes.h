@@ -14,29 +14,20 @@ public:
 	CTraceFilterPlayerMovementCS(CBasePlayerPawn* pawn);
 };
 
-// Doesn't really match with source2sdk
 template<typename T>
-class CWeakHandle {
+class CStdWeakHandle {
 public:
-	CWeakHandle() = default;
+	CStdWeakHandle() = default;
 
-	CWeakHandle(const std::shared_ptr<T>& pData)
+	CStdWeakHandle(const std::shared_ptr<T>& pData)
 		: m_wpData(pData) {}
 
 	operator bool() const {
 		return IsValid();
 	}
 
-	virtual ~CWeakHandle() {}
-
-	virtual bool Close() = 0;
-
-	std::shared_ptr<T> Data() {
-		return m_wpData.lock();
-	}
-
-	T* Raw() {
-		return Data().get();
+	T* Data() {
+		return m_wpData.lock().get();
 	}
 
 	bool IsValid() const {
@@ -47,7 +38,7 @@ public:
 		this->m_wpData.reset();
 	}
 
-public:
+private:
 	std::weak_ptr<T> m_wpData;
 };
 

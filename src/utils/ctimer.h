@@ -45,11 +45,11 @@ public:
 	}
 };
 
-class CTimerHandle : public CWeakHandle<CTimerBase> {
+class CTimerHandle : public CStdWeakHandle<CTimerBase> {
 public:
-	using CWeakHandle::CWeakHandle;
+	using CStdWeakHandle::CStdWeakHandle;
 
-	virtual bool Close() override;
+	bool Close();
 };
 
 class IFrameAction {

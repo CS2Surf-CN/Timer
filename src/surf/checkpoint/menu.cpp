@@ -7,54 +7,32 @@ void CSurfCheckpointService::OpenCheckpointsMenu() {
 		return;
 	}
 
-	auto wpMenu = MENU::Create(
-		pController, MENU_CALLBACK_L(this) {
-			if (action == EMenuAction::SelectItem) {
-				switch (iItem) {
-					case 0: {
-						this->SaveCheckpoint();
-						this->m_iCurrentCP = this->GetLatestCheckpoint();
-						break;
-					}
-					case 1: {
-						this->LoadCheckpoint(this->m_iCurrentCP);
-						break;
-					}
-					case 2: {
-						this->LoadPrev();
-						break;
-					}
-					case 3: {
-						this->LoadNext();
-						break;
-					}
-					case 4: {
-						this->DeleteCheckpoint(this->m_iCurrentCP);
-						this->m_iCurrentCP--;
-						this->ClampIndex(this->m_iCurrentCP);
-						break;
-					}
-					case 5: {
-						this->ResetCheckpoint();
-						break;
-					}
-				}
-			}
-		});
+	auto hMenu = MENU::Create(pController);
 
-	if (wpMenu.expired()) {
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("存点菜单");
-	pMenu->AddItem("存点");
-	pMenu->AddItem("读点");
-	pMenu->AddItem("上一个");
-	pMenu->AddItem("下一个");
-	pMenu->AddItem("删除当前存点");
-	pMenu->AddItem("重置");
+
+	pMenu->AddItem("存点", MENU_HANDLER_L(this) {
+		this->SaveCheckpoint();
+		this->m_iCurrentCP = this->GetLatestCheckpoint();
+	});
+
+	pMenu->AddItem("读点", MENU_HANDLER_L(this) { this->LoadCheckpoint(this->m_iCurrentCP); });
+	pMenu->AddItem("上一个", MENU_HANDLER_L(this) { this->LoadPrev(); });
+	pMenu->AddItem("下一个", MENU_HANDLER_L(this) { this->LoadNext(); });
+
+	pMenu->AddItem("删除当前存点", MENU_HANDLER_L(this) {
+		this->DeleteCheckpoint(this->m_iCurrentCP);
+		this->m_iCurrentCP--;
+		this->ClampIndex(this->m_iCurrentCP);
+	});
+
+	pMenu->AddItem("重置", MENU_HANDLER_L(this) { this->ResetCheckpoint(); });
 
 	pMenu->Display();
 }

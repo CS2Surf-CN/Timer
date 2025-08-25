@@ -5,12 +5,16 @@
 #include <utils/utils.h>
 #include <sdk/entity/cbaseentity.h>
 
+#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
-constexpr float g_fMenuDefaultOffsetX_Alive = -8.9f;
-constexpr float g_fMenuDefaultOffsetY_Alive = 2.4f;
+// constexpr float g_fMenuDefaultOffsetX_Alive = -8.9f;
+// constexpr float g_fMenuDefaultOffsetY_Alive = -0.3f;
+constexpr float g_fMenuDefaultOffsetX_Alive = -9.3f;
+constexpr float g_fMenuDefaultOffsetY_Alive = 0.5f;
 
-CScreenTextMenu::CScreenTextMenu(CBasePlayerController* pController, MenuHandler fnHandler, std::string sTitle) : CBaseMenu(pController, fnHandler, sTitle) {
+CScreenTextMenu::CScreenTextMenu(CBasePlayerController* pController, std::string sTitle)
+	: CBaseMenu(pController, sTitle) {
 	ScreenTextManifest_t manifest;
 	manifest.m_iUnits = 1000;
 	manifest.m_sFont = "Arial Bold";
@@ -29,46 +33,108 @@ CScreenTextMenu::~CScreenTextMenu() {
 	this->Close();
 }
 
-void CScreenTextMenu::Display(int iPageIndex) {
-	if (m_wpScreenText.expired()) {
-		SDK_ASSERT(false);
-		return;
+bool CBaseMenu::Display(int iPageIndex) {
+	if (m_bDisplayed) {
+		return true;
 	}
 
-	auto pMenuText = m_wpScreenText.lock();
+	auto pController = m_hController.Get();
+	if (!pController) {
+		Assert(false);
+		return false;
+	}
+
+	auto pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
+		return false;
+	}
+
+	auto& pCurrentMenu = pMenuPlayer->GetCurrentMenu();
+
+	Assert(pCurrentMenu.get() == this);
+
+	CMenuHandle hMenu(pCurrentMenu);
+	MenuEvent_t event(hMenu, m_hController.Get(), -1);
+	if (pCurrentMenu->m_pFnOnDisplay) {
+		pCurrentMenu->m_pFnOnDisplay(event);
+	}
+
+	if (!hMenu) {
+		auto& pPrevMenu = pMenuPlayer->GetPreviousMenu();
+		if (pPrevMenu) {
+			pPrevMenu->Display();
+		}
+		return false;
+	}
+
+	m_bDisplayed = true;
+
+	return true;
+}
+
+bool CScreenTextMenu::Display(int iPageIndex) {
+	if (!Super::Display(iPageIndex)) {
+		return false;
+	}
+
+	if (m_wpScreenText.expired()) {
+		Assert(false);
+		return false;
+	}
+
+	auto pMenuText = m_wpScreenText.lock().get();
 	auto pController = pMenuText->GetOriginalController();
 	if (!pController) {
-		return;
+		return false;
 	}
 
 	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
 	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return;
+		Assert(false);
+		return false;
 	}
 
+	auto& pCurrentMenu = pMenuPlayer->GetCurrentMenu();
 	for (const auto& pMenu : pMenuPlayer->m_MenuQueue) {
-		pMenu->Disable();
+		if (pMenu != pCurrentMenu) {
+			pMenu->Disable();
+		}
 	}
 
-	pMenuPlayer->m_nCurrentPage = iPageIndex;
-	pMenuPlayer->ClampItem();
-	auto iCurrentItem = pMenuPlayer->m_nCurrentItem;
+	pMenuPlayer->m_iCurrentPage = iPageIndex;
+	pMenuPlayer->ClampItemOnPage();
+	auto iCurrentPageItem = pMenuPlayer->m_iCurrentItem % CBaseMenu::PAGE_MAXITEMS;
 	auto bWSAD = pMenuPlayer->m_bWSADMenu;
+	auto nItemLength = GetItemLength();
 
-	auto formatItem = [iCurrentItem, bWSAD](int iItemIndex, const std::string& sItem) -> std::string {
+	if (!nItemLength) {
+		this->DisplayEmpty(bWSAD);
+		return true;
+	}
+
+	bool bDrawPrev = (nItemLength > 0) && (iPageIndex != 0);
+	bool bDrawNext = (nItemLength > 0) && (iPageIndex + 1 < static_cast<int>(GetPageSize()));
+	bool bDrawPrevNext = bDrawPrev && bDrawNext;
+
+	auto itemRes0 = GetItem(iPageIndex, 0);
+	auto itemRes1 = GetItem(iPageIndex, 1);
+	auto itemRes2 = GetItem(iPageIndex, 2);
+	auto itemRes3 = GetItem(iPageIndex, 3);
+	auto itemRes4 = GetItem(iPageIndex, 4);
+	auto itemRes5 = GetItem(iPageIndex, 5);
+
+	auto formatItem = [iCurrentPageItem, bWSAD](int iItemIndex, const std::string& sItem) -> std::string {
 		if (sItem.empty()) {
 			return "";
 		}
 
 		if (bWSAD) {
-			return fmt::format("{}{}", iItemIndex == iCurrentItem ? "> " : "", sItem);
+			return fmt::format("{}{}", iItemIndex == iCurrentPageItem ? "> " : "", sItem);
 		}
 
 		return fmt::format("{}.{}", iItemIndex + 1, sItem);
 	};
-	bool bDrawPreview = (iPageIndex != 0);
-	bool bDrawNext = ((this->m_vPage.size() > 0) && (iPageIndex < (this->m_vPage.size() - 1)));
 
 	// clang-format off
 	std::string sMenuText = fmt::format("{}\n\n"
@@ -80,31 +146,42 @@ void CScreenTextMenu::Display(int iPageIndex) {
 										"{}\n\n"
 										"{}",
 										this->m_sTitle, 
-										formatItem(0, GetItem(iPageIndex, 0).first), 
-										formatItem(1, GetItem(iPageIndex, 1).first), 
-										formatItem(2, GetItem(iPageIndex, 2).first), 
-										formatItem(3, GetItem(iPageIndex, 3).first), 
-										formatItem(4, GetItem(iPageIndex, 4).first), 
-										formatItem(5, GetItem(iPageIndex, 5).first), 
+										formatItem(0, itemRes0.has_value() ? itemRes0.value().get().first : ""), 
+										formatItem(1, itemRes1.has_value() ? itemRes1.value().get().first : ""), 
+										formatItem(2, itemRes2.has_value() ? itemRes2.value().get().first : ""), 
+										formatItem(3, itemRes3.has_value() ? itemRes3.value().get().first : ""), 
+										formatItem(4, itemRes4.has_value() ? itemRes4.value().get().first : ""), 
+										formatItem(5, itemRes5.has_value() ? itemRes5.value().get().first : ""), 
 										!bWSAD ? fmt::format("{}\n"
 															 "{}\n"
 															 "{}",
-															 formatItem(6, bDrawPreview ? "上一页" : ""), 
+															 formatItem(6, bDrawPrev ? "上一页" : ""), 
 															 formatItem(7, bDrawNext ? "下一页" : ""),
 															 formatItem(8, "退出"))
-											   : fmt::format("A/D: 翻页, W/S: 滚动\n"
-														     "E/F: 选择, Shift: 退出"));
+											   : fmt::format("{}W/S: 滚动\n"
+														     "E: 选择, F: 锁定\n"
+															 "Shift: 退出", 
+															 (bDrawPrevNext ? "A/D: 翻页, " 
+															: bDrawPrev ? "A: 上一页, " 
+															: bDrawNext ? "D: 下一页, "
+															: "")));
 	// clang-format on
 
 	pMenuText->SetText(sMenuText.c_str());
 	this->Enable();
+
+	return true;
 }
 
 void CScreenTextMenu::Enable() {
+	Super::Enable();
+
 	VGUI::Render(m_wpScreenText);
 }
 
 void CScreenTextMenu::Disable() {
+	Super::Disable();
+
 	VGUI::Unrender(m_wpScreenText);
 }
 
@@ -118,49 +195,79 @@ bool CScreenTextMenu::Close() {
 	return true;
 }
 
-void CBaseMenu::AddItem(std::string sItem, std::optional<std::any> data) {
-	if (m_vPage.empty() || m_vPage.back().size() >= PAGE_SIZE) {
-		AllocatePage();
-	}
+void CScreenTextMenu::DisplayEmpty(bool bWSAD) {
+	auto pMenuText = m_wpScreenText.lock().get();
+	std::string sMenuText = fmt::format("{}\n\n"
+										"{}",
+										this->m_sTitle,
+										!bWSAD ? "8.退出" : "Shift: 退出");
 
-	MenuItemType item {sItem, data.has_value() ? data.value() : std::any()};
-	m_vPage.back().emplace_back(item);
+	pMenuText->SetText(sMenuText.c_str());
+	this->Enable();
 }
 
-const CBaseMenu::MenuItemType& CBaseMenu::GetItem(int iPageIndex, int iItemIndex) const {
-	if (iPageIndex < 0 || iPageIndex >= this->m_vPage.size()) {
-		SDK_ASSERT(false);
-		return CBaseMenu::NULL_ITEM;
-	}
-
-	if (iItemIndex < 0) {
-		SDK_ASSERT(false);
-		return CBaseMenu::NULL_ITEM;
-	}
-
-	auto& vItems = m_vPage[iPageIndex];
-	auto iActualItemIdx = iItemIndex % CBaseMenu::PAGE_SIZE;
-	if (iActualItemIdx < vItems.size()) {
-		return vItems.at(iActualItemIdx);
-	}
-
-	return CBaseMenu::NULL_ITEM;
+void CBaseMenu::AddItem(const std::string_view sItem, std::optional<MenuEventHandler> handler) {
+	static auto nullEventHandler = MENU_HANDLER_L() {};
+	m_vItems.emplace_back(sItem, handler ? handler.value() : nullEventHandler);
 }
 
-const CBaseMenu::MenuItemType& CBaseMenu::GetItem(int iItemIndex) const {
-	auto pController = m_hController.Get();
-	if (!pController) {
-		SDK_ASSERT(false);
-		return CBaseMenu::NULL_ITEM;
+void CBaseMenu::SetItem(const size_t nItemIndex, const std::string_view sItem, std::optional<MenuEventHandler> handler) {
+	auto itemRes = GetItem(nItemIndex);
+	if (!itemRes) {
+		return;
 	}
 
-	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
-	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return CBaseMenu::NULL_ITEM;
+	auto& refItem = itemRes.value().get();
+	refItem.first = sItem;
+
+	if (handler) {
+		refItem.second = handler.value();
+	}
+}
+
+bool CBaseMenu::DeleteItem(const size_t nItemIndex) {
+	if (nItemIndex < 0 || nItemIndex >= m_vItems.size()) {
+		return false;
 	}
 
-	return GetItem(pMenuPlayer->m_nCurrentPage, iItemIndex);
+	m_vItems.erase(m_vItems.begin() + nItemIndex);
+	return true;
+}
+
+std::string_view CBaseMenu::GetItemString(const size_t nItemIndex) {
+	if (nItemIndex < 0 || nItemIndex >= m_vItems.size()) {
+		return "";
+	}
+
+	return m_vItems.at(nItemIndex).first;
+}
+
+std::optional<std::reference_wrapper<CBaseMenu::MenuItemHandler>> CBaseMenu::GetItem(size_t nPageIndex, size_t nItemActualIndex) {
+	if (nPageIndex < 0 || nPageIndex >= this->GetPageSize()) {
+		Assert(false);
+		return {};
+	}
+
+	if (nItemActualIndex < 0 || nItemActualIndex >= PAGE_MAXITEMS) {
+		Assert(false);
+		return {};
+	}
+
+	auto nItemIndex = GetItemGlobalIndex(nPageIndex, nItemActualIndex);
+	if (nItemIndex >= m_vItems.size()) {
+		return {};
+	}
+
+	return std::ref(m_vItems.at(nItemIndex));
+}
+
+std::optional<std::reference_wrapper<CBaseMenu::MenuItemHandler>> CBaseMenu::GetItem(size_t nItemIndex) {
+	if (nItemIndex < 0 || nItemIndex >= m_vItems.size()) {
+		Assert(false);
+		return {};
+	}
+
+	return std::ref(m_vItems.at(nItemIndex));
 }
 
 void CMenuPlayer::Cleanup() {
@@ -168,12 +275,13 @@ void CMenuPlayer::Cleanup() {
 }
 
 void CMenuPlayer::ResetMenu(bool bResetMode) {
-	m_nCurrentPage = 0;
-	m_nCurrentItem = 0;
+	m_iCurrentPage = 0;
+	m_iCurrentItem = 0;
 
 	if (bResetMode) {
 		m_bWSADMenu = false;
-		m_bWSADPref = false;
+		m_bWSADPref = true;
+		m_bWSADLocked = false;
 	}
 }
 
@@ -190,29 +298,36 @@ void CMenuPlayer::SelectMenu() {
 	}
 
 	const auto& pMenu = GetCurrentMenu();
-	if (!pMenu) {
+	if (!pMenu || !pMenu->GetItemLength()) {
 		return;
 	}
 
 	auto iMenuType = pMenu->GetType();
 	if (iMenuType == EMenuType::Unknown) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
-	this->ClampItem();
+	this->ClampItemOnPage();
 	CMenuHandle hMenu(pMenu);
 
-	switch (m_nCurrentItem) {
+	switch (CBaseMenu::GetItemActualIndex(m_iCurrentItem)) {
 		case 0:
 		case 1:
 		case 2:
 		case 3:
 		case 4:
 		case 5: {
-			if (pMenu->m_pFnMenuHandler) {
-				int iItemIndex = (m_nCurrentPage * CBaseMenu::PAGE_SIZE) + m_nCurrentItem;
-				pMenu->m_pFnMenuHandler(hMenu, EMenuAction::SelectItem, pController, iItemIndex);
+			const auto& menuHandlerRes = pMenu->m_vItems.at(m_iCurrentItem).second;
+			if (menuHandlerRes) {
+				MenuEvent_t event(hMenu, pController, m_iCurrentItem);
+				const auto& handler = *menuHandlerRes;
+				handler(event);
+				if (hMenu && pMenu == GetCurrentMenu()) {
+					Refresh();
+				}
+
+				// EngineServer()->GetInstance()->ClientCommand(GetPlayerSlot().Get(), fmt::format("play {}", MENU_SND_SELECT_PATH).data());
 				UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_SELECT);
 			}
 
@@ -220,12 +335,10 @@ void CMenuPlayer::SelectMenu() {
 		}
 		case 6: {
 			this->DisplayPagePrev();
-			pMenu->m_pFnMenuHandler(hMenu, EMenuAction::SwitchPage, pController, -1);
 			break;
 		}
 		case 7: {
 			this->DisplayPageNext();
-			pMenu->m_pFnMenuHandler(hMenu, EMenuAction::SwitchPage, pController, -1);
 			break;
 		}
 		case 8: {
@@ -244,18 +357,20 @@ void CMenuPlayer::SwitchMode(bool bRedraw) {
 }
 
 void CMenuPlayer::DisplayPagePrev() {
-	int iPrevPageIndex = m_nCurrentPage - 1;
+	int iPrevPageIndex = m_iCurrentPage - 1;
 	auto& pCurrentMenu = GetCurrentMenu();
-	if (iPrevPageIndex >= 0 && iPrevPageIndex < pCurrentMenu->GetPageLength()) {
+	if (iPrevPageIndex >= 0 && iPrevPageIndex < pCurrentMenu->GetPageSize()) {
+		m_iCurrentItem = static_cast<int>(CBaseMenu::GetItemStartIndexOnPage(iPrevPageIndex));
 		pCurrentMenu->Display(iPrevPageIndex);
 		UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_SELECT);
 	}
 }
 
 void CMenuPlayer::DisplayPageNext() {
-	int iNextPageIndex = m_nCurrentPage + 1;
+	int iNextPageIndex = m_iCurrentPage + 1;
 	auto& pCurrentMenu = GetCurrentMenu();
-	if (iNextPageIndex >= 0 && iNextPageIndex < pCurrentMenu->GetPageLength()) {
+	if (iNextPageIndex >= 0 && iNextPageIndex < pCurrentMenu->GetPageSize()) {
+		m_iCurrentItem = static_cast<int>(CBaseMenu::GetItemStartIndexOnPage(iNextPageIndex));
 		pCurrentMenu->Display(iNextPageIndex);
 		UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_SELECT);
 	}
@@ -264,36 +379,21 @@ void CMenuPlayer::DisplayPageNext() {
 void CMenuPlayer::Refresh() {
 	auto& pCurrentMenu = GetCurrentMenu();
 	if (pCurrentMenu) {
-		pCurrentMenu->Display(m_nCurrentPage);
+		pCurrentMenu->m_bDisplayed = false;
+		pCurrentMenu->Display(m_iCurrentPage);
 	}
 }
 
 void CMenuPlayer::Exit() {
 	const auto& pCurrentMenu = GetCurrentMenu();
-	CMenuHandle hMenu(pCurrentMenu);
 	if (pCurrentMenu->m_bExitBack) {
 		pCurrentMenu->Disable();
 
-		const auto& pPrevMenu = GetPreviousMenu();
-		if (pPrevMenu) {
-			pPrevMenu->Enable();
-		}
-
-		pCurrentMenu->m_pFnMenuHandler(hMenu, EMenuAction::Cancel, GetController(), -1);
 		CloseCurrentMenu();
 	} else {
-		pCurrentMenu->m_pFnMenuHandler(hMenu, EMenuAction::Exit, GetController(), -1);
 		CloseAllMenu();
 	}
-}
 
-void CMenuPlayer::CloseCurrentMenu() {
-	if (m_MenuQueue.empty()) {
-		return;
-	}
-
-	m_MenuQueue.pop_back();
-	ResetMenu();
 	UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_EXIT);
 }
 
@@ -302,9 +402,33 @@ void CMenuPlayer::CloseAllMenu() {
 		return;
 	}
 
+	const auto& pCurrentMenu = GetCurrentMenu();
+	CMenuHandle hMenu(pCurrentMenu);
+	if (pCurrentMenu->m_pFnOnExit) {
+		MenuEvent_t event(hMenu, GetController(), -1);
+		pCurrentMenu->m_pFnOnExit(event);
+	}
+
 	Cleanup();
 	ResetMenu();
-	UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_EXIT);
+}
+
+void CMenuPlayer::CloseCurrentMenu() {
+	if (m_MenuQueue.empty()) {
+		return;
+	}
+
+	const auto& pCurrentMenu = GetCurrentMenu();
+	CMenuHandle hMenu(pCurrentMenu);
+	if (pCurrentMenu->m_pFnOnExit) {
+		MenuEvent_t event(hMenu, GetController(), -1);
+		pCurrentMenu->m_pFnOnExit(event);
+	}
+
+	m_MenuQueue.pop_back();
+	ResetMenu();
+	Refresh();
+	// UTIL::PlaySoundToClient(GetPlayerSlot(), MENU_SND_EXIT);
 }
 
 std::shared_ptr<CBaseMenu>& CMenuPlayer::GetPreviousMenu() {
@@ -313,7 +437,7 @@ std::shared_ptr<CBaseMenu>& CMenuPlayer::GetPreviousMenu() {
 		return s_nullMenu;
 	}
 
-	return m_MenuQueue.at(m_MenuQueue.size() - 2);
+	return *(m_MenuQueue.rbegin() + 1);
 }
 
 std::shared_ptr<CBaseMenu>& CMenuPlayer::GetCurrentMenu() {
@@ -330,76 +454,31 @@ bool CMenuPlayer::IsDisplaying() {
 	return menu.get() != nullptr;
 }
 
-void CMenuPlayer::ClampItem() {
+void CMenuPlayer::ClampItemOnPage() {
 	if (!m_bWSADMenu) {
 		return;
 	}
 
-	uint nItemSize = (uint)GetCurrentMenu()->m_vPage[m_nCurrentPage].size();
-	if (m_nCurrentItem == UINT_MAX) {
-		m_nCurrentItem = nItemSize - 1;
-	} else if (m_nCurrentItem >= nItemSize) {
-		m_nCurrentItem = 0;
+	auto& pCurrentMenu = GetCurrentMenu();
+	int startIdx = static_cast<int>(pCurrentMenu->GetItemStartIndexOnPage(m_iCurrentPage));
+	int currentPageItemLength = static_cast<int>(pCurrentMenu->GetItemLengthOnPage(m_iCurrentPage));
+	if (m_iCurrentItem < startIdx) {
+		m_iCurrentItem = startIdx + currentPageItemLength - 1;
+	} else if (m_iCurrentItem >= startIdx + currentPageItemLength) {
+		m_iCurrentItem = startIdx;
 	}
 }
 
-CCMD_CALLBACK(OnMenuItemSelect) {
-	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
-	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return;
-	}
-
-	if (!pMenuPlayer->IsDisplaying()) {
-		return;
-	}
-
-	int num = -1;
-	if (vArgs.size() > 0) {
-		num = V_StringToInt32(vArgs[0].c_str(), -1) - 1;
-	}
-
-	pMenuPlayer->m_nCurrentItem = num;
-	pMenuPlayer->SelectMenu();
-}
-
-CCMD_CALLBACK(OnNumberSelect) {
-	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
-	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return;
-	}
-
-	if (!pMenuPlayer->IsDisplaying()) {
-		return;
-	}
-
-	pMenuPlayer->m_nCurrentItem = wCommand[wCommand.length() - 2] - L'0';
-	pMenuPlayer->m_nCurrentItem--;
-	pMenuPlayer->SelectMenu();
-}
-
-CCMD_CALLBACK(OnMenuModeChange) {
-	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
-	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return;
-	}
-
-	pMenuPlayer->SwitchMode(true);
-	pMenuPlayer->m_bWSADPref = pMenuPlayer->m_bWSADMenu;
-}
-
-EVENT_CALLBACK_POST(OnPlayerSpawm) {
+void CMenuManager::OnPlayerSpawn(IGameEvent* pEvent, const char* szName, bool bServerOnly) {
 	auto pController = (CCSPlayerController*)pEvent->GetPlayerController("userid");
 	if (!pController) {
 		return;
 	}
 
-	CHandle<CCSPlayerController> hController = pController->GetRefEHandle();
+	auto hController = pController->GetRefEHandle();
 
 	UTIL::RequestFrame([hController]() {
-		CCSPlayerController* pController = hController.Get();
+		CCSPlayerController* pController = static_cast<CCSPlayerController*>(hController.Get());
 		if (!pController) {
 			return;
 		}
@@ -415,7 +494,7 @@ EVENT_CALLBACK_POST(OnPlayerSpawm) {
 
 		CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pPawn);
 		if (!pMenuPlayer) {
-			SDK_ASSERT(false);
+			Assert(false);
 			return;
 		}
 
@@ -424,24 +503,24 @@ EVENT_CALLBACK_POST(OnPlayerSpawm) {
 	});
 }
 
-EVENT_CALLBACK_POST(OnPlayerTeam) {
+void CMenuManager::OnPlayerTeam(IGameEvent* pEvent, const char* szName, bool bServerOnly) {
 	auto pController = (CCSPlayerController*)pEvent->GetPlayerController("userid");
 	if (!pController) {
 		return;
 	}
 
 	auto iNewTeam = pEvent->GetInt("team");
-	CHandle<CCSPlayerController> hController = pController->GetRefEHandle();
+	auto hController = pController->GetRefEHandle();
 
 	UTIL::RequestFrame([hController, iNewTeam]() {
-		CCSPlayerController* pController = hController.Get();
+		CCSPlayerController* pController = static_cast<CCSPlayerController*>(hController.Get());
 		if (!pController) {
 			return;
 		}
 
 		CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
 		if (!pMenuPlayer) {
-			SDK_ASSERT(false);
+			Assert(false);
 			return;
 		}
 
@@ -452,8 +531,22 @@ EVENT_CALLBACK_POST(OnPlayerTeam) {
 	});
 }
 
+void CMenuManager::OnIntermission(IGameEvent* pEvent, const char* szName, bool bServerOnly) {
+	auto iMaxPlayers = UTIL::GetGlobals()->maxClients;
+	for (auto i = 0; i < iMaxPlayers; i++) {
+		CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(CPlayerSlot(i));
+		if (!pMenuPlayer) {
+			continue;
+		}
+
+		// FIXME: Redraw menu on intermission end???
+		pMenuPlayer->Cleanup();
+	}
+}
+
 void CMenuManager::OnPluginStart() {
-	CONCMD::RegConsoleCmd("sm_menu_select", OnMenuItemSelect);
+	// confict with sm menu manager
+	// ConCmdManager()->RegConsoleCmd("sm_menu_select", OnMenuItemSelect);
 
 	for (int i = 1; i <= 9; i++) {
 		std::string sMenuCmd = fmt::format("sm_{}", i);
@@ -462,14 +555,15 @@ void CMenuManager::OnPluginStart() {
 
 	CONCMD::RegConsoleCmd("sm_mma", OnMenuModeChange);
 
-	EVENT::HookEvent("player_spawn", ::OnPlayerSpawm);
-	EVENT::HookEvent("player_team", ::OnPlayerTeam);
+	EVENT::HookEvent("player_spawn", OnPlayerSpawn);
+	EVENT::HookEvent("player_team", OnPlayerTeam);
+	EVENT::HookEvent("cs_intermission", OnIntermission);
 }
 
 void CMenuManager::OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
 	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pPawn);
 	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
@@ -477,20 +571,29 @@ void CMenuManager::OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButtonS
 		return;
 	}
 
+	if (buttons.Pressed(IN_USE)) {
+		pMenuPlayer->SelectMenu();
+	} else if (buttons.Pressed(IN_LOOK_AT_WEAPON)) {
+		pMenuPlayer->m_bWSADLocked = !pMenuPlayer->m_bWSADLocked;
+	} else if (buttons.Pressed(IN_SPEED)) {
+		pMenuPlayer->m_bWSADLocked = false;
+		pMenuPlayer->Exit();
+	}
+
+	if (pMenuPlayer->m_bWSADLocked) {
+		return;
+	}
+
 	if (buttons.Pressed(IN_FORWARD)) {
-		pMenuPlayer->m_nCurrentItem--;
+		pMenuPlayer->m_iCurrentItem--;
 		pMenuPlayer->Refresh();
 	} else if (buttons.Pressed(IN_BACK)) {
-		pMenuPlayer->m_nCurrentItem++;
+		pMenuPlayer->m_iCurrentItem++;
 		pMenuPlayer->Refresh();
 	} else if (buttons.Pressed(IN_MOVELEFT)) {
 		pMenuPlayer->DisplayPagePrev();
 	} else if (buttons.Pressed(IN_MOVERIGHT)) {
 		pMenuPlayer->DisplayPageNext();
-	} else if (buttons.Pressed(IN_USE) || buttons.Pressed(IN_LOOK_AT_WEAPON)) {
-		pMenuPlayer->SelectMenu();
-	} else if (buttons.Pressed(IN_SPEED)) {
-		pMenuPlayer->Exit();
 	}
 }
 
@@ -512,10 +615,57 @@ void CMenuManager::OnSetObserverTargetPost(CPlayer_ObserverServices* pService, C
 	}
 }
 
-std::weak_ptr<CBaseMenu> MENU::Create(CBasePlayerController* pController, MenuHandler pFnMenuHandler, EMenuType eMenuType) {
+void CMenuManager::OnMenuItemSelect(CCSPlayerController* pController, const std::vector<std::string>& vArgs, const std::wstring& wCommand) {
 	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
 	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
+		Assert(false);
+		return;
+	}
+
+	if (!pMenuPlayer->IsDisplaying()) {
+		return;
+	}
+
+	int num = -1;
+	if (vArgs.size() > 0) {
+		num = V_StringToInt32(vArgs[0].c_str(), -1) - 1;
+	}
+
+	pMenuPlayer->m_iCurrentItem = num;
+	pMenuPlayer->SelectMenu();
+}
+
+void CMenuManager::OnNumberSelect(CCSPlayerController* pController, const std::vector<std::string>& vArgs, const std::wstring& wCommand) {
+	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
+		return;
+	}
+
+	if (!pMenuPlayer->IsDisplaying()) {
+		return;
+	}
+
+	pMenuPlayer->m_iCurrentItem = wCommand[wCommand.length() - 2] - L'0';
+	pMenuPlayer->m_iCurrentItem--;
+	pMenuPlayer->SelectMenu();
+}
+
+void CMenuManager::OnMenuModeChange(CCSPlayerController* pController, const std::vector<std::string>& vArgs, const std::wstring& wCommand) {
+	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
+		return;
+	}
+
+	pMenuPlayer->SwitchMode(true);
+	pMenuPlayer->m_bWSADPref = pMenuPlayer->m_bWSADMenu;
+}
+
+CMenuHandle MENU::Create(CBasePlayerController* pController, EMenuType eMenuType) {
+	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
 		return {};
 	}
 
@@ -523,35 +673,34 @@ std::weak_ptr<CBaseMenu> MENU::Create(CBasePlayerController* pController, MenuHa
 		case EMenuType::ScreenText: {
 			pMenuPlayer->ResetMenu();
 
-			auto pMenu = std::make_shared<CScreenTextMenu>(pController, pFnMenuHandler);
+			auto pMenu = std::make_shared<CScreenTextMenu>(pController);
 			pMenuPlayer->m_MenuQueue.emplace_back(pMenu);
-			return pMenu;
-			break;
+			return CMenuHandle(pMenu);
 		}
 	}
 
 	return {};
 }
 
-bool MENU::CloseCurrent(CBasePlayerController* pController) {
-	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
-	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return false;
-	}
-
-	pMenuPlayer->CloseCurrentMenu();
-	return true;
-}
-
 bool MENU::CloseAll(CBasePlayerController* pController) {
 	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
 	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return false;
 	}
 
 	pMenuPlayer->CloseAllMenu();
+	return true;
+}
+
+bool MENU::CloseCurrent(CBasePlayerController* pController) {
+	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
+		return false;
+	}
+
+	pMenuPlayer->CloseCurrentMenu();
 	return true;
 }
 
@@ -560,9 +709,9 @@ bool CMenuHandle::CloseAll() {
 		return false;
 	}
 
-	auto pController = Data()->m_hController.Get();
+	auto pController = Data()->GetController();
 	if (!pController) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return false;
 	}
 
@@ -574,9 +723,9 @@ bool CMenuHandle::CloseCurrent() {
 		return false;
 	}
 
-	auto pController = Data()->m_hController.Get();
+	auto pController = Data()->GetController();
 	if (!pController) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return false;
 	}
 
@@ -584,12 +733,45 @@ bool CMenuHandle::CloseCurrent() {
 		return false;
 	}
 
+	return true;
+}
+
+CMenuHandle CMenuHandle::GetPreviousMenu() {
+	if (!IsValid()) {
+		return {};
+	}
+
+	auto pController = Data()->GetController();
+	if (!pController) {
+		Assert(false);
+		return {};
+	}
+
 	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
 	if (!pMenuPlayer) {
-		SDK_ASSERT(false);
-		return false;
+		Assert(false);
+		return {};
+	}
+
+	return CMenuHandle(pMenuPlayer->GetPreviousMenu());
+}
+
+void CMenuHandle::Refresh() {
+	if (!IsValid()) {
+		return;
+	}
+
+	auto pController = Data()->GetController();
+	if (!pController) {
+		Assert(false);
+		return;
+	}
+
+	CMenuPlayer* pMenuPlayer = MENU::GetManager()->ToPlayer(pController);
+	if (!pMenuPlayer) {
+		Assert(false);
+		return;
 	}
 
 	pMenuPlayer->Refresh();
-	return true;
 }
