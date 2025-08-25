@@ -15,8 +15,8 @@ class CRampfix : CMovementForward {
 private:
 	virtual bool OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveData* mv) override;
 	virtual void OnProcessMovementPost(CCSPlayer_MovementServices* ms, const CMoveData* mv) override;
-	virtual bool OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace) override;
-	virtual void OnTryPlayerMovePost(CCSPlayer_MovementServices* ms, const CMoveData* mv, const Vector* pFirstDest, const trace_t* pFirstTrace) override;
+	virtual bool OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace, bool* bIsSurfing) override;
+	virtual void OnTryPlayerMovePost(CCSPlayer_MovementServices* ms, const CMoveData* mv, const Vector* pFirstDest, const trace_t* pFirstTrace, const bool* bIsSurfing) override;
 	virtual bool OnCategorizePosition(CCSPlayer_MovementServices* ms, CMoveData* mv, bool bStayOnGround) override;
 };
 
@@ -45,7 +45,7 @@ void CRampfix::OnProcessMovementPost(CCSPlayer_MovementServices* ms, const CMove
 	}
 }
 
-bool CRampfix::OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace) {
+bool CRampfix::OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace, bool* bIsSurfing) {
 	CCSPlayerPawnBase* pawn = ms->GetPawn();
 	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pawn);
 	if (!player) {
@@ -250,7 +250,7 @@ bool CRampfix::OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Ve
 	return true;
 }
 
-void CRampfix::OnTryPlayerMovePost(CCSPlayer_MovementServices* ms, const CMoveData* mv, const Vector* pFirstDest, const trace_t* pFirstTrace) {
+void CRampfix::OnTryPlayerMovePost(CCSPlayer_MovementServices* ms, const CMoveData* mv, const Vector* pFirstDest, const trace_t* pFirstTrace, const bool* bIsSurfing) {
 	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(ms);
 	if (!player) {
 		return;

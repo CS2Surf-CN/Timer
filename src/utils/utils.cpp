@@ -191,7 +191,7 @@ void UTIL::GetPlayerAiming(CCSPlayerPawnBase* pPlayer, CGameTrace& ret) {
 	Vector from = pPlayer->GetEyePosition();
 
 	Vector forward;
-	AngleVectors(pPlayer->m_angEyeAngles(), &forward);
+	AngleVectors(pPlayer->GetEyeAngle(), &forward);
 	Vector to = from + forward * MAX_COORD_FLOAT;
 
 	TraceLine(from, to, pPlayer, &ret, MASK_SOLID, CONTENTS_TRIGGER | CONTENTS_PLAYER | CONTENTS_PLAYER_CLIP);

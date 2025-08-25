@@ -81,10 +81,10 @@ static void* Hook_OnMovementServicesRunCmds(CPlayer_MovementServices* pMovementS
 	return ret;
 }
 
-static void Hook_OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace) {
+static void Hook_OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, Vector* pFirstDest, trace_t* pFirstTrace, bool* bIsSurfing) {
 	bool block = false;
 	for (auto p = CMovementForward::m_pFirst; p; p = p->m_pNext) {
-		if (!p->OnTryPlayerMove(ms, mv, pFirstDest, pFirstTrace)) {
+		if (!p->OnTryPlayerMove(ms, mv, pFirstDest, pFirstTrace, bIsSurfing)) {
 			block = true;
 		}
 	}
@@ -93,9 +93,9 @@ static void Hook_OnTryPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv, 
 		return;
 	}
 
-	MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove, ms, mv, pFirstDest, pFirstTrace);
+	MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove, ms, mv, pFirstDest, pFirstTrace, bIsSurfing);
 
-	FORWARD_POST(CMovementForward, OnTryPlayerMovePost, ms, mv, pFirstDest, pFirstTrace);
+	FORWARD_POST(CMovementForward, OnTryPlayerMovePost, ms, mv, pFirstDest, pFirstTrace, bIsSurfing);
 }
 
 static bool Hook_OnPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv) {

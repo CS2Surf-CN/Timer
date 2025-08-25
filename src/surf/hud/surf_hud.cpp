@@ -68,7 +68,7 @@ void CSurfHudPlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButto
 
 	UpdateHudData(pSurfPlayer);
 	UpdateHTML(pSurfPlayer);
-	UpdateScreenText(pSurfPlayer);
+	//UpdateScreenText(pSurfPlayer);
 	UpdateHudDataPost(pSurfPlayer);
 }
 
@@ -95,11 +95,14 @@ void CSurfHudPlugin::UpdateHTML(CSurfPlayer* pSurfPlayer) {
 	auto& pTimerService = pSurfPlayer->m_pTimerService;
 
 	CUtlString sTime = SURF::FormatTime(pTimerService->m_fCurrentTime);
+	Vector vel;
+	pSurfPlayer->GetVelocity(vel);
 
 	// clang-format off
-	UTIL::PrintHTMLCenter(pController, " %s时间: %s%s", 
+	UTIL::PrintHTMLCenter(pController, " %s时间: %s<br>速度: %.3f%s", 
 		"<span class='fontSize-l'>", 
 		sTime.Get(),
+		vel.Length2D(),
 		"</span>");
 	// clang-format on
 }

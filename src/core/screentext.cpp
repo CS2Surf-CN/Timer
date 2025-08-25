@@ -1,45 +1,62 @@
-#include <core/screentext.h>
+#include "screentext.h"
 #include <core/memory.h>
 #include <core/eventmanager.h>
 #include <core/concmdmanager.h>
 #include <utils/ctimer.h>
+#include <utils/utils.h>
+
+#define VIEWMODEL_BROKEN 1
 
 CScreenTextControllerManager g_ScreenTextControllerManager;
 
-extern void SetScreenTextEntityTransmiter(CBaseEntity* pScreenEnt, CBasePlayerController* pOwner);
+void SetScreenTextEntityTransmiter(CBaseEntity* pScreenEnt, CBasePlayerController* pOwner);
 
-CScreenText::CScreenText(const ScreenTextManifest_t& manifest) : m_vecPos(manifest.m_vecPos) {
-	CPointWorldText* pText = (CPointWorldText*)MEM::CALL::CreateEntityByName("point_worldtext");
-	if (!pText) {
-		SDK_ASSERT(false);
-		return;
+CPointWorldText* CScreenText::EnsureScreenEntity() {
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		return pScreenEnt;
 	}
 
-	pText->m_Color(manifest.m_Color);
-	pText->m_FontName(manifest.m_sFont.c_str());
-	pText->m_flFontSize(manifest.m_fFontSize);
-	pText->m_flWorldUnitsPerPx((0.25 / manifest.m_iUnits) * manifest.m_fFontSize);
+	CPointWorldText* pText = static_cast<CPointWorldText*>(MEM::CALL::CreateEntityByName("point_worldtext"));
+	if (!pText) {
+		Assert(false);
+		return nullptr;
+	}
+
+	pText->m_Color(m_Manifest.m_Color);
+	pText->m_FontName(m_Manifest.m_sFont.c_str());
+	pText->m_flFontSize(m_Manifest.m_fFontSize);
+	pText->m_flWorldUnitsPerPx(GetWorldUnits(m_Manifest.m_iUnits));
 	pText->m_flDepthOffset(0.0f);
-	pText->m_fadeMinDist(0.0f);
 	pText->m_fadeMinDist(0.0f);
 	pText->m_nJustifyHorizontal(PointWorldTextJustifyHorizontal_t::POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_LEFT);
 	pText->m_nJustifyVertical(PointWorldTextJustifyVertical_t::POINT_WORLD_TEXT_JUSTIFY_VERTICAL_CENTER);
 	pText->m_bFullbright(true);
-	pText->m_bDrawBackground(manifest.m_bBackground);
-	pText->m_flBackgroundBorderHeight(manifest.m_fBackgroundBorderHeight);
-	pText->m_flBackgroundBorderWidth(manifest.m_fBackgroundBorderWidth);
-
-	pText->m_messageText("Sample Text");
-	pText->m_bEnabled(manifest.m_bEnable);
+	pText->m_bDrawBackground(m_Manifest.m_bBackground);
+	pText->m_flBackgroundBorderHeight(m_Manifest.m_fBackgroundBorderHeight);
+	pText->m_flBackgroundBorderWidth(m_Manifest.m_fBackgroundBorderWidth);
+	pText->m_messageText(m_Manifest.m_sText.c_str());
+	pText->m_bEnabled(m_Manifest.m_bEnable);
 
 	pText->DispatchSpawn();
 
-	this->m_hScreenEnt.Set(pText);
+	m_hScreenEnt = pText->GetRefEHandle();
+
+	return pText;
+}
+
+CScreenText::CScreenText(const ScreenTextManifest_t& manifest) {
+	m_Manifest = manifest;
+	EnsureScreenEntity();
 }
 
 CScreenText::~CScreenText() {
 	if (m_hScreenEnt.IsValid()) {
-		m_hScreenEnt->Kill();
+		auto pScreenEnt = m_hScreenEnt.Get();
+		if (pScreenEnt) {
+			pScreenEnt->Kill();
+		}
+
 		m_hScreenEnt.Term();
 	}
 
@@ -48,34 +65,59 @@ CScreenText::~CScreenText() {
 }
 
 void CScreenText::SetText(const std::string_view& text) {
-	m_hScreenEnt->SetText(text.data());
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		m_Manifest.m_sText = text;
+		pScreenEnt->SetText(text.data());
+	}
 }
 
 void CScreenText::SetPos(float x, float y) {
-	m_vecPos.x = x;
-	m_vecPos.y = y;
+	m_Manifest.m_vecPos.x = x;
+	m_Manifest.m_vecPos.y = y;
 
 	UpdatePos();
 }
 
 void CScreenText::SetColor(Color color) {
-	m_hScreenEnt->m_Color(color);
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		m_Manifest.m_Color = color;
+		pScreenEnt->m_Color(color);
+	}
 }
 
 void CScreenText::SetFont(const std::string_view& font) {
-	m_hScreenEnt->m_FontName(font.data());
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		m_Manifest.m_sFont = font;
+		pScreenEnt->m_FontName(font.data());
+	}
 }
 
 void CScreenText::SetFontSize(float fontsize) {
-	m_hScreenEnt->m_flFontSize(fontsize);
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		m_Manifest.m_fFontSize = fontsize;
+		pScreenEnt->m_flFontSize(fontsize);
+	}
 }
 
 void CScreenText::SetUnits(int unit) {
-	m_hScreenEnt->m_flWorldUnitsPerPx((0.25 / unit) * m_hScreenEnt->m_flFontSize());
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		m_Manifest.m_iUnits = unit;
+		pScreenEnt->m_flWorldUnitsPerPx(GetWorldUnits(unit));
+	}
 }
 
 bool CScreenText::IsRendering() {
-	return m_hOwner.IsValid() && m_hScreenEnt->m_bEnabled();
+	auto pScreenEnt = m_hScreenEnt.Get();
+	if (pScreenEnt) {
+		return m_hOwner.IsValid() && pScreenEnt->m_bEnabled();
+	}
+
+	return false;
 }
 
 void CScreenText::Display(CBasePlayerController* pController) {
@@ -84,15 +126,17 @@ void CScreenText::Display(CBasePlayerController* pController) {
 		return;
 	}
 
+	EnsureScreenEntity();
+
 	CPointWorldText* pText = this->m_hScreenEnt.Get();
 	if (!pText) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
 	CCSPlayerPawnBase* pPawn = dynamic_cast<CCSPlayerPawnBase*>(pController->GetCurrentPawn());
 	if (!pPawn) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
@@ -103,6 +147,34 @@ void CScreenText::Display(CBasePlayerController* pController) {
 	UpdatePos();
 }
 
+void CScreenText::UpdatePos(CCSPlayerPawnBase* pPawn) {
+	auto pText = m_hScreenEnt.Get();
+
+	if (!pText) {
+		return;
+	}
+
+	Vector forward;
+	Vector right;
+	Vector up;
+	const auto& parentAng = pPawn->GetEyeAngle();
+	AngleVectors(parentAng, &forward, &right, &up);
+	Vector textPos = pPawn->GetEyePosition();
+	textPos += (forward * 7.10f);
+	// -x = move left,  +x = move right
+	textPos += (right * m_Manifest.m_vecPos.x);
+
+	// -y = move up,   +y = move down
+	textPos -= (up * m_Manifest.m_vecPos.y);
+
+	QAngle textAng;
+	textAng.x = 0.f;
+	textAng.y = AngleNormalize(parentAng.y - 90.0f);
+	textAng.z = AngleNormalize(-parentAng.x + 90.0f);
+
+	pText->Teleport(&textPos, &textAng, nullptr);
+}
+
 void CScreenText::UpdateRelation(CCSPlayerPawnBase* pPawn) {
 	if (!pPawn) {
 		return;
@@ -110,33 +182,38 @@ void CScreenText::UpdateRelation(CCSPlayerPawnBase* pPawn) {
 
 	CPointWorldText* pText = this->m_hScreenEnt.Get();
 	if (!pText) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
+#ifndef VIEWMODEL_BROKEN
 	if (!pPawn->IsObserver()) {
-		CBaseViewModel* pViewModel = pPawn->EnsureViewModel();
+		CBaseViewModel* pViewModel = pPawn->GetCustomViewModel();
 		if (!pViewModel) {
-			SDK_ASSERT(false);
+			Assert(false);
 			return;
 		}
 
 		pText->SetParent(pViewModel);
-		pText->m_hOwnerEntity().Set(pViewModel);
+		pText->m_hOwnerEntity(pViewModel);
 	} else {
 		CBaseEntity* pTarget = pPawn;
 
 		CPlayer_ObserverServices* pObsService = pPawn->m_pObserverServices();
 		CCSPlayerPawnBase* pObsTarget = dynamic_cast<CCSPlayerPawnBase*>(pObsService->m_hObserverTarget()->Get());
 		if (pObsTarget && pObsService->m_iObserverMode() == OBS_MODE_IN_EYE) {
-			pTarget = pObsTarget->EnsureViewModel();
+			pTarget = pObsTarget->GetCustomViewModel();
 		}
 
 		pText->SetParent(pTarget);
-		pText->m_hOwnerEntity().Set(pTarget);
+		pText->m_hOwnerEntity(pTarget);
 	}
+#else
+	pText->SetParent(pPawn);
+	pText->m_hOwnerEntity(pPawn);
+#endif
 
-	m_hOwner.Set(pPawn);
+	m_hOwner = pPawn->GetRefEHandle();
 }
 
 void CScreenText::UpdatePos() {
@@ -147,22 +224,45 @@ void CScreenText::UpdatePos() {
 	}
 
 	CBaseEntity* pParent = pText->m_hOwnerEntity().Get();
+#ifndef VIEWMODEL_BROKEN
 	const Vector& parentPos = pParent->GetAbsOrigin();
 	Vector textPos;
 	if (dynamic_cast<CBaseViewModel*>(pParent)) {
 		textPos = GetRelativeVMOrigin(parentPos);
 	} else {
-		pParent->Teleport(nullptr, &vec3_angle, nullptr);
-		textPos = GetRelativePawnOrigin(parentPos, vec3_angle);
+		static QAngle nullAng;
+		pParent->Teleport(nullptr, &nullAng, nullptr);
+		textPos = GetRelativePawnOrigin(parentPos, nullAng);
 	}
 
 	static QAngle textAng = {0.0f, -90.0f, 90.0f};
 
 	Vector fwd, right;
 	AngleVectors(textAng, &fwd, &right, nullptr);
-	fwd *= m_vecPos.x;
-	right *= m_vecPos.y * -1.0f;
+	fwd *= m_Manifest.m_vecPos.x;
+	right *= m_Manifest.m_vecPos.y * -1.0f;
 	textPos += fwd + right;
+#else
+	const auto& parentPos = static_cast<CCSPlayerPawnBase*>(pParent)->GetEyePosition();
+	const auto& parentAng = static_cast<CCSPlayerPawnBase*>(pParent)->GetEyeAngle();
+	Vector textPos = parentPos;
+
+	Vector forward;
+	Vector right;
+	Vector up;
+	AngleVectors(parentAng, &forward, &right, &up);
+	textPos += (forward * 7.10f);
+	// -x = move left,  +x = move right
+	textPos += (right * m_Manifest.m_vecPos.x);
+
+	// -y = move up,   +y = move down
+	textPos -= (up * m_Manifest.m_vecPos.y);
+
+	QAngle textAng;
+	textAng.x = 0.f;
+	textAng.y = AngleNormalize(parentAng.y - 90.0f);
+	textAng.z = AngleNormalize(-parentAng.x + 90.0f);
+#endif
 
 	pText->Teleport(&textPos, &textAng, nullptr);
 }
@@ -170,7 +270,7 @@ void CScreenText::UpdatePos() {
 void CScreenText::UpdateTransmit(CBasePlayerController* pOwner) {
 	CPointWorldText* pText = this->m_hScreenEnt.Get();
 	if (!pText) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
@@ -199,7 +299,7 @@ CScreenTextControllerManager* VGUI::GetScreenTextManager() {
 std::weak_ptr<CScreenText> VGUI::CreateScreenText(CBasePlayerController* pController, std::optional<ScreenTextManifest_t> manifest) {
 	CScreenTextController* pTextController = GetScreenTextManager()->ToPlayer(pController);
 	if (!pTextController) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return {};
 	}
 
@@ -265,7 +365,7 @@ void VGUI::Dispose(const std::weak_ptr<CScreenText>& hText) {
 
 	CScreenTextController* pTextController = GetScreenTextManager()->ToPlayer(pController);
 	if (!pTextController) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
@@ -275,63 +375,26 @@ void VGUI::Dispose(const std::weak_ptr<CScreenText>& hText) {
 void VGUI::Cleanup(CBasePlayerController* pController) {
 	CScreenTextController* pTextController = GetScreenTextManager()->ToPlayer(pController);
 	if (!pTextController) {
-		SDK_ASSERT(false);
+		Assert(false);
 		return;
 	}
 
 	pTextController->m_ScreenTextList.clear();
 }
 
-EVENT_CALLBACK_POST(OnPlayerTeam) {
-	auto pController = (CCSPlayerController*)pEvent->GetPlayerController("userid");
-	if (!pController) {
-		return;
-	}
-
-	auto iNewTeam = pEvent->GetInt("team");
-	CHandle<CCSPlayerController> hController = pController->GetRefEHandle();
-
-	UTIL::RequestFrame([hController, iNewTeam]() {
-		CCSPlayerController* pController = hController.Get();
-		if (!pController) {
-			return;
-		}
-
-		CBasePlayerPawn* pPawn = pController->GetCurrentPawn();
-		if (!pPawn) {
-			return;
-		}
-
-		auto pPlayer = VGUI::GetScreenTextManager()->ToPlayer(pController);
-		if (!pPlayer) {
-			return;
-		}
-
-		for (const auto& pScreenText : pPlayer->m_ScreenTextList) {
-			pScreenText->UpdateRelation(dynamic_cast<CCSPlayerPawnBase*>(pPawn));
-			pScreenText->UpdatePos();
-		}
-	});
-}
-
 void CScreenTextControllerManager::OnPluginStart() {
-	EVENT::HookEvent("player_team", ::OnPlayerTeam);
+	EVENT::HookEvent("player_team", OnPlayerTeam);
+	EVENT::HookEvent("cs_intermission", OnIntermission);
 }
 
 void CScreenTextControllerManager::OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
-	if (pPawn->IsObserver()) {
-		auto pNode = pPawn->m_CBodyComponent()->m_pSceneNode();
-		auto pParent = pNode->m_pParent();
-		CGameSceneNode* pChild = pNode->m_pChild();
-		if (pChild) {
-			//  Magically force child update physics every tick!
-			auto& velZ = pPawn->m_vecVelocity().m_vecZ();
-			velZ += 0.6f;
-			pNode->m_angAbsRotation(viewAngles);
-			if (pNode->m_angRotation() != viewAngles) {
-				pNode->m_angRotation(viewAngles);
-			}
-		}
+	CScreenTextController* pTextController = VGUI::GetScreenTextManager()->ToPlayer(pPawn);
+	if (!pTextController) {
+		return;
+	}
+
+	for (const auto& pScreenText : pTextController->m_ScreenTextList) {
+		pScreenText->UpdatePos(pPawn);
 	}
 }
 
@@ -345,7 +408,54 @@ void CScreenTextControllerManager::OnSetObserverTargetPost(CPlayer_ObserverServi
 
 		for (const auto& pScreenText : pPlayer->m_ScreenTextList) {
 			pScreenText->UpdateRelation(pServicePawn);
-			pScreenText->UpdatePos();
+			if (pEnt->IsPawn()) {
+				pScreenText->UpdatePos(static_cast<CCSPlayerPawn*>(pEnt));
+			}
 		}
+	}
+}
+
+void CScreenTextControllerManager::OnPlayerTeam(IGameEvent* pEvent, const char* szName, bool bServerOnly) {
+	auto pController = (CCSPlayerController*)pEvent->GetPlayerController("userid");
+	if (!pController) {
+		return;
+	}
+
+	auto iNewTeam = pEvent->GetInt("team");
+	auto hController = pController->GetRefEHandle();
+
+	UTIL::RequestFrame([hController, iNewTeam]() {
+		CCSPlayerController* pController = static_cast<CCSPlayerController*>(hController.Get());
+		if (!pController) {
+			return;
+		}
+
+		CCSPlayerPawnBase* pPawn = dynamic_cast<CCSPlayerPawnBase*>(pController->GetCurrentPawn());
+		if (!pPawn) {
+			return;
+		}
+
+		auto pPlayer = VGUI::GetScreenTextManager()->ToPlayer(pController);
+		if (!pPlayer) {
+			return;
+		}
+
+		for (const auto& pScreenText : pPlayer->m_ScreenTextList) {
+			pScreenText->UpdateRelation(pPawn);
+			pScreenText->UpdatePos(pPawn);
+		}
+	});
+}
+
+void CScreenTextControllerManager::OnIntermission(IGameEvent* pEvent, const char* szName, bool bServerOnly) {
+	auto iMaxPlayers = UTIL::GetGlobals()->maxClients;
+	for (auto i = 0; i < iMaxPlayers; i++) {
+		auto pTextController = VGUI::GetScreenTextManager()->ToPlayer(CPlayerSlot(i));
+		if (!pTextController || pTextController->IsFakeClient()) {
+			return;
+		}
+
+		// FIXME: Rerender on intermission end???
+		pTextController->m_ScreenTextList.clear();
 	}
 }

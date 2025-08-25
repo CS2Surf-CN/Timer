@@ -23,18 +23,15 @@ class CCSPlayerPawnBase : public CBasePlayerPawn {
 public:
 	DECLARE_SCHEMA_CLASS(CCSPlayerPawnBase);
 
-	SCHEMA_FIELD(CCSPlayer_ViewModelServices*, m_pViewModelServices);
-	SCHEMA_FIELD(QAngle, m_angEyeAngles);
 	SCHEMA_FIELD(CHandle<CCSPlayerController>, m_hOriginalController);
 	SCHEMA_FIELD(CSPlayerState, m_iPlayerState);
 
 	Vector GetEyePosition();
+	QAngle GetEyeAngle();
 
 	bool IsObserverActive() {
 		return m_iPlayerState() == CSPlayerState::STATE_OBSERVER_MODE;
 	}
-
-	CBaseViewModel* EnsureViewModel(int vmSlot = 1);
 };
 
 class CCSPlayerPawn : public CCSPlayerPawnBase {
@@ -46,6 +43,7 @@ public:
 	SCHEMA_FIELD(float, m_flVelocityModifier);
 	SCHEMA_FIELD(CCSBot*, m_pBot);
 	SCHEMA_FIELD(QAngle, m_aimPunchAngle);
+	SCHEMA_FIELD(QAngle, m_angEyeAngles);
 
 public:
 	template<typename T = CBasePlayerController>

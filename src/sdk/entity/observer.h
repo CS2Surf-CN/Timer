@@ -9,8 +9,6 @@ class CCSObserver_MovementServices : public CPlayer_MovementServices {};
 
 class CCSObserver_UseServices : public CPlayer_UseServices {};
 
-class CCSObserver_ViewModelServices : public CPlayer_ViewModelServices {};
-
 class CCSObserver_CameraServices : public CCSPlayerBase_CameraServices {};
 
 class CCSObserverPawn : public CCSPlayerPawnBase {
@@ -28,11 +26,6 @@ public:
 	CCSObserver_UseServices* GetUseServices() {
 		static auto iOffset = schema::GetOffset("CCSObserverPawn", "m_pUseServices");
 		return *(CCSObserver_UseServices**)((uint8_t*)this + iOffset.offset);
-	};
-
-	CCSObserver_ViewModelServices* GetViewModelServices() {
-		static auto iOffset = schema::GetOffset("CCSObserverPawn", "m_pViewModelServices");
-		return *(CCSObserver_ViewModelServices**)((uint8_t*)this + iOffset.offset);
 	};
 
 	CCSObserver_CameraServices* GetCameraServices() {

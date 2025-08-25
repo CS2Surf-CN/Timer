@@ -2,11 +2,12 @@
 
 #include <sdk/entity/cbaseentity.h>
 
-class CCSPlayer_WaterServices;
+class CPlayer_WaterServices;
 class CPlayer_MovementServices;
 class CPlayer_ObserverServices;
-class CCSPlayer_ItemServices;
+class CPlayer_ItemServices;
 class CPlayer_CameraServices;
+class CPlayer_WeaponServices;
 
 class CCSPlayerPawn;
 class CBasePlayerController;
@@ -17,10 +18,11 @@ public:
 
 	SCHEMA_FIELD(CPlayer_MovementServices*, m_pMovementServices);
 	SCHEMA_FIELD_POINTER(CHandle<CBasePlayerController>, m_hController);
-	SCHEMA_FIELD(CCSPlayer_ItemServices*, m_pItemServices);
+	SCHEMA_FIELD(CPlayer_ItemServices*, m_pItemServices);
 	SCHEMA_FIELD(CPlayer_ObserverServices*, m_pObserverServices);
-	SCHEMA_FIELD(CCSPlayer_WaterServices*, m_pWaterServices);
+	SCHEMA_FIELD(CPlayer_WaterServices*, m_pWaterServices);
 	SCHEMA_FIELD(CPlayer_CameraServices*, m_pCameraServices);
+	SCHEMA_FIELD(CPlayer_WeaponServices*, m_pWeaponServices);
 
 public:
 	CBasePlayerController* GetController() {

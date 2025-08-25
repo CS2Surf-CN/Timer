@@ -28,27 +28,25 @@ CCMD_CALLBACK(Command_Hide) {
 	UTIL::PrintChat(pController, "[其他玩家] %s\n", pMiscService->m_bHide ? "已隐藏" : "已显示");
 }
 
+// FIXME
 CCMD_CALLBACK(Command_HideWeapons) {
-	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pController);
-	if (!player) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
 		return;
 	}
 
-	auto pViewModelService = pController->GetPlayerPawn()->m_pViewModelServices();
-	if (!pViewModelService) {
-		return;
-	}
-
-	auto pViewModel = pViewModelService->GetViewModel(0);
-	if (!pViewModel) {
-		return;
-	}
-
-	auto& pMiscService = player->m_pMiscService;
+	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bHideWeapons = !pMiscService->m_bHideWeapons;
-	SURF::MISC::HidePlugin()->Set(pController, pViewModel, pMiscService->m_bHideWeapons);
 
-	UTIL::PrintChat(pController, "[武器] %s\n", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");
+	auto pPawn = pController->GetPlayerPawn();
+	auto pWeaponService = pPawn->m_pWeaponServices();
+	auto pActiveWeapon = pWeaponService->m_hActiveWeapon().Get();
+	if (pActiveWeapon) {
+		pWeaponService->m_hActiveWeapon().Set(nullptr);
+		pPlayer->Print("[武器] %s\n", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");	
+	} else {
+	
+	}
 }
 
 CCMD_CALLBACK(Command_HideLegs) {

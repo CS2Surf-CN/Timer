@@ -91,11 +91,6 @@ public:
 	DECLARE_SCHEMA_CLASS(CPlayer_UseServices);
 };
 
-class CPlayer_ViewModelServices : public CPlayerPawnComponent {
-public:
-	DECLARE_SCHEMA_CLASS(CPlayer_ViewModelServices);
-};
-
 class CPlayer_CameraServices : public CPlayerPawnComponent {
 public:
 	DECLARE_SCHEMA_CLASS(CPlayer_CameraServices);
@@ -113,6 +108,9 @@ public:
 class CPlayer_WeaponServices : public CPlayerPawnComponent {
 public:
 	DECLARE_SCHEMA_CLASS(CPlayer_WeaponServices);
+
+	SCHEMA_FIELD(CHandle<CBasePlayerWeapon>, m_hActiveWeapon);
+	SCHEMA_FIELD_POINTER(CUtlVector<CHandle<CBasePlayerWeapon>>, m_hMyWeapons);
 };
 
 class CCSPlayer_WeaponServices : public CPlayer_WeaponServices {
@@ -123,14 +121,4 @@ public:
 class CCSPlayer_DamageReactServices : public CPlayerPawnComponent {
 public:
 	DECLARE_SCHEMA_CLASS(CCSPlayer_DamageReactServices);
-};
-
-class CCSPlayer_ViewModelServices : public CPlayer_ViewModelServices {
-public:
-	DECLARE_SCHEMA_CLASS(CCSPlayer_ViewModelServices);
-
-	SCHEMA_FIELD_POINTER(CHandle<CBaseViewModel>, m_hViewModel);
-
-	CBaseViewModel* GetViewModel(int iIndex = 0);
-	void SetViewModel(int iIndex, CBaseViewModel* pViewModel);
 };
