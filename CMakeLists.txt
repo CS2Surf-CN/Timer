@@ -18,23 +18,13 @@ include_directories(
 	./vendor/zlib/include
 )
 
-if(WIN32)
-	file(GLOB SURFTIMER_LIBS 
-			"./vendor/libmem/lib/*.lib"
-			"./vendor/libmodule/lib/*.lib"
-			"./vendor/libhv/lib/*.lib"
-			"./vendor/polyhook/lib/*.lib"
-			"./vendor/zlib/lib/*.lib"
-	)
-else()
-	file(GLOB SURFTIMER_LIBS 
-			"./vendor/libmem/lib/*.a"
-			"./vendor/libmodule/lib/*.a"
-			"./vendor/libhv/lib/*.a"
-			"./vendor/polyhook/lib/*.a"
-			"./vendor/zlib/lib/*.a"
-	)
-endif()
+file(GLOB SURFTIMER_LIBS 
+    "./vendor/libmem/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    "./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    "./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    "./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    "./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
 
 file(GLOB_RECURSE SDK_SOURCES 
 		"${SDK_CONVAR}"
