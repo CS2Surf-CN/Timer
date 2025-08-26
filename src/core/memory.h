@@ -69,6 +69,7 @@ namespace MEM {
 		inline void* g_fnServerGamePostSimulate;
 		inline void* g_fnActivateServer;
 		inline void* g_fnWeaponDrop;
+		inline void* g_fnWeaponSwitch;
 		inline void* g_fnTakeDamage;
 		inline void* g_fnClientSendSnapshotBefore;
 		inline void* g_fnSetObserverTarget;

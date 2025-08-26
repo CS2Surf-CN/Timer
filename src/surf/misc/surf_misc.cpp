@@ -54,6 +54,17 @@ void CSurfMiscPlugin::OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBase
 	pWeapon->AcceptInput("kill");
 }
 
+void CSurfMiscPlugin::OnWeaponSwitchPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pService);
+	if (!pPlayer) {
+		return;
+	}
+
+	if (pPlayer->m_pMiscService->m_bHideWeapons) {
+		pPlayer->m_pMiscService->HideWeapons();
+	}
+}
+
 void CSurfMiscPlugin::OnEntitySpawned(CEntityInstance* pEntity) {
 	const char* sClassname = pEntity->GetClassname();
 	if (V_strstr(sClassname, "trigger_")) {
@@ -151,11 +162,13 @@ void CSurfMiscService::HideWeapons() {
 	}
 
 	if (auto pWeaponService = pPawn->m_pWeaponServices(); pWeaponService) {
-		/*auto pWeapons = pWeaponService->m_hMyWeapons();
-		FOR_EACH_VEC(*pWeapons, i) {
-			auto pWeapon = pWeapons->Element(i).Get();
-			SURF::MISC::HidePlugin()->Set(pPawn->GetController(), pWeapon, m_bHideWeapons);
-		}*/
+		if (m_bHideWeapons) {
+			pWeaponService->m_hActiveWeapon(nullptr);
+		} else {
+			if (pWeaponService->m_hMyWeapons()->Count()) {
+				pWeaponService->m_hActiveWeapon(pWeaponService->m_hMyWeapons()->Tail());
+			}
+		}
 	}
 }
 

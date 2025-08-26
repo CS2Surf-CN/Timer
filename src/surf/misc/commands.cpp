@@ -6,17 +6,17 @@
 #include <surf/misc/hide.h>
 
 CCMD_CALLBACK(Command_Hide) {
-	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pController);
-	if (!player) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
 		return;
 	}
 
-	auto& pMiscService = player->m_pMiscService;
+	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bHide = !pMiscService->m_bHide;
 
 	auto vOnlinePlayers = GetPlayerManager()->GetOnlinePlayers();
-	for (const auto& pPlayer : vOnlinePlayers) {
-		CCSPlayerController* pTargetController = pPlayer->GetController();
+	for (const auto& pOnlinePlayer : vOnlinePlayers) {
+		CCSPlayerController* pTargetController = pOnlinePlayer->GetController();
 		if (pTargetController && pTargetController->GetPlayerSlot() != pController->GetPlayerSlot()) {
 			CCSPlayerPawn* pTargetPawn = pTargetController->GetPlayerPawn();
 			if (pTargetPawn) {
@@ -25,7 +25,7 @@ CCMD_CALLBACK(Command_Hide) {
 		}
 	}
 
-	UTIL::PrintChat(pController, "[其他玩家] %s\n", pMiscService->m_bHide ? "已隐藏" : "已显示");
+	pPlayer->Print("[其他玩家] %s", pMiscService->m_bHide ? "已隐藏" : "已显示");
 }
 
 // FIXME
@@ -35,42 +35,42 @@ CCMD_CALLBACK(Command_HideWeapons) {
 		return;
 	}
 
-#if 1
+#if 0
 	pPlayer->PrintWarning("功能维护中!");
 #else
 	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bHideWeapons = !pMiscService->m_bHideWeapons;
 	pMiscService->HideWeapons();
 
-	pPlayer->Print("[武器] %s\n", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");
+	pPlayer->Print("[武器] %s", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");
 #endif
 }
 
 CCMD_CALLBACK(Command_HideLegs) {
-	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pController);
-	if (!player) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
 		return;
 	}
 
-	auto& pMiscService = player->m_pMiscService;
+	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bHideLegs = !pMiscService->m_bHideLegs;
 	pMiscService->HideLegs();
 
-	UTIL::PrintChat(pController, "[腿部] %s\n", pMiscService->m_bHideLegs ? "已隐藏" : "已显示");
+	pPlayer->Print("[腿部] %s", pMiscService->m_bHideLegs ? "已隐藏" : "已显示");
 }
 
 CCMD_CALLBACK(Command_ShowTrigger) {
-	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(pController);
-	if (!player) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
 		return;
 	}
 
-	auto& pMiscService = player->m_pMiscService;
+	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bShowTrigger = !pMiscService->m_bShowTrigger;
 
-	UTIL::PrintChat(pController, "[显示区域] %s\n", pMiscService->m_bShowTrigger ? "已打开" : "已关闭");
+	pPlayer->Print("[显示区域] %s", pMiscService->m_bShowTrigger ? "已打开" : "已关闭");
 	if (pMiscService->m_bShowTrigger) {
-		UTIL::PrintChat(pController, "请控制台输入 cl_debug_overlays_broadcast 1\n");
+		pPlayer->Print("请控制台输入 cl_debug_overlays_broadcast 1");
 	}
 
 	SURF::MISC::ShowTriggerPlugin()->TransmitTriggers(SURF::MiscPlugin()->m_vTriggers, pMiscService->m_bShowTrigger);

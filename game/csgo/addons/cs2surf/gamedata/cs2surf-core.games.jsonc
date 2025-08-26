@@ -247,6 +247,12 @@
 			"windows": "48 89 5C 24 ? 44 89 44 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24",
 			"linux": "48 85 F6 0F 84 ? ? ? ? 55 48 89 E5 41 57 49 89 F7 41 56 41 55 41 54 53 48 83 EC ? 48 8B 46"
 		},
+		// vtable 25/26 (win/linux)
+		"CCSPlayer_WeaponServices::Weapon_Switch": {
+			"library": "server",
+			"windows": "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 41 8B E8 48 8B DA 48 8B F1",
+			"linux": "55 48 89 E5 41 57 41 56 41 89 D6 41 55 49 89 FD 41 54 49 89 F4 53 48 83 EC ? E8"
+		},
 		// Cstrike_TitlesTXT_Hint_try_not_to_injure_teammates, xref
 		"CCSPlayerPawn::OnTakeDamage": {
 			"library": "server",

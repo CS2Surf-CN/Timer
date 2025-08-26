@@ -306,6 +306,24 @@ static bool Hook_OnWeaponDrop(CCSPlayer_WeaponServices* pService, CBasePlayerWea
 	return ret;
 }
 
+static bool Hook_OnWeaponSwitch(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon, int unk) {
+	bool block = false;
+	for (auto p = CFeatureForward::m_pFirst; p; p = p->m_pNext) {
+		if (!p->OnWeaponSwitch(pService, pWeapon)) {
+			block = true;
+		}
+	}
+	if (block) {
+		return false;
+	}
+
+	auto ret = MEM::SDKCall<bool>(MEM::TRAMPOLINE::g_fnWeaponSwitch, pService, pWeapon, unk);
+
+	FORWARD_POST(CFeatureForward, OnWeaponSwitchPost, pService, pWeapon);
+
+	return ret;
+}
+
 static int Hook_OnTakeDamage(CCSPlayer_DamageReactServices* pService, CTakeDamageInfo* info) {
 	auto pVictim = pService->GetPawn();
 	bool block = false;
@@ -355,6 +373,7 @@ static bool Hook_OnSetObserverTarget(CPlayer_ObserverServices* pService, CBaseEn
 static bool SetupDetours() {
 	// clang-format off
 	HOOK_SIG("CCSPlayer_WeaponServices::Weapon_Drop", Hook_OnWeaponDrop, MEM::TRAMPOLINE::g_fnWeaponDrop);
+	HOOK_SIG("CCSPlayer_WeaponServices::Weapon_Switch", Hook_OnWeaponSwitch, MEM::TRAMPOLINE::g_fnWeaponSwitch);
 	HOOK_SIG("CCSPlayerPawn::OnTakeDamage", Hook_OnTakeDamage, MEM::TRAMPOLINE::g_fnTakeDamage);
 	HOOK_SIG("CServerSideClient::SendSnapshotBefore", Hook_OnClientSendSnapshotBefore, MEM::TRAMPOLINE::g_fnClientSendSnapshotBefore);
 	HOOK_SIG("CPlayer_ObserverServices::SetObserverTarget", Hook_OnSetObserverTarget, MEM::TRAMPOLINE::g_fnSetObserverTarget);

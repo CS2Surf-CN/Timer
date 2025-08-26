@@ -95,6 +95,12 @@ public:
 
 	virtual void OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon, const int& iDropType, const Vector* targetPos) {}
 
+	virtual bool OnWeaponSwitch(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon) {
+		return true;
+	}
+
+	virtual void OnWeaponSwitchPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon) {}
+
 	virtual bool OnTakeDamage(CCSPlayerPawnBase* pVictim, CTakeDamageInfo* pInfo) {
 		return true;
 	}
