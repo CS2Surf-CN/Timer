@@ -59,15 +59,17 @@ void UTIL::TIMER::AddTimer(const std::shared_ptr<CTimerBase>& timer, bool preser
 }
 
 void UTIL::TIMER::RemoveTimer(CTimerHandle& hTimer) {
-	auto pTimer = hTimer.Data();
-	if (!pTimer) {
+	if (!hTimer) {
 		return;
 	}
 
-	auto RemoveFromTimer = [pTimer](std::list<std::shared_ptr<CTimerBase>>& timers) {
-		auto it = std::find(timers.begin(), timers.end(), pTimer);
+	auto RemoveFromTimer = [pTimer = hTimer.Data()](std::list<std::shared_ptr<CTimerBase>>& timers) {
+		auto it = std::find_if(timers.begin(), timers.end(), [pTimer](const auto& ptr) {
+			return ptr.get() == pTimer;
+		});
+
 		if (it != timers.end()) {
-			pTimer->removeable = true;
+			(*it)->removeable = true;
 		}
 	};
 

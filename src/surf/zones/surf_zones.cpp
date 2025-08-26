@@ -235,35 +235,25 @@ void CSurfZoneService::DeleteZone(const ZoneData_t& zone) {
 		return;
 	}
 
-	auto wpMenu = MENU::Create(
-		pPlayer->GetController(), MENU_CALLBACK_L(pPlayer, zone) {
-			if (action == EMenuAction::SelectItem) {
-				switch (iItem) {
-					case 0: {
-						pPlayer->m_pZoneService->Print("已确认!");
-						SURF::ZonePlugin()->DeleteZone(zone);
-						break;
-					}
-					case 1: {
-						pPlayer->m_pZoneService->Print("已取消.");
-						break;
-					}
-				}
-
-				hMenu.Close();
-			}
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pPlayer->GetController());
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("确认删除?");
 
-	pMenu->AddItem("是");
-	pMenu->AddItem("否");
+	pMenu->AddItem("是", MENU_HANDLER_L(pPlayer, zone) {
+		pPlayer->m_pZoneService->Print("已确认!");
+		SURF::ZonePlugin()->DeleteZone(zone);
+		event.hMenu.CloseAll();
+	});
+
+	pMenu->AddItem("否", MENU_HANDLER_L(pPlayer, zone) {
+		pPlayer->m_pZoneService->Print("已取消.");
+		event.hMenu.CloseAll();
+	});
 
 	pMenu->Display();
 }
@@ -275,35 +265,25 @@ void CSurfZoneService::DeleteAllZones() {
 		return;
 	}
 
-	auto wpMenu = MENU::Create(
-		pPlayer->GetController(), MENU_CALLBACK_L(pPlayer) {
-			if (action == EMenuAction::SelectItem) {
-				switch (iItem) {
-					case 0: {
-						pPlayer->m_pZoneService->Print("已确认!");
-						SURF::ZonePlugin()->DeleteAllZones();
-						break;
-					}
-					case 1: {
-						pPlayer->m_pZoneService->Print("已取消.");
-						break;
-					}
-				}
-
-				hMenu.Close();
-			}
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pPlayer->GetController());
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("确认删除所有区域?");
 
-	pMenu->AddItem("是");
-	pMenu->AddItem("否");
+	pMenu->AddItem("是", MENU_HANDLER_L(pPlayer) {
+		pPlayer->m_pZoneService->Print("已确认!");
+		SURF::ZonePlugin()->DeleteAllZones();
+		event.hMenu.CloseAll();
+	});
+
+	pMenu->AddItem("否", MENU_HANDLER_L(pPlayer) {
+		pPlayer->m_pZoneService->Print("已取消.");
+		event.hMenu.CloseAll();
+	});
 
 	pMenu->Display();
 }

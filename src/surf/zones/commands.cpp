@@ -6,53 +6,49 @@
 #include <fmt/format.h>
 
 static void ZoneMenu_SelectType(CSurfPlayer* pPlayer) {
-	auto wpMenu = MENU::Create(
-		pPlayer->GetController(), MENU_CALLBACK_L(pPlayer) {
-			if (action == EMenuAction::SelectItem) {
-				auto& pZoneService = pPlayer->m_pZoneService;
-				pZoneService->m_ZoneEdit.m_iType = (EZoneType)iItem;
-				pZoneService->m_ZoneEdit.m_iValue = SURF::ZonePlugin()->GetZoneCount(pZoneService->m_ZoneEdit.m_iTrack, (EZoneType)iItem);
-				pZoneService->m_ZoneEdit.StartEditZone();
-
-				hMenu.Close();
-			}
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pPlayer->GetController());
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("选择类型");
+
 	for (int i = EZoneType::Zone_Start; i < EZoneType::ZONETYPES_SIZE; i++) {
-		pMenu->AddItem(SURF::ZONE::GetZoneNameByType((EZoneType)i));
+		pMenu->AddItem(SURF::ZONE::GetZoneNameByType((EZoneType)i), MENU_HANDLER_L(pPlayer) {
+			auto& pZoneService = pPlayer->m_pZoneService;
+			pZoneService->m_ZoneEdit.m_iType = (EZoneType)event.nItem;
+			pZoneService->m_ZoneEdit.m_iValue = SURF::ZonePlugin()->GetZoneCount(pZoneService->m_ZoneEdit.m_iTrack, (EZoneType)event.nItem);
+			pZoneService->m_ZoneEdit.StartEditZone();
+
+			event.hMenu.CloseAll();
+		});
 	}
+
 	pMenu->SetExitback(true);
 	pMenu->Display();
 }
 
 static void ZoneMenu_SelectTrack(CSurfPlayer* pPlayer) {
-	auto wpMenu = MENU::Create(
-		pPlayer->GetController(), MENU_CALLBACK_L(pPlayer) {
-			if (action == EMenuAction::SelectItem) {
-				pPlayer->m_pZoneService->m_ZoneEdit.m_iTrack = (EZoneTrack)iItem;
-				ZoneMenu_SelectType(pPlayer);
-			}
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pPlayer->GetController());
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
 	pPlayer->m_pZoneService->m_ZoneEdit.Reset();
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("选择赛道");
+
 	for (TimerTrack_t i = EZoneTrack::Track_Main; i < EZoneTrack::TRACKS_SIZE; i++) {
-		pMenu->AddItem(SURF::GetTrackName(i));
+		pMenu->AddItem(SURF::GetTrackName(i), MENU_HANDLER_L(pPlayer) {
+			pPlayer->m_pZoneService->m_ZoneEdit.m_iTrack = (EZoneTrack)event.nItem;
+			ZoneMenu_SelectType(pPlayer);
+		});
 	}
+
 	pMenu->SetExitback(true);
 	pMenu->Display();
 }
@@ -64,40 +60,13 @@ static void ZoneMenu_Edit(CSurfPlayer* pPlayer, bool bDelete = false) {
 		return;
 	}
 
-	auto wpMenu = MENU::Create(
-		pPlayer->GetController(), MENU_CALLBACK_L(pPlayer, bDelete) {
-			if (action != EMenuAction::SelectItem) {
-				return;
-			}
-
-			auto& item = hMenu.Data()->GetItem(iItem);
-			if (!item.second.has_value()) {
-				pPlayer->PrintWarning("未知错误: %s", FILE_LINE_STRING);
-				return;
-			}
-
-			auto hZone = std::any_cast<CZoneHandle>(item.second);
-			if (!SURF::ZonePlugin()->m_hZones.contains(hZone)) {
-				pPlayer->PrintWarning("未知错误: %s", FILE_LINE_STRING);
-				return;
-			}
-
-			auto& zone = SURF::ZonePlugin()->m_hZones.at(hZone);
-			if (bDelete) {
-				pPlayer->m_pZoneService->DeleteZone(zone);
-			} else {
-				pPlayer->m_pZoneService->ReEditZone(zone);
-			}
-			std::string sZone = fmt::format("{} - {} #{}", SURF::GetTrackName(zone.m_iTrack), SURF::ZONE::GetZoneNameByType(zone.m_iType), zone.m_iValue);
-			pPlayer->Print("你选择了: %s", sZone.c_str());
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pPlayer->GetController());
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle(bDelete ? "删除区域" : "编辑区域");
 
 	std::vector<std::pair<CZoneHandle, ZoneCache_t>> vZones(hZones.begin(), hZones.end());
@@ -114,9 +83,17 @@ static void ZoneMenu_Edit(CSurfPlayer* pPlayer, bool bDelete = false) {
 		return zoneA.m_iValue < zoneB.m_iValue;
 	});
 
-	for (const auto& [handle, zone] : vZones) {
+	for (const auto& [_, zone] : vZones) {
 		std::string sZone = fmt::format("{} - {} #{}", SURF::GetTrackName(zone.m_iTrack), SURF::ZONE::GetZoneNameByType(zone.m_iType), zone.m_iValue);
-		pMenu->AddItem(sZone, handle);
+		pMenu->AddItem(sZone, MENU_HANDLER_L(sZone, zone, pPlayer, bDelete) {
+			if (bDelete) {
+				pPlayer->m_pZoneService->DeleteZone(zone);
+			} else {
+				pPlayer->m_pZoneService->ReEditZone(zone);
+			}
+
+			pPlayer->Print("你选择了: %s", sZone.c_str());
+		});
 	}
 
 	pMenu->SetExitback(true);
@@ -138,41 +115,21 @@ CCMD_CALLBACK(Command_Zones) {
 		return;
 	}
 
-	auto wpMenu = MENU::Create(
-		pController, MENU_CALLBACK_L(pPlayer) {
-			if (action == EMenuAction::SelectItem) {
-				switch (iItem) {
-					case 0:
-						ZoneMenu_SelectTrack(pPlayer);
-						return;
-					case 1:
-						ZoneMenu_Edit(pPlayer);
-						break;
-					case 2:
-						ZoneMenu_Edit(pPlayer, true);
-						break;
-					case 3:
-						ZoneMenu_DeleteAll(pPlayer);
-						break;
-					case 4:
-						SURF::ZonePlugin()->RefreshZones();
-						break;
-				}
-			}
-		});
-
-	if (wpMenu.expired()) {
+	auto hMenu = MENU::Create(pController);
+	if (!hMenu) {
 		SDK_ASSERT(false);
 		return;
 	}
 
-	auto pMenu = wpMenu.lock();
+	auto pMenu = hMenu.Data();
 	pMenu->SetTitle("区域菜单");
-	pMenu->AddItem("添加");
-	pMenu->AddItem("编辑");
-	pMenu->AddItem("删除");
-	pMenu->AddItem("删除所有");
-	pMenu->AddItem("刷新");
+
+	pMenu->AddItem("添加", MENU_HANDLER_L(pPlayer) { ZoneMenu_SelectTrack(pPlayer); });
+	pMenu->AddItem("编辑", MENU_HANDLER_L(pPlayer) { ZoneMenu_Edit(pPlayer); });
+	pMenu->AddItem("删除", MENU_HANDLER_L(pPlayer) { ZoneMenu_Edit(pPlayer, true); });
+	pMenu->AddItem("删除所有", MENU_HANDLER_L(pPlayer) { ZoneMenu_DeleteAll(pPlayer); });
+	pMenu->AddItem("刷新", MENU_HANDLER_L(pPlayer) { SURF::ZonePlugin()->RefreshZones(); });
+
 	pMenu->Display();
 }
 
