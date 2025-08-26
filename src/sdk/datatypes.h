@@ -47,13 +47,13 @@ private:
 typedef uint32 SoundEventGuid_t;
 
 struct SndOpEventGuid_t {
-	SndOpEventGuid_t()
-		: m_nGuid(0), m_hStackHash(-1) {}
+	SoundEventGuid_t m_nGuid = 0;
+	uint32 m_hStackHash = -1;
 
-	SoundEventGuid_t m_nGuid;
-	uint32 m_hStackHash;
+	MEM_PAD(24);
 };
 
+static_assert(sizeof(SndOpEventGuid_t) == 32);
 static_assert(!std::is_trivial_v<SndOpEventGuid_t>);
 
 // used with EmitSound_t
@@ -82,28 +82,26 @@ enum gender_t : uint8 {
 };
 
 struct EmitSound_t {
-	// clang-format off
-	EmitSound_t() :
-		m_nChannel( 0 ),
-		m_pSoundName( 0 ),
-		m_flVolume( VOL_NORM ),
-		m_SoundLevel( SNDLVL_NONE ),
-		m_nFlags( 0 ),
-		m_nPitch( PITCH_NORM ),
-		m_pOrigin( 0 ),
-		m_flSoundTime( 0.0f ),
-		m_pflSoundDuration( 0 ),
-		m_bEmitCloseCaption( true ),
-		m_bWarnOnMissingCloseCaption( false ),
-		m_bWarnOnDirectWaveReference( false ),
-		m_nSpeakerEntity( -1 ),
-		m_UtlVecSoundOrigin(),
-		m_nForceGuid( 0 ),
-		m_SpeakerGender( GENDER_NONE )
-	{
+	EmitSound_t()
+		: m_nChannel(0),
+		  m_pSoundName(0),
+		  m_flVolume(VOL_NORM),
+		  m_SoundLevel(SNDLVL_NONE),
+		  m_nFlags(0),
+		  m_nPitch(PITCH_NORM),
+		  m_pOrigin(0),
+		  m_flSoundTime(0.0f),
+		  m_pflSoundDuration(0),
+		  m_bEmitCloseCaption(true),
+		  m_bWarnOnMissingCloseCaption(false),
+		  m_bWarnOnDirectWaveReference(false),
+		  m_nSpeakerEntity(-1),
+		  m_UtlVecSoundOrigin(),
+		  m_nForceGuid(0),
+		  m_SpeakerGender(GENDER_NONE),
+		  m_bHasSoundScape(false) {
 	}
 
-	// clang-format on
 	int m_nChannel;
 	const char* m_pSoundName;
 	float m_flVolume;
@@ -117,7 +115,8 @@ struct EmitSound_t {
 	bool m_bWarnOnMissingCloseCaption;
 	bool m_bWarnOnDirectWaveReference;
 	CEntityIndex m_nSpeakerEntity;
-	CUtlVector<Vector, CUtlMemory<Vector, int>> m_UtlVecSoundOrigin;
+	CUtlVector<Vector> m_UtlVecSoundOrigin;
 	SoundEventGuid_t m_nForceGuid;
 	gender_t m_SpeakerGender;
+	bool m_bHasSoundScape;
 };

@@ -68,6 +68,18 @@ enum HierarchyType_t : uint8_t {
 
 class CCollisionProperty;
 
+class CNetworkVector {
+public:
+	Vector m_vecData;
+	int m_nClassSize;
+
+public:
+	void NetworkStateChanged(uint32_t nOffset) {
+		void* router = (void*)((char*)this + m_nClassSize);
+		// CALL_VIRTUAL(void, 0, router, this, nOffset, 0xFFFFFFFF, -1);
+	}
+};
+
 class CNetworkedQuantizedFloat {
 public:
 	float32 m_Value;
@@ -75,7 +87,7 @@ public:
 	bool m_bUnflattened;
 };
 
-class CNetworkOriginCellCoordQuantizedVector {
+class CNetworkOriginCellCoordQuantizedVector : public CNetworkVector {
 public:
 	DECLARE_SCHEMA_CLASS_INLINE(CNetworkOriginCellCoordQuantizedVector);
 
@@ -89,7 +101,7 @@ public:
 	SCHEMA_FIELD(float, m_vecZ);
 };
 
-class CNetworkVelocityVector {
+class CNetworkVelocityVector : public CNetworkVector {
 public:
 	DECLARE_SCHEMA_CLASS_INLINE(CNetworkVelocityVector);
 
@@ -98,7 +110,7 @@ public:
 	SCHEMA_FIELD(float, m_vecZ);
 };
 
-class CNetworkViewOffsetVector {
+class CNetworkViewOffsetVector : public CNetworkVector {
 public:
 	DECLARE_SCHEMA_STRUCT(CNetworkViewOffsetVector);
 

@@ -22,6 +22,7 @@ void CSurfHudPlugin::OnPlayerSpawn(IGameEvent* pEvent, const char* szName, bool 
 		return;
 	}
 
+#if 0
 	auto& wpSpeedText = pSurfPlayer->m_pHudService->m_wpSpeedText;
 	if (wpSpeedText.expired()) {
 		wpSpeedText = VGUI::CreateScreenText(pController);
@@ -50,6 +51,7 @@ void CSurfHudPlugin::OnPlayerSpawn(IGameEvent* pEvent, const char* szName, bool 
 
 		VGUI::Render(wpSpeedText);
 	});
+#endif
 }
 
 void CSurfHudPlugin::OnPluginStart() {
