@@ -14,11 +14,13 @@ void GlobalAPIResponse::FromJson(const json& j) {
 
 namespace SURF::GLOBALAPI {
 	namespace MAP {
-		zoneinfo_t::zoneinfo_t() : ZoneData_t() {
+		zoneinfo_t::zoneinfo_t()
+			: ZoneData_t() {
 			m_sMap = GlobalPlugin()->m_sMapName;
 		}
 
-		zoneinfo_t::zoneinfo_t(const ZoneData_t& other) : ZoneData_t(other) {
+		zoneinfo_t::zoneinfo_t(const ZoneData_t& other)
+			: ZoneData_t(other) {
 			m_sMap = GlobalPlugin()->m_sMapName;
 		}
 

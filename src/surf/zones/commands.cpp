@@ -85,11 +85,11 @@ static void ZoneMenu_Edit(CSurfPlayer* pPlayer, bool bDelete = false) {
 
 	for (const auto& [_, zone] : vZones) {
 		std::string sZone = fmt::format("{} - {} #{}", SURF::GetTrackName(zone.m_iTrack), SURF::ZONE::GetZoneNameByType(zone.m_iType), zone.m_iValue);
-		pMenu->AddItem(sZone, MENU_HANDLER_L(sZone, zone, pPlayer, bDelete) {
+		pMenu->AddItem(sZone, MENU_HANDLER_L(sZone, zoneCache = zone, pPlayer, bDelete) {
 			if (bDelete) {
-				pPlayer->m_pZoneService->DeleteZone(zone);
+				pPlayer->m_pZoneService->DeleteZone(zoneCache);
 			} else {
-				pPlayer->m_pZoneService->ReEditZone(zone);
+				pPlayer->m_pZoneService->ReEditZone(zoneCache);
 			}
 
 			pPlayer->Print("你选择了: %s", sZone.c_str());

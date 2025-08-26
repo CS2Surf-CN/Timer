@@ -76,7 +76,8 @@ public:
 	friend class CMenuPlayer;
 
 public:
-	CBaseMenu(CBasePlayerController* pController, std::string sTitle = "") : m_sTitle(sTitle) {
+	CBaseMenu(CBasePlayerController* pController, std::string sTitle = "")
+		: m_sTitle(sTitle) {
 		m_hController = pController->GetRefEHandle();
 	}
 

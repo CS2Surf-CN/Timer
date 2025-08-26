@@ -35,18 +35,15 @@ CCMD_CALLBACK(Command_HideWeapons) {
 		return;
 	}
 
+#if 1
+	pPlayer->PrintWarning("功能维护中!");
+#else
 	auto& pMiscService = pPlayer->m_pMiscService;
 	pMiscService->m_bHideWeapons = !pMiscService->m_bHideWeapons;
+	pMiscService->HideWeapons();
 
-	auto pPawn = pController->GetPlayerPawn();
-	auto pWeaponService = pPawn->m_pWeaponServices();
-	auto pActiveWeapon = pWeaponService->m_hActiveWeapon().Get();
-	if (pActiveWeapon) {
-		pWeaponService->m_hActiveWeapon().Set(nullptr);
-		pPlayer->Print("[武器] %s\n", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");	
-	} else {
-	
-	}
+	pPlayer->Print("[武器] %s\n", pMiscService->m_bHideWeapons ? "已隐藏" : "已显示");
+#endif
 }
 
 CCMD_CALLBACK(Command_HideLegs) {

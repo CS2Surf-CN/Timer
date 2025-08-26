@@ -317,7 +317,7 @@ public:
 private:
 	[[maybe_unused]] char pad6[0x5];
 	CPlayerUserId m_UserID = -1;
-	bool m_bReceivedPacket;	// true, if client received a packet after the last send packet
+	bool m_bReceivedPacket; // true, if client received a packet after the last send packet
 	CSteamID m_SteamID;
 	CSteamID m_UnkSteamID;
 	CSteamID m_AuthTicketSteamID; // Auth ticket
@@ -345,16 +345,16 @@ public:
 	int m_UnkVariable3;
 	int m_nStringTableAckTick;
 	int m_UnkVariable4;
-	CFrameSnapshot* m_pLastSnapshot;	// last send snapshot
+	CFrameSnapshot* m_pLastSnapshot; // last send snapshot
 	CUtlVector<void*> m_vecLoadedSpawnGroups;
 	CMsgPlayerInfo m_playerInfo;
 	CFrameSnapshot* m_pBaseline;
 	int m_nBaselineUpdateTick;
-	CBitVec<MAX_EDICTS>	m_BaselinesSent;
-	int	m_nBaselineUsed;		// 0/1 toggling flag, singaling client what baseline to use
-	int	m_nLoadingProgress;	// 0..100 progress, only valid during loading
+	CBitVec<MAX_EDICTS> m_BaselinesSent;
+	int m_nBaselineUsed;    // 0/1 toggling flag, singaling client what baseline to use
+	int m_nLoadingProgress; // 0..100 progress, only valid during loading
 
-	// This is used when we send out a nodelta packet to put the client in a state where we wait 
+	// This is used when we send out a nodelta packet to put the client in a state where we wait
 	// until we get an ack from them on this packet.
 	// This is for 3 reasons:
 	// 1. A client requesting a nodelta packet means they're screwed so no point in deluging them with data.
@@ -365,7 +365,7 @@ public:
 	int m_nForceWaitForTick = -1;
 
 	CCircularBuffer m_UnkBuffer = {1024};
-	bool m_bLowViolence = false;		// true if client is in low-violence mode (L4D server needs to know)
+	bool m_bLowViolence = false; // true if client is in low-violence mode (L4D server needs to know)
 	bool m_bSomethingWithAddressType = true;
 	bool m_bFullyAuthenticated = false;
 	bool m_bUnk1 = false;
@@ -382,7 +382,7 @@ public:
 	float m_fSnapshotInterval = 0.0f;
 
 private:
-	// CSVCMsg_PacketEntities_t m_packetmsg; 
+	// CSVCMsg_PacketEntities_t m_packetmsg;
 	[[maybe_unused]] char pad2544[0x138];
 
 public:
@@ -393,6 +393,7 @@ public:
 
 private:
 	[[maybe_unused]] char pad2912[0x40];
+
 public:
 	CCommand* m_pCommand;
 };

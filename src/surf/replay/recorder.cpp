@@ -67,21 +67,21 @@ void CSurfReplayService::OnTimerFinishPost_SaveRecording() {
 		m_hTrackPostFrameTimer = UTIL::CreateTimer(
 			fTrackPostRunTime,
 			[](CHandle<CCSPlayerController> hController) {
-				auto pController = hController.Get();
-				if (!pController || !pController->IsController()) {
-					return -1.0;
-				}
-
-				auto pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
-				if (!pPlayer) {
-					SDK_ASSERT(false);
-					return -1.0;
-				}
-
-				pPlayer->m_pReplayService->FinishGrabbingPostFrames();
-
+			auto pController = hController.Get();
+			if (!pController || !pController->IsController()) {
 				return -1.0;
-			},
+			}
+
+			auto pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+			if (!pPlayer) {
+				SDK_ASSERT(false);
+				return -1.0;
+			}
+
+			pPlayer->m_pReplayService->FinishGrabbingPostFrames();
+
+			return -1.0;
+		},
 			pPlayer->GetController()->GetRefEHandle());
 	} else {
 		FinishGrabbingPostFrames();

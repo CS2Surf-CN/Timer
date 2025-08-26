@@ -79,7 +79,8 @@ template<typename T, int ELEMENT_COUNT, typename I = int>
 class CFixedSizeCircularBuffer {
 public:
 	// Creates a circular buffer of a certain type, the buffer works as a LIFO
-	CFixedSizeCircularBuffer() : m_Data(), m_nIndex(0), m_nCount(0) {}
+	CFixedSizeCircularBuffer()
+		: m_Data(), m_nIndex(0), m_nCount(0) {}
 
 	// Called when a new element is written to a buffer
 	virtual void ElementAlloc(T& element) = 0;

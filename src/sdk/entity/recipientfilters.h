@@ -7,7 +7,8 @@
 
 class CRecipientFilter : public IRecipientFilter {
 public:
-	CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false) : m_nBufType(nBufType), m_bInitMessage(bInitMessage) {}
+	CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false)
+		: m_nBufType(nBufType), m_bInitMessage(bInitMessage) {}
 
 	CRecipientFilter(IRecipientFilter* source, CPlayerSlot exceptSlot = {-1}) {
 		m_Recipients = source->GetRecipients();

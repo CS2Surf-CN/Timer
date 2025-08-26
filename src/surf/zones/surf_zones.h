@@ -4,11 +4,13 @@
 #include <surf/zones/edit.h>
 
 struct ZoneCache_t : ZoneData_t {
-	ZoneCache_t() : ZoneData_t() {
+	ZoneCache_t()
+		: ZoneData_t() {
 		m_aBeams.fill(CEntityHandle());
 	}
 
-	ZoneCache_t(const ZoneData_t& other) : ZoneData_t(other) {
+	ZoneCache_t(const ZoneData_t& other)
+		: ZoneData_t(other) {
 		m_aBeams.fill(CEntityHandle());
 	}
 

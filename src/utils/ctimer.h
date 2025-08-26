@@ -17,7 +17,8 @@ struct TimerOption_t {
 
 class CTimerBase {
 public:
-	CTimerBase(f64 initialInterval, bool useRealTime) : interval(initialInterval), useRealTime(useRealTime) {};
+	CTimerBase(f64 initialInterval, bool useRealTime)
+		: interval(initialInterval), useRealTime(useRealTime) {};
 
 	virtual ~CTimerBase() {}
 
@@ -37,7 +38,8 @@ public:
 	Fn m_fn;
 	std::tuple<Args...> m_args;
 
-	explicit CTimer(bool useRealTime, f32 initialDelay, Fn fn, Args... args) : CTimerBase(initialDelay, useRealTime), m_fn(std::move(fn)), m_args(std::make_tuple(std::move(args)...)) {}
+	explicit CTimer(bool useRealTime, f32 initialDelay, Fn fn, Args... args)
+		: CTimerBase(initialDelay, useRealTime), m_fn(std::move(fn)), m_args(std::make_tuple(std::move(args)...)) {}
 
 	bool Execute() override {
 		interval = std::apply(m_fn, m_args);
@@ -67,7 +69,8 @@ public:
 	Fn m_fn;
 	std::tuple<Args...> m_args;
 
-	explicit CFrameAction(Fn fn, Args... args) : m_fn(std::move(fn)), m_args(std::make_tuple(std::move(args)...)) {}
+	explicit CFrameAction(Fn fn, Args... args)
+		: m_fn(std::move(fn)), m_args(std::make_tuple(std::move(args)...)) {}
 
 	virtual void Execute() override {
 		std::apply(m_fn, m_args);

@@ -101,6 +101,7 @@ bool CSurfMiscPlugin::OnPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv
 		return true;
 	}
 
+	// due to GetMaxSpeed() got inlined
 	mv->m_flMaxSpeed = pPlayer->m_fCurrentMaxSpeed;
 
 	return true;
@@ -130,7 +131,7 @@ void CSurfMiscService::HideLegs() {
 				pWeapon->m_fEffects(EF_NOSHADOW | EF_NORECEIVESHADOW);
 			}
 		}
-	} else if (!this->m_bHideLegs) {
+	} else {
 		pPawn->m_clrRender(Color(255, 255, 255, 255));
 		pPawn->m_fEffects(0);
 		if (auto pWeaponService = pPawn->m_pWeaponServices(); pWeaponService) {
@@ -140,6 +141,21 @@ void CSurfMiscService::HideLegs() {
 				pWeapon->m_fEffects(0);
 			}
 		}
+	}
+}
+
+void CSurfMiscService::HideWeapons() {
+	CCSPlayerPawn* pPawn = this->GetPlayer()->GetPlayerPawn();
+	if (!pPawn) {
+		return;
+	}
+
+	if (auto pWeaponService = pPawn->m_pWeaponServices(); pWeaponService) {
+		/*auto pWeapons = pWeaponService->m_hMyWeapons();
+		FOR_EACH_VEC(*pWeapons, i) {
+			auto pWeapon = pWeapons->Element(i).Get();
+			SURF::MISC::HidePlugin()->Set(pPawn->GetController(), pWeapon, m_bHideWeapons);
+		}*/
 	}
 }
 

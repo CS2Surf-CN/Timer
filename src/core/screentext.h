@@ -21,6 +21,7 @@ struct ScreenTextManifest_t {
 class CScreenText {
 private:
 	CPointWorldText* EnsureScreenEntity();
+
 	float GetWorldUnits(int unit) const {
 		return (0.25f / unit) * m_Manifest.m_fFontSize;
 	}

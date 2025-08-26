@@ -48,18 +48,18 @@ void CSurfBotReplayService::DoPlayback(CCSPlayerPawnBase* pBotPawn, CInButtonSta
 		m_info.hRestartTimer = UTIL::CreateTimer(
 			m_info.fRestartDelay,
 			[](CHandle<CCSPlayerController> hController) {
-				auto pController = hController.Get();
-				if (!pController || !pController->IsBot()) {
-					return -1.0;
-				}
-
-				auto pSurfBot = SURF::GetBotManager()->ToPlayer(pController);
-				if (pSurfBot) {
-					pSurfBot->m_pReplayService->FinishReplay();
-				}
-
+			auto pController = hController.Get();
+			if (!pController || !pController->IsBot()) {
 				return -1.0;
-			},
+			}
+
+			auto pSurfBot = SURF::GetBotManager()->ToPlayer(pController);
+			if (pSurfBot) {
+				pSurfBot->m_pReplayService->FinishReplay();
+			}
+
+			return -1.0;
+		},
 			GetPlayer()->GetController()->GetRefEHandle());
 		return;
 	}

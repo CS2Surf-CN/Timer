@@ -229,7 +229,8 @@ namespace MEM {
 		class VType {};
 
 		union VConverter {
-			VConverter(void* _ptr) : ptr(_ptr) {}
+			VConverter(void* _ptr)
+				: ptr(_ptr) {}
 
 			void* ptr;
 			Ret (__thiscall VType::*fn)(Args...);

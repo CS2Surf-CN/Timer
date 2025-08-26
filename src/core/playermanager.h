@@ -12,7 +12,8 @@ class CPlayerService {
 public:
 	CPlayerService() = delete;
 
-	CPlayerService(CPlayer* player) : m_pPlayer(player) {}
+	CPlayerService(CPlayer* player)
+		: m_pPlayer(player) {}
 
 public:
 	virtual ~CPlayerService() {}
@@ -66,7 +67,8 @@ protected:
 
 class CPlayer : public CPlayerServiceFactory {
 public:
-	CPlayer(int slot) : m_iSlot(slot) {}
+	CPlayer(int slot)
+		: m_iSlot(slot) {}
 
 	virtual ~CPlayer() {}
 

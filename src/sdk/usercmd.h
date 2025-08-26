@@ -32,7 +32,8 @@ struct CPlayerButton {
 	uint64_t changed;
 	uint64_t scroll;
 
-	CPlayerButton() : down(0), changed(0), scroll(0) {}
+	CPlayerButton()
+		: down(0), changed(0), scroll(0) {}
 
 	CPlayerButton(const CPlayerButton&) = default;
 

@@ -45,6 +45,7 @@ public:
 
 public:
 	void HideLegs();
+	void HideWeapons();
 };
 
 namespace SURF {

@@ -4,8 +4,6 @@
 #include <core/eventmanager.h>
 #include <utils/utils.h>
 #include <sdk/entity/cbaseentity.h>
-
-#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 // constexpr float g_fMenuDefaultOffsetX_Alive = -8.9f;

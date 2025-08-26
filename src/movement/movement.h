@@ -25,7 +25,8 @@ struct SubtickMove {
 class CMoveDataBase {
 public:
 	CMoveDataBase() = default;
-	CMoveDataBase(const CMoveDataBase &source)
+
+	CMoveDataBase(const CMoveDataBase& source)
 		// clang-format off
 		: m_bFirstRunOfFunctions {source.m_bFirstRunOfFunctions},
 		m_bHasZeroFrametime {source.m_bHasZeroFrametime},
@@ -50,16 +51,13 @@ public:
 		m_flSubtickEndFraction {source.m_flSubtickEndFraction}
 	// clang-format on
 	{
-		for (int i = 0; i < source.m_AttackSubtickMoves.Count(); i++)
-		{
+		for (int i = 0; i < source.m_AttackSubtickMoves.Count(); i++) {
 			this->m_AttackSubtickMoves.AddToTail(source.m_AttackSubtickMoves[i]);
 		}
-		for (int i = 0; i < source.m_SubtickMoves.Count(); i++)
-		{
+		for (int i = 0; i < source.m_SubtickMoves.Count(); i++) {
 			this->m_SubtickMoves.AddToTail(source.m_SubtickMoves[i]);
 		}
-		for (int i = 0; i < source.m_TouchList.Count(); i++)
-		{
+		for (int i = 0; i < source.m_TouchList.Count(); i++) {
 			auto touch = this->m_TouchList.AddToTailGetPtr();
 			touch->deltavelocity = m_TouchList[i].deltavelocity;
 			touch->trace.m_pSurfaceProperties = m_TouchList[i].trace.m_pSurfaceProperties;

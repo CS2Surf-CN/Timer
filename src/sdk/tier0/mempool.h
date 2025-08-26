@@ -118,7 +118,8 @@ private:
 template<class T>
 class CUtlMemoryPool : public CUtlMemoryPoolBase {
 public:
-	CUtlMemoryPool(int numElements, MemoryPoolGrowType_t growMode = UTLMEMORYPOOL_GROW_FAST, const char* pszAllocOwner = MEM_ALLOC_CLASSNAME(T), MemAllocAttribute_t allocAttribute = MemAllocAttribute_Unk0) : CUtlMemoryPoolBase(sizeof(T), numElements, alignof(T), growMode, pszAllocOwner, allocAttribute) {}
+	CUtlMemoryPool(int numElements, MemoryPoolGrowType_t growMode = UTLMEMORYPOOL_GROW_FAST, const char* pszAllocOwner = MEM_ALLOC_CLASSNAME(T), MemAllocAttribute_t allocAttribute = MemAllocAttribute_Unk0)
+		: CUtlMemoryPoolBase(sizeof(T), numElements, alignof(T), growMode, pszAllocOwner, allocAttribute) {}
 
 	T* Alloc();
 	T* AllocZero();
@@ -466,7 +467,8 @@ private: \
 #define DEFINE_FIXEDSIZE_ALLOCATOR_EXTERNAL(_class, _allocator) CUtlMemoryPool<_class>* _class::s_pAllocator = _allocator
 
 template<int ITEM_SIZE, int ALIGNMENT, int CHUNK_SIZE, class CAllocator, bool GROWMODE, int COMPACT_THRESHOLD>
-inline CAlignedMemPool<ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator, GROWMODE, COMPACT_THRESHOLD>::CAlignedMemPool() : m_pFirstFree(0), m_nFree(0), m_TimeLastCompact(0) {
+inline CAlignedMemPool<ITEM_SIZE, ALIGNMENT, CHUNK_SIZE, CAllocator, GROWMODE, COMPACT_THRESHOLD>::CAlignedMemPool()
+	: m_pFirstFree(0), m_nFree(0), m_TimeLastCompact(0) {
 	// These COMPILE_TIME_ASSERT checks need to be in individual scopes to avoid build breaks
 	// on MacOS and Linux due to a gcc bug.
 	{

@@ -70,7 +70,7 @@ void CSurfHudPlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pPawn, const CInButto
 
 	UpdateHudData(pSurfPlayer);
 	UpdateHTML(pSurfPlayer);
-	//UpdateScreenText(pSurfPlayer);
+	// UpdateScreenText(pSurfPlayer);
 	UpdateHudDataPost(pSurfPlayer);
 }
 
@@ -118,7 +118,8 @@ void CSurfHudPlugin::UpdateScreenText(CSurfPlayer* pSurfPlayer) {
 		Color iSpeedColor = iVel < pHudService->m_iPrevousSpeed ? Color(255, 0, 0, 255) : Color(0, 0, 255, 255);
 		pSpeedText->SetColor(iSpeedColor);
 
-		auto sAlign = iVel < 100 ? "  " : iVel < 1000 ? " " : "";
+		auto sAlign = iVel < 100 ? "  " : iVel < 1000 ? " "
+													  : "";
 		std::string sSpeed = fmt::format("{}{}", sAlign, iVel);
 		pSpeedText->SetText(sSpeed);
 	}
