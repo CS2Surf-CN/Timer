@@ -172,7 +172,7 @@ void SDKHookManager::HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHoo
 	auto same_ctx = std::ranges::find_if(listenerList, [hEnt, pListener](const auto& pair) { return pair.first == hEnt && pair.second == pListener; });
 	if (same_ctx != listenerList.end()) {
 		SDK_ASSERT(false); // design error
-		Plat_FatalErrorFunc("Hooking the same entity and listener is not allowed");
+		Plat_FatalError("Hooking the same entity and listener is not allowed");
 	}
 
 	listenerList.emplace_back(hEnt, pListener);
@@ -233,12 +233,19 @@ void SDKHookManager::UnhookVMT(CBaseEntity* pEnt) {
 	for (int type = 0; type < SDKHookType::SDKHook_MAX_TYPE; type++) {
 		if (m_umSDKHookCallbacks[type].contains(pVtable)) {
 			for (int i = 0; i <= 1; i++) {
-				if (m_umSDKHooksListeners[type][i].contains(pVtable)) {
-					for (const auto& [hEnt, pListener] : m_umSDKHooksListeners[type][i].at(pVtable)) {
-						if (hEnt == hTargetEnt) {
-							SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, pListener, i);
-						}
+				if (!m_umSDKHooksListeners[type][i].contains(pVtable)) {
+					continue;
+				}
+
+				std::vector<void*> vListenerUnhook;
+				for (const auto& [hEnt, pListener] : m_umSDKHooksListeners[type][i].at(pVtable)) {
+					if (hEnt == hTargetEnt) {
+						vListenerUnhook.emplace_back(pListener);
 					}
+				}
+
+				for (const auto& pListener : vListenerUnhook) {
+					SDKHOOK::UninstallHookRT(static_cast<SDKHookType>(type), pEnt, pListener, i);
 				}
 			}
 		}
