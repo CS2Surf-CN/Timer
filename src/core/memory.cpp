@@ -454,20 +454,10 @@ void MEM::MODULE::Setup() {
 }
 
 std::shared_ptr<libmodule::CModule> MEM::MODULE::Append(const std::string_view svModuleName) {
-	auto __remove_substr = [](std::string& str, const std::string& toRemove) {
-		if (toRemove.empty()) {
-			return;
-		}
-
-		size_t pos;
-		while ((pos = str.find(toRemove)) != std::string::npos) {
-			str.erase(pos, toRemove.length());
-		}
-	};
-
 	std::string sModuleName = svModuleName.data();
-	__remove_substr(sModuleName, MODULE_PREFIX);
-	__remove_substr(sModuleName, MODULE_EXT);
+	if (auto pos = sModuleName.find(MODULE_EXT); pos != std::string::npos) {
+		sModuleName.resize(pos);
+	}
 
 	if (g_umModules.contains(sModuleName)) {
 		return {};
