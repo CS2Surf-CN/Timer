@@ -108,11 +108,14 @@ void* Plat_GetProcAddress(void* lib, const char* symbol);
 void* Plat_GetModuleHandle(const char* path);
 bool Plat_GetCommandArgument(const char* argName, char* buffer, size_t maxlength);
 
-#define LIB_DECLARE_MODULE(sModule) constexpr inline const char*##sModule = FILLMODULE(#sModule)
-
 namespace LIB {
 	constexpr inline const char* gamebin = GAMEBIN;
 	constexpr inline const char* addons = GAME_NAME "/addons/cs2surf";
+
+	// clang-format off
+#define LIB_DECLARE_MODULE(sModule) \
+	constexpr inline const char* sModule = FILLMODULE(#sModule)
+	// clang-format on
 
 	LIB_DECLARE_MODULE(engine2);
 	LIB_DECLARE_MODULE(server);
