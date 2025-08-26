@@ -12,6 +12,8 @@ struct touchlist_t {
 class CTraceFilterPlayerMovementCS : public CTraceFilter {
 public:
 	CTraceFilterPlayerMovementCS(CBasePlayerPawn* pawn);
+
+	virtual bool ShouldHitEntity(CEntityInstance* pEnt) override;
 };
 
 template<typename T>
