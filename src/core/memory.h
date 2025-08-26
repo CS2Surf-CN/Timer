@@ -41,13 +41,16 @@ namespace MEM {
 	} // namespace CALL
 
 	namespace MODULE {
-		inline std::shared_ptr<libmodule::CModule> engine;
+		inline std::shared_ptr<libmodule::CModule> engine2;
 		inline std::shared_ptr<libmodule::CModule> tier0;
 		inline std::shared_ptr<libmodule::CModule> server;
 		inline std::shared_ptr<libmodule::CModule> schemasystem;
 		inline std::shared_ptr<libmodule::CModule> steamnetworkingsockets;
 
+		inline std::unordered_map<std::string, std::shared_ptr<libmodule::CModule>> g_umModules;
+
 		void Setup();
+		std::shared_ptr<libmodule::CModule> Append(const std::string_view svModuleName);
 	} // namespace MODULE
 
 	namespace TRAMPOLINE {
@@ -76,6 +79,7 @@ namespace MEM {
 	} // namespace TRAMPOLINE
 
 	void SetupHooks();
+	void* FindPattern(const std::string_view svPattern, const std::string_view svModuleName);
 
 	class CHookManager {
 	public:

@@ -68,9 +68,13 @@ void* GAMEDATA::GetMemSig(std::string name) {
 		return nullptr;
 	}
 
-	auto lib = MODULE_PREFIX + element["library"].get<std::string>() + MODULE_EXT;
+	auto sModuleName = element["library"].get<std::string>();
+	MEM::MODULE::Append(sModuleName);
+
 	auto sig = element[WIN_LINUX("windows", "linux")].get<std::string>();
-	auto addr = libmem::SignScan(sig.c_str(), lib.c_str());
+	// auto lib = MODULE_PREFIX + sModuleName + MODULE_EXT;
+	// auto addr = libmem::SignScan(sig.c_str(), lib.c_str());
+	auto addr = MEM::FindPattern(sig, sModuleName);
 	SDK_ASSERT(addr);
 	m_pMemSig[name] = addr;
 	return addr;

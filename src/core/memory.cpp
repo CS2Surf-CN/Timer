@@ -416,7 +416,7 @@ static bool SetupVMTHooks() {
 	HOOK_VMTEX(
 		"CNetworkGameServer",
 		CNetworkGameServerBase::ActivateServer,
-		MEM::MODULE::engine,
+		MEM::MODULE::engine2,
 		Hook_ActivateServer,
 		MEM::TRAMPOLINE::g_fnActivateServer
 	);
@@ -431,26 +431,58 @@ void MEM::SetupHooks() {
 	SDK_ASSERT(SetupVMTHooks());
 }
 
+void* MEM::FindPattern(const std::string_view svPattern, const std::string_view svModuleName) {
+	if (!MODULE::g_umModules.contains(svModuleName.data())) {
+		SDK_ASSERT(false);
+		return nullptr;
+	}
+
+	const auto& pModule = MODULE::g_umModules.at(svModuleName.data());
+	return pModule->FindPattern(svPattern).RCast<void*>();
+}
+
 MEM::CHookManager* MEM::GetHookManager() {
 	return &g_HookManager;
 }
 
 void MEM::MODULE::Setup() {
-	engine = std::make_shared<libmodule::CModule>();
-	engine->InitFromName(LIB::engine2, true);
+	engine2 = Append(LIB::engine2);
+	tier0 = Append(LIB::tier0);
+	server = Append(LIB::server);
+	schemasystem = Append(LIB::schemasystem);
+	steamnetworkingsockets = Append(LIB::steamnetworkingsockets);
+}
 
-	tier0 = std::make_shared<libmodule::CModule>();
-	tier0->InitFromName(LIB::tier0, true);
+std::shared_ptr<libmodule::CModule> MEM::MODULE::Append(const std::string_view svModuleName) {
+	auto __remove_substr = [](std::string& str, const std::string& toRemove) {
+		if (toRemove.empty()) {
+			return;
+		}
 
-	server = std::make_shared<libmodule::CModule>();
-	server->InitFromMemory(libmem::GetModule(LIB::server).base);
-	SDK_ASSERT(server->GetModuleBase().GetPtr());
+		size_t pos;
+		while ((pos = str.find(toRemove)) != std::string::npos) {
+			str.erase(pos, toRemove.length());
+		}
+	};
 
-	schemasystem = std::make_shared<libmodule::CModule>();
-	schemasystem->InitFromName(LIB::schemasystem, true);
+	std::string sModuleName = svModuleName.data();
+	__remove_substr(sModuleName, MODULE_PREFIX);
+	__remove_substr(sModuleName, MODULE_EXT);
 
-	steamnetworkingsockets = std::make_shared<libmodule::CModule>();
-	steamnetworkingsockets->InitFromName(LIB::steamnetworkingsockets, true);
+	if (g_umModules.contains(sModuleName)) {
+		return {};
+	}
+
+	auto mod = std::make_shared<libmodule::CModule>();
+	mod->InitFromName(sModuleName);
+	if (!mod->IsValid()) {
+		SDK_ASSERT(false);
+		return {};
+	}
+
+	g_umModules[sModuleName] = mod;
+
+	return mod;
 }
 
 #pragma endregion

@@ -108,20 +108,23 @@ void* Plat_GetProcAddress(void* lib, const char* symbol);
 void* Plat_GetModuleHandle(const char* path);
 bool Plat_GetCommandArgument(const char* argName, char* buffer, size_t maxlength);
 
+#define LIB_DECLARE_MODULE(sModule) constexpr inline const char*##sModule = FILLMODULE(#sModule)
+
 namespace LIB {
 	constexpr inline const char* gamebin = GAMEBIN;
 	constexpr inline const char* addons = GAME_NAME "/addons/cs2surf";
-	constexpr inline const char* engine2 = FILLMODULE("engine2");
-	constexpr inline const char* server = FILLMODULE("server");
-	constexpr inline const char* tier0 = FILLMODULE("tier0");
-	constexpr inline const char* networksystem = FILLMODULE("networksystem");
-	constexpr inline const char* filesystem_stdio = FILLMODULE("filesystem_stdio");
-	constexpr inline const char* schemasystem = FILLMODULE("schemasystem");
-	constexpr inline const char* matchmaking = FILLMODULE("matchmaking");
-	constexpr inline const char* soundsystem = FILLMODULE("soundsystem");
-	constexpr inline const char* resourcesystem = FILLMODULE("resourcesystem");
-	constexpr inline const char* steamnetworkingsockets = FILLMODULE("steamnetworkingsockets");
-	constexpr inline const char* worldrenderer = FILLMODULE("worldrenderer");
+
+	LIB_DECLARE_MODULE(engine2);
+	LIB_DECLARE_MODULE(server);
+	LIB_DECLARE_MODULE(tier0);
+	LIB_DECLARE_MODULE(networksystem);
+	LIB_DECLARE_MODULE(filesystem_stdio);
+	LIB_DECLARE_MODULE(schemasystem);
+	LIB_DECLARE_MODULE(matchmaking);
+	LIB_DECLARE_MODULE(soundsystem);
+	LIB_DECLARE_MODULE(resourcesystem);
+	LIB_DECLARE_MODULE(steamnetworkingsockets);
+	LIB_DECLARE_MODULE(worldrenderer);
 } // namespace LIB
 
 #pragma endregion

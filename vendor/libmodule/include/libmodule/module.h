@@ -43,6 +43,10 @@ namespace libmodule {
 		CModule& operator=(const CModule&) = delete;
 
 		explicit operator bool() const {
+			return IsValid();
+		}
+
+		bool IsValid() const {
 			return m_pModuleHandle != nullptr;
 		}
 
