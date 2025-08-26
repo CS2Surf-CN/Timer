@@ -98,6 +98,17 @@ bool CSurfMiscPlugin::OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveDat
 	return true;
 }
 
+bool CSurfMiscPlugin::OnPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(ms);
+	if (!pPlayer) {
+		return true;
+	}
+
+	mv->m_flMaxSpeed = pPlayer->m_fCurrentMaxSpeed;
+
+	return true;
+}
+
 bool CSurfMiscPlugin::OnTakeDamage(CCSPlayerPawnBase* pVictim, CTakeDamageInfo* info) {
 	return false;
 }
