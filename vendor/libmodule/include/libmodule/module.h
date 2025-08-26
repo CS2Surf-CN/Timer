@@ -79,6 +79,7 @@ namespace libmodule {
 		[[nodiscard]] CMemory GetModuleBase() const noexcept;
 		[[nodiscard]] std::string_view GetModulePath() const;
 		[[nodiscard]] std::string_view GetModuleName() const;
+		[[nodiscard]] std::string GetFixedServerPath(const std::string_view svRawPath) const;
 
 	private:
 		bool Init(const std::string_view svModelePath);
