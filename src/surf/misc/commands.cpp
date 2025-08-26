@@ -57,6 +57,7 @@ CCMD_CALLBACK(Command_HideLegs) {
 
 	auto& pMiscService = player->m_pMiscService;
 	pMiscService->m_bHideLegs = !pMiscService->m_bHideLegs;
+	pMiscService->HideLegs();
 
 	UTIL::PrintChat(pController, "[腿部] %s\n", pMiscService->m_bHideLegs ? "已隐藏" : "已显示");
 }

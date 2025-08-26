@@ -92,9 +92,6 @@ bool CSurfMiscPlugin::OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveDat
 		ms->m_flDuckSpeed(DUCK_SPEED_MINIMUM);
 	}
 
-	auto& pMiscService = player->m_pMiscService;
-	pMiscService->HideLegs();
-
 	return true;
 }
 
@@ -118,16 +115,31 @@ void CSurfMiscPlugin::OnResourcePrecache(IEntityResourceManifest* pResourceManif
 }
 
 void CSurfMiscService::HideLegs() {
-	CCSPlayerPawn* pawn = this->GetPlayer()->GetPlayerPawn();
-	if (!pawn) {
+	CCSPlayerPawn* pPawn = this->GetPlayer()->GetPlayerPawn();
+	if (!pPawn) {
 		return;
 	}
 
-	Color& ogColor = pawn->m_clrRender();
-	if (this->m_bHideLegs && ogColor.a() == 255) {
-		pawn->m_clrRender(Color(255, 255, 255, 254));
-	} else if (!this->m_bHideLegs && ogColor.a() != 255) {
-		pawn->m_clrRender(Color(255, 255, 255, 255));
+	if (this->m_bHideLegs) {
+		pPawn->m_clrRender(Color(255, 255, 255, 254));
+		pPawn->m_fEffects(EF_NOSHADOW | EF_NORECEIVESHADOW);
+		if (auto pWeaponService = pPawn->m_pWeaponServices(); pWeaponService) {
+			auto pWeapons = pWeaponService->m_hMyWeapons();
+			FOR_EACH_VEC(*pWeapons, i) {
+				auto pWeapon = pWeapons->Element(i).Get();
+				pWeapon->m_fEffects(EF_NOSHADOW | EF_NORECEIVESHADOW);
+			}
+		}
+	} else if (!this->m_bHideLegs) {
+		pPawn->m_clrRender(Color(255, 255, 255, 255));
+		pPawn->m_fEffects(0);
+		if (auto pWeaponService = pPawn->m_pWeaponServices(); pWeaponService) {
+			auto pWeapons = pWeaponService->m_hMyWeapons();
+			FOR_EACH_VEC(*pWeapons, i) {
+				auto pWeapon = pWeapons->Element(i).Get();
+				pWeapon->m_fEffects(0);
+			}
+		}
 	}
 }
 

@@ -11,10 +11,8 @@ EVENT_CALLBACK_POST(OnPlayerDeath) {
 		return;
 	}
 
-	CHandle<CCSPlayerController> hController = pController->GetRefEHandle();
-
-	UTIL::RequestFrame([hController]() {
-		CCSPlayerController* pController = hController.Get();
+	UTIL::RequestFrame([hController = pController->GetRefEHandle()]() {
+		CCSPlayerController* pController = static_cast<CCSPlayerController*>(hController.Get());
 		if (!pController) {
 			return;
 		}
@@ -53,10 +51,8 @@ EVENT_CALLBACK_POST(OnPlayerSpawm) {
 		return;
 	}
 
-	CHandle<CCSPlayerController> hController = pController->GetRefEHandle();
-
-	UTIL::RequestFrame([hController]() {
-		CCSPlayerController* pController = hController.Get();
+	UTIL::RequestFrame([hController = pController->GetRefEHandle()]() {
+		CCSPlayerController* pController = static_cast<CCSPlayerController*>(hController.Get());
 		if (!pController) {
 			return;
 		}
@@ -72,6 +68,15 @@ EVENT_CALLBACK_POST(OnPlayerSpawm) {
 
 		pPawn->SetCollisionGroup(COLLISION_GROUP_DEBRIS);
 		pPawn->m_clrRender(Color(255, 255, 255, 255));
+
+		CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+		if (!pPlayer) {
+			return;
+		}
+
+		if (pPlayer->m_pMiscService->m_bHideLegs) {
+			pPlayer->m_pMiscService->HideLegs();
+		}
 	});
 }
 
