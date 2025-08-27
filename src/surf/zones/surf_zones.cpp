@@ -196,22 +196,20 @@ void CSurfZonePlugin::UpsertZone(const ZoneData_t& data, bool bUpload) {
 
 	if (bUpload) {
 		SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
-		SURF::GLOBALAPI::MAP::UpdateZone(
-			info, HTTPRES_CALLBACK_L() {
-				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}更新区域失败."));
-				SURF::CPrintChatAll("{grey}更新区域成功!");
-			});
+		SURF::GLOBALAPI::MAP::UpdateZone(info, HTTPRES_CALLBACK_L() {
+			GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}更新区域失败."));
+			SURF::CPrintChatAll("{grey}更新区域成功!");
+		});
 	}
 }
 
 void CSurfZonePlugin::DeleteZone(const ZoneData_t& data, bool bUpload) {
 	if (bUpload) {
 		SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
-		SURF::GLOBALAPI::MAP::DeleteZone(
-			info, HTTPRES_CALLBACK_L() {
-				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}删除区域失败."));
-				SURF::CPrintChatAll("{grey}删除区域成功!");
-			});
+		SURF::GLOBALAPI::MAP::DeleteZone(info, HTTPRES_CALLBACK_L() {
+			GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}删除区域失败."));
+			SURF::CPrintChatAll("{grey}删除区域成功!");
+		});
 	}
 
 	auto res = FindZone(data.m_iTrack, data.m_iType, data.m_iValue);

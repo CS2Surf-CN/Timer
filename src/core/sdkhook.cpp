@@ -7,8 +7,6 @@
 #include <utility>
 #include <list>
 
-#include <core/concmdmanager.h>
-
 class SDKHookManager : CCoreForward {
 private:
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;

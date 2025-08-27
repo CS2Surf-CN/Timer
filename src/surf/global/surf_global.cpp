@@ -41,37 +41,34 @@ void CSurfGlobalAPIPlugin::OnApplyGameSettings(ISource2Server* pServer, KeyValue
 	m_iMapWorkshopID = pKV->FindKey("launchoptions")->GetUint64("customgamemode");
 	m_sMapName = pKV->FindKey("launchoptions")->GetString("levelname", pGlobal->mapname.ToCStr());
 
-	SURF::GLOBALAPI::AUTH::GetGlobalToken(
-		m_GlobalAuth.m_sKey, HTTPRES_CALLBACK_L() {
-			GAPIRES_CHECK(res, r);
+	SURF::GLOBALAPI::AUTH::GetGlobalToken(m_GlobalAuth.m_sKey, HTTPRES_CALLBACK_L() {
+		GAPIRES_CHECK(res, r);
 
-			JSON_GETTER(r.m_Data, token, SURF::GlobalPlugin()->m_GlobalAuth.m_sToken);
+		JSON_GETTER(r.m_Data, token, SURF::GlobalPlugin()->m_GlobalAuth.m_sToken);
 
-			FORWARD_POST(CSurfGlobalAPIForward, OnGlobalInit);
-		});
+		FORWARD_POST(CSurfGlobalAPIForward, OnGlobalInit);
+	});
 
-	SURF::GLOBALAPI::AUTH::GetUpdaterToken(
-		m_UpdaterAuth.m_sKey, HTTPRES_CALLBACK_L() {
-			GAPIRES_CHECK(res, r);
+	SURF::GLOBALAPI::AUTH::GetUpdaterToken(m_UpdaterAuth.m_sKey, HTTPRES_CALLBACK_L() {
+		GAPIRES_CHECK(res, r);
 
-			JSON_GETTER(r.m_Data, token, SURF::GlobalPlugin()->m_UpdaterAuth.m_sToken);
+		JSON_GETTER(r.m_Data, token, SURF::GlobalPlugin()->m_UpdaterAuth.m_sToken);
 
-			FORWARD_POST(CSurfGlobalAPIForward, OnGlobalZoneHelperInit);
-		});
+		FORWARD_POST(CSurfGlobalAPIForward, OnGlobalZoneHelperInit);
+	});
 
 	if (m_iMapWorkshopID != 0) {
-		SURF::GLOBALAPI::MAP::PullInfo(
-			m_iMapWorkshopID, m_sMapName, HTTPRES_CALLBACK_L() {
-				GAPIRES_CHECK(res, r);
+		SURF::GLOBALAPI::MAP::PullInfo(m_iMapWorkshopID, m_sMapName, HTTPRES_CALLBACK_L() {
+			GAPIRES_CHECK(res, r);
 
-				SURF::GlobalPlugin()->m_bMapValidated = true;
+			SURF::GlobalPlugin()->m_bMapValidated = true;
 
-				JSON_GETTER(r.m_Data, tier, SURF::GLOBALAPI::MAP::g_MapInfo.m_iTier);
-				JSON_GETTER(r.m_Data, maxvel, SURF::GLOBALAPI::MAP::g_MapInfo.m_fMaxvel);
-				JSON_GETTER(r.m_Data, limitpre, SURF::GLOBALAPI::MAP::g_MapInfo.m_bLimitPrespeed);
+			JSON_GETTER(r.m_Data, tier, SURF::GLOBALAPI::MAP::g_MapInfo.m_iTier);
+			JSON_GETTER(r.m_Data, maxvel, SURF::GLOBALAPI::MAP::g_MapInfo.m_fMaxvel);
+			JSON_GETTER(r.m_Data, limitpre, SURF::GLOBALAPI::MAP::g_MapInfo.m_bLimitPrespeed);
 
-				FORWARD_POST(CSurfGlobalAPIForward, OnGlobalMapValidated);
-			});
+			FORWARD_POST(CSurfGlobalAPIForward, OnGlobalMapValidated);
+		});
 	}
 }
 
