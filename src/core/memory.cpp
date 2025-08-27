@@ -432,12 +432,17 @@ void MEM::SetupHooks() {
 }
 
 void* MEM::FindPattern(const std::string_view svPattern, const std::string_view svModuleName) {
-	if (!MODULE::g_umModules.contains(svModuleName.data())) {
+	std::string sModuleName = svModuleName.data();
+	if (auto pos = sModuleName.find(MODULE_EXT); pos != std::string::npos) {
+		sModuleName.resize(pos);
+	}
+
+	if (!MODULE::g_umModules.contains(sModuleName)) {
 		SDK_ASSERT(false);
 		return nullptr;
 	}
 
-	const auto& pModule = MODULE::g_umModules.at(svModuleName.data());
+	const auto& pModule = MODULE::g_umModules.at(sModuleName);
 	return pModule->FindPattern(svPattern).RCast<void*>();
 }
 
