@@ -18,7 +18,7 @@
 				"+map de_dust2",
 				"+exec server.cfg",
 				"+sv_cheats 1",
-				"+host_workshop_map 3133346713"
+				"+host_workshop_map 3073875025"
 			]
 		},
 		{
@@ -35,7 +35,7 @@
 				"+developer 5",
 				"+exec server.cfg",
 				"+sv_cheats 1",
-				"+host_workshop_map 3133346713"
+				"+host_workshop_map 3073875025"
 			]
 		},
 		{
