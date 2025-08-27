@@ -258,7 +258,10 @@ namespace MEM {
 		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
 		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, nLen, libmem::Prot::XRW);
 		if (old_mem_prot.has_value()) {
-			libmem::SetMemory((libmem::Address)adr_patch, 0x90, nLen);
+			for (size_t i = 0; i < nLen; ++i) {
+				adr_patch[i] = 0x90;
+			}
+
 			libmem::ProtMemory((libmem::Address)adr_patch, nLen, old_mem_prot.value());
 		}
 	}
