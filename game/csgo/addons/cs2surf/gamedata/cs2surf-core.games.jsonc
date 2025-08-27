@@ -4,7 +4,7 @@
 			"windows": 88,
 			"linux": 80
 		},
-		// 9 functions after one with "CBasePlayerPawn::PhysicsSimulate"
+		// 11 functions after one with "CBasePlayerPawn::PhysicsSimulate"
 		"IsEntityPawn": {
 			"windows": 172,
 			"linux": 171
@@ -27,17 +27,17 @@
 		// return (*(*v9 + 2832LL))(v9, v27, 0LL);
 		// 2832 (354 * 8) is the offset
 		"CommitSuicide": {
-			"windows": 404,
-			"linux": 404
+			"windows": 403,
+			"linux": 403
 		},
 		"ControllerRespawn": {
-			"windows": 275,
-			"linux": 277
+			"windows": 274,
+			"linux": 276
 		},
 		// "Player.Respawn"
 		"Respawn": {
-			"windows": 368,
-			"linux": 369
+			"windows": 367,
+			"linux": 368
 		},
 		// Check sv_fullupdate
 		"ClientOffset": {
