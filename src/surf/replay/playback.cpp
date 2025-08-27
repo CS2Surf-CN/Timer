@@ -5,7 +5,7 @@ void CSurfBotReplayService::OnInit() {
 	Init();
 }
 
-void CSurfBotReplayService::OnReset() {
+void CSurfBotReplayService::OnPlayerQuit() {
 	Init();
 }
 
@@ -45,10 +45,8 @@ void CSurfBotReplayService::DoPlayback(CCSPlayerPawnBase* pBotPawn, CInButtonSta
 		m_info.iTick = iLimit;
 		m_info.iRealTick = iLimit;
 		m_info.iStatus = Replay_End;
-		m_info.hRestartTimer = UTIL::CreateTimer(
-			m_info.fRestartDelay,
-			[](CHandle<CCSPlayerController> hController) {
-			auto pController = hController.Get();
+		m_info.hRestartTimer = UTIL::CreateTimer(m_info.fRestartDelay, [hController = GetPlayer()->GetController()->GetRefEHandle()]() {
+			auto pController = static_cast<CCSPlayerController*>(hController.Get());
 			if (!pController || !pController->IsBot()) {
 				return -1.0;
 			}
@@ -59,8 +57,8 @@ void CSurfBotReplayService::DoPlayback(CCSPlayerPawnBase* pBotPawn, CInButtonSta
 			}
 
 			return -1.0;
-		},
-			GetPlayer()->GetController()->GetRefEHandle());
+		});
+
 		return;
 	}
 

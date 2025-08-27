@@ -125,4 +125,4 @@ void CSurfHudPlugin::UpdateScreenText(CSurfPlayer* pSurfPlayer) {
 	}
 }
 
-void CSurfHudService::OnReset() {}
+void CSurfHudService::OnPlayerQuit() {}

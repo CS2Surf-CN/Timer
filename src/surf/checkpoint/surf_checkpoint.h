@@ -22,7 +22,7 @@ public:
 	using CSurfPlayerService::CSurfPlayerService;
 
 	virtual void OnInit() override;
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	void OpenCheckpointsMenu();

@@ -23,7 +23,7 @@ class CSurfHudService : CSurfPlayerService {
 public:
 	using CSurfPlayerService::CSurfPlayerService;
 
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	hudsettings_t m_HUDSettigs;

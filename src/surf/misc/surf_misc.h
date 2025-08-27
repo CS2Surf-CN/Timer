@@ -30,7 +30,7 @@ public:
 class CSurfMiscService : CSurfPlayerService {
 	using CSurfPlayerService::CSurfPlayerService;
 
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public: // rampfix
 	bool didTPM {};

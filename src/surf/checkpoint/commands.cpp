@@ -11,7 +11,11 @@ CCMD_CALLBACK(Command_Checkpoints) {
 	}
 
 	auto& pCPService = pSurfPlayer->m_pCheckpointService;
+#if 0
 	pCPService->OpenCheckpointsMenu();
+#else
+	pCPService->Print("请打开无线电菜单 (默认按x)");
+#endif
 }
 
 CCMD_CALLBACK(Command_Save) {

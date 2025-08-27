@@ -35,9 +35,10 @@ void CSurfCheckpointPlugin::OnPlayerSpawn(IGameEvent* pEvent, const char* szName
 void CSurfCheckpointService::OnInit() {
 	// TODO: cvar to control reserve
 	m_vCheckpoints.reserve(1000);
+	SetPrintPrefix("{green} [存点系统]");
 }
 
-void CSurfCheckpointService::OnReset() {
+void CSurfCheckpointService::OnPlayerQuit() {
 	// TODO: persist data
 	m_vCheckpoints.clear();
 	m_iCurrentCP = 0;

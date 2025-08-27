@@ -185,6 +185,10 @@ CCMD_CALLBACK(Command_BuildMappingZones) {
 		event.hMenu.CloseAll();
 	});
 
+	pMenu->SetOnExit(MENU_HANDLER_L(pPlayer) {
+		pPlayer->m_pZoneService->Print("已取消.");
+	});
+
 	pMenu->Display();
 }
 

@@ -185,7 +185,7 @@ void CSurfPlayerService::Print(const char* fmt, ...) const {
 		va_start(args, fmt);
 		buffer.FormatV(fmt, args);
 
-		UTIL::CPrintChat(pController, "{green}[Surf] {grey}%s", buffer.Get());
+		UTIL::CPrintChat(pController, "%s {grey}%s", m_sPrintPrefix.data(), buffer.Get());
 	}
 }
 
@@ -197,6 +197,6 @@ void CSurfPlayerService::PrintWarning(const char* fmt, ...) const {
 		va_start(args, fmt);
 		buffer.FormatV(fmt, args);
 
-		UTIL::CPrintChat(pController, "{green}[Surf] {darkred}%s", buffer.Get());
+		UTIL::CPrintChat(pController, "%s {darkred}%s", m_sPrintPrefix.data(), buffer.Get());
 	}
 }

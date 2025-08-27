@@ -177,4 +177,4 @@ void CSurfMiscService::HideWeapons() {
 	}
 }
 
-void CSurfMiscService::OnReset() {}
+void CSurfMiscService::OnPlayerQuit() {}

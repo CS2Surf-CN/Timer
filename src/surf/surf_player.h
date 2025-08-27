@@ -56,6 +56,14 @@ public:
 	void PlayErrorSound() const;
 	void Print(const char* fmt, ...) const;
 	void PrintWarning(const char* fmt, ...) const;
+
+protected:
+	void SetPrintPrefix(const std::string_view svPrefix) {
+		m_sPrintPrefix = svPrefix;
+	}
+
+private:
+	std::string m_sPrintPrefix = "{green}[Surf]";
 };
 
 class CSurfPlayerManager : public CMovementPlayerManager {

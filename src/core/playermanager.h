@@ -24,7 +24,9 @@ public:
 
 	virtual void OnInit() {}
 
-	virtual void OnReset() {}
+	virtual void OnPlayerJoin() {}
+
+	virtual void OnPlayerQuit() {}
 
 protected:
 	CPlayer* m_pPlayer;
@@ -53,6 +55,8 @@ protected:
 			service.reset(new T(reinterpret_cast<CPlayer*>(this)));
 			reinterpret_cast<CPlayerService*>(service.get())->OnInit();
 		}
+
+		reinterpret_cast<CPlayerService*>(service.get())->OnPlayerJoin();
 	}
 
 	template<typename T>
@@ -60,7 +64,7 @@ protected:
 		static_assert(std::is_base_of<CPlayerService, T>::value, "T must be derived from CPlayerService");
 
 		if (service) {
-			reinterpret_cast<CPlayerService*>(service.get())->OnReset();
+			reinterpret_cast<CPlayerService*>(service.get())->OnPlayerQuit();
 		}
 	}
 };

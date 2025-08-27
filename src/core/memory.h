@@ -257,12 +257,12 @@ namespace MEM {
 	inline void PatchNOP(void* pAddress, size_t nLen) {
 		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
 		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, nLen, libmem::Prot::XRW);
-		if (old_mem_prot.has_value()) {
+		if (old_mem_prot) {
 			for (size_t i = 0; i < nLen; ++i) {
 				adr_patch[i] = 0x90;
 			}
 
-			libmem::ProtMemory((libmem::Address)adr_patch, nLen, old_mem_prot.value());
+			libmem::ProtMemory((libmem::Address)adr_patch, nLen, *old_mem_prot);
 		}
 	}
 
@@ -272,12 +272,13 @@ namespace MEM {
 		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
 		const size_t patch_size = sizeof...(args);
 		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, patch_size, libmem::Prot::XRW);
-		for (size_t i = 0; i < patch_size; ++i) {
-			if (old_mem_prot.has_value()) {
+		if (old_mem_prot) {
+			for (size_t i = 0; i < patch_size; ++i) {
 				adr_patch[i] = bytes[i];
 			}
+
+			libmem::ProtMemory((libmem::Address)adr_patch, patch_size, *old_mem_prot);
 		}
-		libmem::ProtMemory((libmem::Address)adr_patch, patch_size, old_mem_prot.value());
 	}
 } // namespace MEM
 

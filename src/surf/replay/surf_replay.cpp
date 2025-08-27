@@ -105,6 +105,6 @@ void CSurfReplayService::OnInit() {
 	Init();
 }
 
-void CSurfReplayService::OnReset() {
+void CSurfReplayService::OnPlayerQuit() {
 	Init();
 }

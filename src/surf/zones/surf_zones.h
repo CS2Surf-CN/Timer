@@ -29,7 +29,7 @@ struct std::hash<CZoneHandle> {
 class CSurfZoneService : public CSurfPlayerService {
 private:
 	virtual void OnInit() override;
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	using CSurfPlayerService::CSurfPlayerService;

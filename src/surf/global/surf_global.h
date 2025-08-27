@@ -96,7 +96,7 @@ public:
 
 class CSurfGlobalAPIService : CSurfPlayerService {
 private:
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	using CSurfPlayerService::CSurfPlayerService;

@@ -151,7 +151,7 @@ bool CSurfGlobalAPIPlugin::IsGlobalUpdaterEnabled() const {
 	return !m_UpdaterAuth.m_sToken.empty();
 }
 
-void CSurfGlobalAPIService::OnReset() {
+void CSurfGlobalAPIService::OnPlayerQuit() {
 	m_bGloballyVerified = false;
 }
 

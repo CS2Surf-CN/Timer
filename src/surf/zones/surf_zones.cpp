@@ -443,6 +443,6 @@ void CSurfZoneService::OnInit() {
 	ResetCustomDestination();
 }
 
-void CSurfZoneService::OnReset() {
+void CSurfZoneService::OnPlayerQuit() {
 	ResetCustomDestination();
 }

@@ -69,7 +69,7 @@ struct replay_bot_info_t {
 class CSurfReplayService : CSurfPlayerService {
 private:
 	virtual void OnInit() override;
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	using CSurfPlayerService::CSurfPlayerService;
@@ -100,7 +100,7 @@ public:
 	using CSurfBotService::CSurfBotService;
 
 	virtual void OnInit() override;
-	virtual void OnReset() override;
+	virtual void OnPlayerQuit() override;
 
 public:
 	void Init();
