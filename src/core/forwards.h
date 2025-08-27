@@ -43,13 +43,15 @@ public:
 
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) {}
 
+	virtual void OnMapEnd() {}
+
 	virtual void OnApplyGameSettings(ISource2Server* pServer, KeyValues* pKV) {}
 
 	virtual void OnGameFrame(ISource2Server* pServer, bool simulating, bool bFirstTick, bool bLastTick) {}
 
 	virtual void OnServerGamePostSimulate(IGameSystem* pGameEvent) {}
 
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) {}
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {}
 
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) {}
 

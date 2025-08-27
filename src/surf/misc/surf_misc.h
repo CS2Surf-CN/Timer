@@ -7,9 +7,10 @@ class CSurfMiscPlugin : CMovementForward, CFeatureForward, CCoreForward {
 private:
 	virtual void OnPluginStart() override;
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
+	virtual void OnMapEnd() override;
 	virtual void OnWeaponDropPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon, const int& iDropType, const Vector* targetPos) override;
 	virtual void OnWeaponSwitchPost(CCSPlayer_WeaponServices* pService, CBasePlayerWeapon* pWeapon) override;
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 	virtual void OnClientDisconnect(ISource2GameClients* pClient, CPlayerSlot slot, ENetworkDisconnectionReason reason, const char* pszName, uint64 xuid, const char* pszNetworkID) override;
 	virtual bool OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveData* mv) override;
 	virtual bool OnPlayerMove(CCSPlayer_MovementServices* ms, CMoveData* mv) override;
@@ -22,8 +23,8 @@ private:
 	void RegisterCommands();
 
 public:
-	std::vector<CHandle<CBaseTrigger>> m_vTriggers;
-	std::vector<CHandle<CBaseEntity>> m_vTeleDestination;
+	std::vector<CHandle<CBaseTrigger>> m_vTriggers {};
+	std::vector<CHandle<CBaseEntity>> m_vTeleDestination {};
 };
 
 class CSurfMiscService : CSurfPlayerService {

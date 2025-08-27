@@ -3,6 +3,7 @@
 #include <core/sdkhook.h>
 #include <core/menu.h>
 #include <surf/global/surf_global.h>
+#include <surf/misc/surf_misc.h>
 #include <surf/api.h>
 
 CSurfZonePlugin g_SurfZonePlugin;
@@ -17,6 +18,29 @@ void CSurfZonePlugin::OnPluginStart() {
 
 void CSurfZonePlugin::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 	RefreshZones();
+}
+
+void CSurfZonePlugin::OnMapEnd() {
+	ClearZones();
+}
+
+void CSurfZonePlugin::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
+	if (m_vPrecacheHookZones.empty()) {
+		return;
+	}
+
+	auto pszClassname = pEntity->GetClassname();
+	if (bMapStarted && V_strstr(pszClassname, "trigger_")) {
+		auto pszHammerid = reinterpret_cast<CBaseEntity*>(pEntity)->m_sUniqueHammerID().Get();
+		if (pszHammerid) {
+			auto it = std::ranges::find_if(m_vPrecacheHookZones, [pszHammerid](const ZoneData_t& data) { return !V_strcmp(data.m_sHookHammerid.c_str(), pszHammerid); });
+			if (it != m_vPrecacheHookZones.end()) {
+				const auto& data = *it;
+				CreateHookZone(static_cast<CBaseEntity*>(pEntity), data);
+				m_vPrecacheHookZones.erase(it);
+			}
+		}
+	}
 }
 
 void CSurfZonePlugin::OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) {
@@ -88,10 +112,22 @@ std::optional<std::pair<CZoneHandle, ZoneCache_t>> CSurfZonePlugin::FindZone(Tim
 
 int CSurfZonePlugin::GetZoneCount(TimerTrack_t track, EZoneType type) {
 	int count = 0;
-	for (const auto& pair : m_hZones) {
-		const auto& cache = pair.second;
-		if (cache.m_iTrack == track && cache.m_iType == type) {
+	for (const auto& [_, data] : m_hZones) {
+		if (data.m_iTrack == track && data.m_iType == type) {
 			count++;
+		}
+	}
+
+	return count;
+}
+
+int CSurfZonePlugin::GetHookZoneCount(TimerTrack_t track, EZoneType type) {
+	int count = GetZoneCount(track, type);
+	if (!count) {
+		for (const auto& data : m_vPrecacheHookZones) {
+			if (data.m_iTrack == track && data.m_iType == type) {
+				count++;
+			}
 		}
 	}
 
@@ -100,10 +136,9 @@ int CSurfZonePlugin::GetZoneCount(TimerTrack_t track, EZoneType type) {
 
 std::vector<ZoneCache_t> CSurfZonePlugin::GetZones(TimerTrack_t track, EZoneType type) {
 	std::vector<ZoneCache_t> vZones;
-	for (const auto& pair : m_hZones) {
-		const auto& cache = pair.second;
-		if (cache.m_iTrack == track && cache.m_iType == type) {
-			vZones.emplace_back(cache);
+	for (const auto& [_, data] : m_hZones) {
+		if (data.m_iTrack == track && data.m_iType == type) {
+			vZones.emplace_back(data);
 		}
 	}
 
@@ -111,19 +146,8 @@ std::vector<ZoneCache_t> CSurfZonePlugin::GetZones(TimerTrack_t track, EZoneType
 }
 
 void CSurfZonePlugin::ClearZones() {
-	for (const auto& pair : m_hZones) {
-		auto pZone = pair.first.Get();
-		if (pZone) {
-			pZone->Kill();
-		}
-
-		const auto& vBeams = pair.second.m_aBeams;
-		for (const auto& hBeam : vBeams) {
-			auto pBeam = hBeam.Get();
-			if (pBeam) {
-				pBeam->Kill();
-			}
-		}
+	for (const auto& cache : m_hZones) {
+		KillZone(cache);
 	}
 
 	m_hZones.clear();
@@ -161,13 +185,17 @@ void CSurfZonePlugin::RefreshZones() {
 void CSurfZonePlugin::UpsertZone(const ZoneData_t& data, bool bUpload) {
 	DeleteZone(data, false);
 
-	CBaseEntity* pZone = CreateNormalZone(data.m_vecMins, data.m_vecMaxs);
-	ZoneCache_t cache(data);
-	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
-	m_hZones[pZone->GetRefEHandle()] = cache;
+	if (!data.IsHookZone()) {
+		if (!CreateNormalZone(data)) {
+			SURF::CPrintChatAll("{darkred}创建普通区域失败!");
+			return;
+		}
+	} else {
+		PrecacheHookZone(data);
+	}
 
 	if (bUpload) {
-		SURF::GLOBALAPI::MAP::zoneinfo_t info(cache);
+		SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
 		SURF::GLOBALAPI::MAP::UpdateZone(
 			info, HTTPRES_CALLBACK_L() {
 				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}更新区域失败."));
@@ -207,14 +235,13 @@ void CSurfZonePlugin::DeleteAllZones(bool bUpload) {
 }
 
 void CSurfZoneService::EditZone(CCSPlayerPawnBase* pawn, const CInButtonState& buttons) {
-	auto& iEditStep = m_ZoneEdit.m_iStep;
 	if (m_ZoneEdit.m_bEnabled) {
 		trace_t tr;
 		UTIL::GetPlayerAiming(pawn, tr);
 		Vector& aim = tr.m_vEndPos;
 
 		if (buttons.Pressed(IN_USE)) {
-			iEditStep = (ZoneEditStep)(iEditStep + 1);
+			m_ZoneEdit.m_iStep += 1;
 
 			m_ZoneEdit.CreateEditZone(aim);
 		}
@@ -338,9 +365,9 @@ void CSurfZonePlugin::CreateBeams(const Vector& vecMin, const Vector& vecMax, st
 	}
 }
 
-CBaseEntity* CSurfZonePlugin::CreateNormalZone(const Vector& vecMins, const Vector& vecMaxs) {
-	Vector vecCenter = SURF::ZONE::GetCenter(vecMins, vecMaxs);
-	Vector mins(vecMins), maxs(vecMaxs);
+CBaseEntity* CSurfZonePlugin::CreateNormalZone(const ZoneData_t& data) {
+	Vector vecCenter = SURF::ZONE::GetCenter(data.m_vecMins, data.m_vecMaxs);
+	Vector mins(data.m_vecMins), maxs(data.m_vecMaxs);
 	SURF::ZONE::FillBoxMinMax(mins, maxs, true);
 	auto pZone = MEM::CALL::CreateAABBTrigger(vecCenter, mins, maxs);
 	if (!pZone) {
@@ -355,18 +382,57 @@ CBaseEntity* CSurfZonePlugin::CreateNormalZone(const Vector& vecMins, const Vect
 
 	pZone->SetName("surf_zone");
 
+	ZoneCache_t cache(data);
+	CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
+	m_hZones[pZone->GetRefEHandle()] = cache;
+
 	return pZone;
+}
+
+void CSurfZonePlugin::CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data) {
+	SDKHOOK::HookEntity<SDKHook_StartTouch>(pEnt, SURF::ZONE::HOOK::OnStartTouch);
+	SDKHOOK::HookEntity<SDKHook_StartTouch>(pEnt, SURF::ZONE::HOOK::OnStartTouchPost);
+	SDKHOOK::HookEntity<SDKHook_Touch>(pEnt, SURF::ZONE::HOOK::OnTouchPost);
+	SDKHOOK::HookEntity<SDKHook_EndTouch>(pEnt, SURF::ZONE::HOOK::OnEndTouchPost);
+
+	ZoneCache_t cache(data);
+
+	if (data.m_iType == EZoneType::Zone_Mark) {
+		CreateBeams(cache.m_vecMins, cache.m_vecMaxs, cache.m_aBeams);
+	}
+
+	m_hZones[pEnt->GetRefEHandle()] = cache;
+}
+
+void CSurfZonePlugin::PrecacheHookZone(const ZoneData_t& data) {
+	for (const auto& hTrigger : SURF::MiscPlugin()->m_vTriggers) {
+		auto pTrigger = hTrigger.Get();
+		if (!pTrigger) {
+			continue;
+		}
+
+		std::string sHammerid = pTrigger->m_sUniqueHammerID().Get();
+		if (data.m_sHookHammerid == sHammerid) {
+			CreateHookZone(pTrigger, data);
+			return;
+		}
+	}
+
+	m_vPrecacheHookZones.emplace_back(data);
 }
 
 void CSurfZonePlugin::KillZone(const std::pair<CZoneHandle, ZoneCache_t>& zone) {
 	const auto& hZone = zone.first;
-	CBaseEntity* pZone = hZone.Get();
-	if (pZone) {
-		pZone->Kill();
+	const auto& data = zone.second;
+
+	if (!data.IsHookZone()) {
+		CBaseEntity* pZone = hZone.Get();
+		if (pZone) {
+			pZone->Kill();
+		}
 	}
 
-	const auto& vBeams = zone.second.m_aBeams;
-	for (const auto& hBeam : vBeams) {
+	for (const auto& hBeam : data.m_aBeams) {
 		auto pBeam = hBeam.Get();
 		if (pBeam) {
 			pBeam->Kill();

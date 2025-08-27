@@ -53,6 +53,8 @@ class CSurfZonePlugin : CMovementForward, CCoreForward {
 private:
 	virtual void OnPluginStart() override;
 	virtual void OnActivateServer(CNetworkGameServerBase* pGameServer) override;
+	virtual void OnMapEnd() override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 	virtual void OnPlayerRunCmdPost(CCSPlayerPawnBase* pawn, const CInButtonState& buttons, const float (&vec)[3], const QAngle& viewAngles, const int& weapon, const int& cmdnum, const int& tickcount, const int& seed, const int (&mouse)[2]) override;
 	virtual bool ProcessSayCommand(CCSPlayerController* pController) override;
 	virtual bool OnSayCommand(CCSPlayerController* pController, const std::vector<std::string>& vArgs) override;
@@ -61,6 +63,7 @@ public:
 	std::optional<ZoneCache_t> FindZone(CBaseEntity* pEnt);
 	std::optional<std::pair<CZoneHandle, ZoneCache_t>> FindZone(TimerTrack_t track, EZoneType type, i32 value);
 	int GetZoneCount(TimerTrack_t track, EZoneType type);
+	int GetHookZoneCount(TimerTrack_t track, EZoneType type);
 	std::vector<ZoneCache_t> GetZones(TimerTrack_t track, EZoneType type);
 	void ClearZones();
 	void RefreshZones();
@@ -68,14 +71,20 @@ public:
 	void DeleteZone(const ZoneData_t& data, bool bUpload = true);
 	void DeleteAllZones(bool bUpload = true);
 	void CreateBeams(const Vector& vecMin, const Vector& vecMax, std::array<CHandle<CBeam>, 12>& out);
-	CBaseEntity* CreateNormalZone(const Vector& vecMins, const Vector& vecMaxs);
+	CBaseEntity* CreateNormalZone(const ZoneData_t& data);
+	void CreateHookZone(CBaseEntity* pEnt, const ZoneData_t& data);
+	void PrecacheHookZone(const ZoneData_t& data);
 	void KillZone(const std::pair<CZoneHandle, ZoneCache_t>& zone);
+	std::vector<ZoneData_t>& BuildMappingZones();
 
 private:
 	void RegisterCommand();
 
 public:
 	std::unordered_map<CZoneHandle, ZoneCache_t> m_hZones;
+
+	// Triggers are not stable until map fully inited.
+	std::vector<ZoneData_t> m_vPrecacheHookZones;
 };
 
 namespace SURF {

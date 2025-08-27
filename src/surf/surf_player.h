@@ -79,7 +79,7 @@ public:
 	virtual std::vector<CPlayer*> GetOnlinePlayers() const override;
 
 private:
-	virtual void OnEntitySpawned(CEntityInstance* pEntity) override;
+	virtual void OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) override;
 };
 
 namespace SURF {

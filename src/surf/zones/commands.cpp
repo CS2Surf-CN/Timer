@@ -4,6 +4,7 @@
 #include <core/menu.h>
 #include <utils/utils.h>
 #include <fmt/format.h>
+#include <surf/global/surf_global.h>
 
 static void ZoneMenu_SelectType(CSurfPlayer* pPlayer) {
 	auto hMenu = MENU::Create(pPlayer->GetController());
@@ -142,7 +143,53 @@ CCMD_CALLBACK(Command_EditZone) {
 	ZoneMenu_Edit(player);
 }
 
+CCMD_CALLBACK(Command_BuildMappingZones) {
+	CSurfPlayer* pPlayer = SURF::GetPlayerManager()->ToPlayer(pController);
+	if (!pPlayer) {
+		return;
+	}
+
+	pPlayer->m_pZoneService->Print("预建地图区域中...");
+	auto& vHookZones = SURF::ZonePlugin()->BuildMappingZones();
+	pPlayer->m_pZoneService->Print("预建地图完成!");
+
+	auto hMenu = MENU::Create(pController);
+	if (!hMenu) {
+		SDK_ASSERT(false);
+		return;
+	}
+
+	auto pMenu = hMenu.Data();
+	pMenu->SetTitle("是否上传至后台?");
+
+	pMenu->AddItem("是", MENU_HANDLER_L(vHookZones) {
+		int iUploaded = 0;
+		for (const auto& data : vHookZones) {
+			const int iZonesToUpload = vHookZones.size();
+			SURF::GLOBALAPI::MAP::zoneinfo_t info(data);
+			SURF::GLOBALAPI::MAP::UpdateZone(info, HTTPRES_CALLBACK_L(&data, iZonesToUpload, &iUploaded) {
+				GAPIRES_CHECK(res, r, SURF::CPrintChatAll("{darkred}上传失败, hammerid: %s, name: %s.", data.m_sHookHammerid.c_str(), data.m_sHookName.c_str()));
+				iUploaded++;
+
+				if (iUploaded == iZonesToUpload) {
+					SURF::CPrintChatAll("{grey}所有区域已上传成功!");
+				}
+			});
+
+			event.hMenu.CloseAll();
+		}
+	});
+
+	pMenu->AddItem("否", MENU_HANDLER_L(pPlayer) {
+		pPlayer->m_pZoneService->Print("已取消.");
+		event.hMenu.CloseAll();
+	});
+
+	pMenu->Display();
+}
+
 void CSurfZonePlugin::RegisterCommand() {
-	CONCMD::RegConsoleCmd("sm_zones", Command_Zones);
-	CONCMD::RegConsoleCmd("sm_editzone", Command_EditZone);
+	CONCMD::RegAdminCmd("sm_zones", Command_Zones, AdminFlag::Generic);
+	CONCMD::RegAdminCmd("sm_editzone", Command_EditZone, AdminFlag::Generic);
+	CONCMD::RegAdminCmd("sm_buildmapping", Command_BuildMappingZones, AdminFlag::Generic);
 }

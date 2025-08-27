@@ -89,7 +89,7 @@ static void Hook_OnPlayerTeleportPost(CBaseEntity* pSelf, Vector* newPosition, Q
 	});
 }
 
-void CSurfPlayerManager::OnEntitySpawned(CEntityInstance* pEntity) {
+void CSurfPlayerManager::OnEntitySpawned(CEntityInstance* pEntity, bool bMapStarted) {
 	auto pszClassname = pEntity->GetClassname();
 	if (!V_stricmp(pszClassname, "player")) {
 		SDKHOOK::HookEntity<SDKHook_Teleport>((CBaseEntity*)pEntity, Hook_OnPlayerTeleport);

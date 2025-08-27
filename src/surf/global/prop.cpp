@@ -57,8 +57,8 @@ namespace SURF::GLOBALAPI {
 				j["flags"] = m_iFlag;
 			}
 
-			if (m_iHookHammerid != -1) {
-				j["hammerid"] = m_iHookHammerid;
+			if (!m_sHookHammerid.empty()) {
+				j["hammerid"] = m_sHookHammerid;
 			}
 
 			if (!m_sHookName.empty()) {
@@ -91,7 +91,7 @@ namespace SURF::GLOBALAPI {
 			JSON_GETTER(j, track, m_iTrack);
 			JSON_GETTER(j, flags, m_iFlag);
 			JSON_GETTER(j, value, m_iValue);
-			JSON_GETTER(j, hammerid, m_iHookHammerid);
+			JSON_GETTER(j, hammerid, m_sHookHammerid);
 			JSON_GETTER(j, hookname, m_sHookName);
 			JSON_GETTER(j, limitspeed, m_iLimitSpeed);
 		}

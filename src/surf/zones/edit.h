@@ -31,8 +31,8 @@ struct ZoneData_t {
 		m_vecDestination = Vector(0.0f, 0.0f, 0.0f);
 		m_angDestination = QAngle(0.0f, 0.0f, 0.0f);
 		m_iFlag = -1;
-		m_iHookHammerid = -1;
-		m_sHookName = std::string();
+		m_sHookHammerid = {};
+		m_sHookName = {};
 		m_iLimitSpeed = 350;
 	}
 
@@ -42,6 +42,10 @@ struct ZoneData_t {
 
 	Vector GetCenter() const {
 		return (m_vecMins + m_vecMaxs) / 2.0f;
+	}
+
+	bool IsHookZone() const {
+		return !m_sHookHammerid.empty();
 	}
 
 	void EnsureDestination();
@@ -56,7 +60,7 @@ struct ZoneData_t {
 	QAngle m_angDestination;
 	i32 m_iFlag;
 	i32 m_iLimitSpeed;
-	i32 m_iHookHammerid;
+	std::string m_sHookHammerid;
 	std::string m_sHookName;
 };
 

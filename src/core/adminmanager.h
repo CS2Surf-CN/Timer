@@ -47,7 +47,7 @@ namespace ADMIN {
 	CAdminInfo GetAdmin(CCSPlayerController* controller);
 	bool CheckAccess(uint64 xuid, AdminFlag flag);
 	bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
-	void AddAdmin(uint64 xuid, std::string nick, AdminFlag flag);
+	void AddAdmin(uint64 xuid, AdminFlag flag);
 
 	inline std::unordered_map<uint64, CAdminInfo> m_umAdmins;
 } // namespace ADMIN

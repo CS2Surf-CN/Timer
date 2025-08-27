@@ -49,7 +49,7 @@ bool ADMIN::CheckAccess(CCSPlayerController* controller, AdminFlag flag) {
 	return CheckAccess(controller->m_steamID(), flag);
 }
 
-void ADMIN::AddAdmin(uint64 xuid, std::string nick, AdminFlag flag) {
+void ADMIN::AddAdmin(uint64 xuid, AdminFlag flag) {
 	CAdminInfo admin {.m_iSteamID = xuid, .m_nFlag = flag};
 
 	m_umAdmins[xuid] = admin;

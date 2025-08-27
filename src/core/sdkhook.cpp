@@ -7,6 +7,8 @@
 #include <utility>
 #include <list>
 
+#include <core/concmdmanager.h>
+
 class SDKHookManager : CCoreForward {
 private:
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
@@ -70,8 +72,10 @@ namespace SDKHOOK {
 		bool block = false;
 		const auto& preHooks = g_SDKHookManager.m_umSDKHooksListeners[T][0][vtable];
 		for (const auto& [eHandle, pFnPre] : preHooks) {
-			if (eHandle == pSelf->GetRefEHandle() && !reinterpret_cast<SDKHOOK_PRE(HookType_t)*>(pFnPre)(pSelf, args...)) {
-				block = true;
+			if (eHandle == pSelf->GetRefEHandle()) {
+				if (!reinterpret_cast<SDKHOOK_PRE(HookType_t)*>(pFnPre)(pSelf, args...)) {
+					block = true;
+				}
 			}
 		}
 		if (block) {
