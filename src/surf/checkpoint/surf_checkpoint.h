@@ -36,6 +36,7 @@ public:
 	void LoadPrev();
 	void LoadNext();
 	void DeleteCheckpoint(const i32 idx);
+	void DeleteCurrentCheckpoint();
 	void ResetCheckpoint();
 	i32 GetLatestCheckpoint() const;
 

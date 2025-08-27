@@ -208,6 +208,12 @@ void CSurfCheckpointService::DeleteCheckpoint(const i32 idx) {
 	}
 }
 
+void CSurfCheckpointService::DeleteCurrentCheckpoint() {
+	this->DeleteCheckpoint(this->m_iCurrentCP);
+	this->m_iCurrentCP--;
+	this->ClampIndex(this->m_iCurrentCP);
+}
+
 void CSurfCheckpointService::ResetCheckpoint() {
 	m_vCheckpoints.clear();
 	m_iCurrentCP = 0;

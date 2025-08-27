@@ -25,13 +25,7 @@ void CSurfCheckpointService::OpenCheckpointsMenu() {
 	pMenu->AddItem("读点", MENU_HANDLER_L(this) { this->LoadCheckpoint(this->m_iCurrentCP); });
 	pMenu->AddItem("上一个", MENU_HANDLER_L(this) { this->LoadPrev(); });
 	pMenu->AddItem("下一个", MENU_HANDLER_L(this) { this->LoadNext(); });
-
-	pMenu->AddItem("删除当前存点", MENU_HANDLER_L(this) {
-		this->DeleteCheckpoint(this->m_iCurrentCP);
-		this->m_iCurrentCP--;
-		this->ClampIndex(this->m_iCurrentCP);
-	});
-
+	pMenu->AddItem("删除当前存点", MENU_HANDLER_L(this) { this->DeleteCurrentCheckpoint(); });
 	pMenu->AddItem("重置", MENU_HANDLER_L(this) { this->ResetCheckpoint(); });
 
 	pMenu->Display();
