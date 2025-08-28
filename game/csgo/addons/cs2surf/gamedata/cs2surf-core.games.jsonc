@@ -148,13 +148,13 @@
 		"AddDebugOverlayBits": {
 			"signature": "CMD_ShowTriggers",
 			"windows": {
-				"offset_func": 151,
+				"offset_func": 183,
 				"offset_opcode": 1,
 				"opcode_length": 5,
 				"dereference": false
 			},
 			"linux": {
-				"offset_func": 96,
+				"offset_func": 120,
 				"offset_opcode": 1,
 				"opcode_length": 5,
 				"dereference": false
@@ -163,13 +163,13 @@
 		"RemoveDebugOverlayBits": {
 			"signature": "CMD_ShowTriggers",
 			"windows": {
-				"offset_func": 158,
+				"offset_func": 190,
 				"offset_opcode": 1,
 				"opcode_length": 5,
 				"dereference": false
 			},
 			"linux": {
-				"offset_func": 174,
+				"offset_func": 196,
 				"offset_opcode": 1,
 				"opcode_length": 5,
 				"dereference": false
