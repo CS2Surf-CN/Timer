@@ -50,13 +50,20 @@ jobs:
 
   build-linux:
     name: Linux
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           lfs: false
+      
+      - name: Install Clang 19 & GCC 14
+        run: |
+          sudo apt update
+          sudo apt install -y g++-14 clang-19
+          sudo ln -sf /usr/bin/gcc-14 /usr/bin/gcc && sudo ln -sf /usr/bin/g++-14 /usr/bin/g++
+          sudo ln -sf /usr/bin/clang-19 /usr/bin/clang && sudo ln -sf /usr/bin/clang++-19 /usr/bin/clang++
 
       - name: Update version header
         run: |
