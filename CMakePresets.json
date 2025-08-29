@@ -20,8 +20,8 @@
 			"inherits": "Path-Preset",
 			"generator": "Ninja",
 			"cacheVariables": {
-				"CMAKE_C_COMPILER": "clang-15",
-				"CMAKE_CXX_COMPILER": "clang++-15",
+				"CMAKE_C_COMPILER": "clang-19",
+				"CMAKE_CXX_COMPILER": "clang++-19",
 				"OUT_DIR": "$env{SURF_BIN_DIR}",
 				"CMAKE_BUILD_TYPE": "Debug"
 			},
