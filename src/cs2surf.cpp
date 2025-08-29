@@ -19,6 +19,8 @@
 
 #include <vendor/MultiAddonManager/public/imultiaddonmanager.h>
 
+#include <expected>
+
 IMultiAddonManager* g_pMultiAddonManager;
 
 CSurfPlugin g_SurfPlugin;
@@ -27,6 +29,14 @@ PLUGIN_EXPOSE(CSurfPlugin, g_SurfPlugin);
 
 CSurfPlugin* SurfPlugin() {
 	return &g_SurfPlugin;
+}
+
+std::expected<int, std::string> ExpectTest(int test) {
+	if (test) {
+		return test;
+	}
+
+	return std::unexpected("d");
 }
 
 bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) {
@@ -44,6 +54,7 @@ bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, b
 	UTIL::UnlockConCommands();
 
 	g_SMAPI->AddListener(this, this);
+	ExpectTest(1);
 
 	ADMIN::AddAdmin(76561198083290027, AdminFlag::Root);
 
