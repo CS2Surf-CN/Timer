@@ -27,7 +27,6 @@ CScreenTextMenu::CScreenTextMenu(CBasePlayerController* pController, std::string
 }
 
 CScreenTextMenu::~CScreenTextMenu() {
-	CBaseMenu::~CBaseMenu();
 	this->Close();
 }
 
