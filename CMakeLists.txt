@@ -15,15 +15,17 @@ include_directories(
 	./vendor/nlohmann
 	./vendor/fmt/include
 	./vendor/polyhook/include
+	./vendor/safetyhook/include
 	./vendor/zlib/include
 )
 
 file(GLOB SURFTIMER_LIBS 
-    "./vendor/libmem/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/libmem/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/safetyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 
 file(GLOB_RECURSE SDK_SOURCES 

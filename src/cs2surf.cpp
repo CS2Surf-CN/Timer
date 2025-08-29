@@ -19,6 +19,8 @@
 
 #include <vendor/MultiAddonManager/public/imultiaddonmanager.h>
 
+#include <safetyhook.hpp>
+
 IMultiAddonManager* g_pMultiAddonManager;
 
 CSurfPlugin g_SurfPlugin;
@@ -27,6 +29,11 @@ PLUGIN_EXPOSE(CSurfPlugin, g_SurfPlugin);
 
 CSurfPlugin* SurfPlugin() {
 	return &g_SurfPlugin;
+}
+
+SafetyHookInline g_HkSurfPlugin{};
+CSurfPlugin* HkSurfPlugin() {
+	return g_HkSurfPlugin.call<CSurfPlugin*>();
 }
 
 bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) {
@@ -44,6 +51,8 @@ bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, b
 	UTIL::UnlockConCommands();
 
 	g_SMAPI->AddListener(this, this);
+
+	g_HkSurfPlugin = safetyhook::create_inline(SurfPlugin, HkSurfPlugin);
 
 	ADMIN::AddAdmin(76561198083290027, AdminFlag::Root);
 
