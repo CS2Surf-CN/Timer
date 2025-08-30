@@ -2,6 +2,7 @@
 
 #include <string>
 #include <filesystem>
+#include <fstream>
 
 //#include <sdk/serversideclient.h>
 //#include <sdk/gamerules.h>

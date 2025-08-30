@@ -8,6 +8,8 @@ module;
 
 module surf.core.gamedata;
 
+import surf.core;
+
 json g_Json;
 std::string g_sFilePath;
 std::unordered_map<std::string, void*> g_pMemSig;
@@ -82,8 +84,7 @@ void* GAMEDATA::GetMemSig(std::string name) {
 	auto sig = element[WIN_LINUX("windows", "linux")].get<std::string>();
 	// auto lib = MODULE_PREFIX + sModuleName + MODULE_EXT;
 	// auto addr = libmem::SignScan(sig.c_str(), lib.c_str());
-	//auto addr = MEM::FindPattern(sig, sModuleName);
-	void* addr = nullptr;
+	auto addr = MEM::FindPattern(sig, sModuleName);
 	SDK_ASSERT(addr);
 	g_pMemSig[name] = addr;
 	return addr;

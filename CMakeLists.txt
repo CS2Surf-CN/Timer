@@ -37,9 +37,11 @@ file(GLOB_RECURSE PROTOBUF_SOURCES "${SURFTIMER_SRC}/sdk/protobuf/*.pb.cc" "${SU
 file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/adminmanager.cpp" 
 									"${SURFTIMER_SRC}/gamedata.cpp"
 									"${SURFTIMER_SRC}/core.cpp"
+									"${SURFTIMER_SRC}/memory.cpp"
 )
 file(GLOB_RECURSE SURFTIMER_MODULES "${SURFTIMER_SRC}/adminmanager.cppm" 
 									"${SURFTIMER_SRC}/gamedata.cppm" 
+									"${SURFTIMER_SRC}/memory.cppm"
 									"${SURFTIMER_SRC}/core.cppm"
 )
 
