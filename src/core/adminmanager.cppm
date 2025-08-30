@@ -1,13 +1,13 @@
 module;
 
-#include <pch.h>
+#include <platform.h>
 
 export module surf.core.adminmanager;
 
 /**
  * Access levels (flags) for admins.
  */
-export enum class AdminFlag : uint32_t {
+export enum class AdminFlag : uint32 {
 	None = 0,           /* No permissions */
 	Generic = 1 << 0,   /* a: Generic admin abilities */
 	Kick = 1 << 1,      /* b: Kick another user */
@@ -26,19 +26,19 @@ export enum class AdminFlag : uint32_t {
 };
 
 export inline AdminFlag operator|(AdminFlag a, AdminFlag b) {
-	return static_cast<AdminFlag>(static_cast<uint32_t>(a) | static_cast<uint32_t>(b));
+	return static_cast<AdminFlag>(static_cast<uint32>(a) | static_cast<uint32>(b));
 }
 
 export inline AdminFlag operator&(AdminFlag a, AdminFlag b) {
-	return static_cast<AdminFlag>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
+	return static_cast<AdminFlag>(static_cast<uint32>(a) & static_cast<uint32>(b));
 }
 
 export inline AdminFlag operator~(AdminFlag a) {
-	return static_cast<AdminFlag>(~static_cast<uint32_t>(a));
+	return static_cast<AdminFlag>(~static_cast<uint32>(a));
 }
 
 export struct CAdminInfo {
-	uint64_t m_iSteamID;
+	uint64 m_iSteamID;
 	AdminFlag m_nFlag;
 };
 
