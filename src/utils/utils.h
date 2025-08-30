@@ -11,6 +11,8 @@
 #include <utils/ctimer.h>
 #include <utils/print.h>
 
+import surf.core;
+
 #define JSON_GETTER(_json, key, ret) \
 	do { \
 		if (_json.contains(#key)) \

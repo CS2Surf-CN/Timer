@@ -34,8 +34,14 @@ file(GLOB_RECURSE SDK_SOURCES
 		"${SDK_ROOT}/tier1/keyvalues3.cpp"
 )
 file(GLOB_RECURSE PROTOBUF_SOURCES "${SURFTIMER_SRC}/sdk/protobuf/*.pb.cc" "${SURFTIMER_SRC}/sdk/protobuf/*.pb.h")
-file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/adminmanager.cpp" "${SURFTIMER_SRC}/core.cpp")
-file(GLOB_RECURSE SURFTIMER_MODULES "${SURFTIMER_SRC}/adminmanager.cppm" "${SURFTIMER_SRC}/core.cppm")
+file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/adminmanager.cpp" 
+									"${SURFTIMER_SRC}/gamedata.cpp"
+									"${SURFTIMER_SRC}/core.cpp"
+)
+file(GLOB_RECURSE SURFTIMER_MODULES "${SURFTIMER_SRC}/adminmanager.cppm" 
+									"${SURFTIMER_SRC}/gamedata.cppm" 
+									"${SURFTIMER_SRC}/core.cppm"
+)
 
 add_definitions(-DHV_STATICLIB -DHAVE_MEMOVERRIDE_NEW_DELETE -DFMT_HEADER_ONLY -DNOMINMAX)
 

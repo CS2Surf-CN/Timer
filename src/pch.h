@@ -11,9 +11,6 @@
 
 #include <sdk/common.h>
 
-#include <json.h>
-using json = nlohmann::json;
-
 //#include <core/forwards.h>
 
 //#include <utils/enumhelper.h>

@@ -62,3 +62,13 @@ const QAngle& CBaseEntity::GetAbsAngles() {
 
 	return pNode->m_angAbsRotation();
 }
+
+bool CBaseEntity::IsPawn() {
+	static auto iOffset = GAMEDATA::GetOffset("IsEntityPawn");
+	return CALL_VIRTUAL(bool, iOffset, this);
+}
+
+bool CBaseEntity::IsController() {
+	static auto iOffset = GAMEDATA::GetOffset("IsEntityController");
+	return CALL_VIRTUAL(bool, iOffset, this);
+}

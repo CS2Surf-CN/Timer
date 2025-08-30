@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ehandle.h>
-#include <core/gamedata.h>
 #include <sdk/schema.h>
 #include <sdk/entity/ccollisionproperty.h>
 
@@ -204,15 +203,8 @@ public:
 		return m_pEntity->m_EHandle.GetEntryIndex();
 	}
 
-	bool IsPawn() {
-		static auto iOffset = GAMEDATA::GetOffset("IsEntityPawn");
-		return CALL_VIRTUAL(bool, iOffset, this);
-	}
-
-	bool IsController() {
-		static auto iOffset = GAMEDATA::GetOffset("IsEntityController");
-		return CALL_VIRTUAL(bool, iOffset, this);
-	}
+	bool IsPawn();
+	bool IsController();
 
 	bool IsAlive() {
 		return this->m_lifeState() == LIFE_ALIVE;

@@ -43,12 +43,14 @@ export struct CAdminInfo {
 };
 
 export namespace ADMIN {
+	class CCSPlayerController;
+
 	bool IsAdmin(uint64 xuid);
-	//bool IsAdmin(CCSPlayerController* controller);
+	bool IsAdmin(CCSPlayerController* controller);
 	CAdminInfo GetAdmin(uint64 xuid);
-	//CAdminInfo GetAdmin(CCSPlayerController* controller);
+	CAdminInfo GetAdmin(CCSPlayerController* controller);
 	bool CheckAccess(uint64 xuid, AdminFlag flag);
-	//bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
+	bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
 	void AddAdmin(uint64 xuid, AdminFlag flag);
 } // namespace ADMIN
 

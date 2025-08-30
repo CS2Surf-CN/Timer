@@ -1,7 +1,7 @@
 #include "utils.h"
 #include <fstream>
 #include <steam/isteamgameserver.h>
-#include <core/interfaces.h>
+//#include <core/interfaces.h>
 #include <public/iserver.h>
 #include <sdk/entity/ccsplayercontroller.h>
 #include <sdk/entity/ccsplayerpawn.h>
