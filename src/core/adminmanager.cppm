@@ -1,3 +1,7 @@
+module;
+
+#include <pch.h>
+
 export module surf.core.adminmanager;
 
 /**
@@ -34,19 +38,17 @@ export inline AdminFlag operator~(AdminFlag a) {
 }
 
 export struct CAdminInfo {
-	uint64 m_iSteamID;
+	uint64_t m_iSteamID;
 	AdminFlag m_nFlag;
 };
 
-class CCSPlayerController;
-
 export namespace ADMIN {
 	bool IsAdmin(uint64 xuid);
-	bool IsAdmin(CCSPlayerController* controller);
+	//bool IsAdmin(CCSPlayerController* controller);
 	CAdminInfo GetAdmin(uint64 xuid);
-	CAdminInfo GetAdmin(CCSPlayerController* controller);
+	//CAdminInfo GetAdmin(CCSPlayerController* controller);
 	bool CheckAccess(uint64 xuid, AdminFlag flag);
-	bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
+	//bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
 	void AddAdmin(uint64 xuid, AdminFlag flag);
 } // namespace ADMIN
 
