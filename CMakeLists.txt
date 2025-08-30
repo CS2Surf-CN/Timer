@@ -34,19 +34,24 @@ file(GLOB_RECURSE SDK_SOURCES
 		"${SDK_ROOT}/tier1/keyvalues3.cpp"
 )
 file(GLOB_RECURSE PROTOBUF_SOURCES "${SURFTIMER_SRC}/sdk/protobuf/*.pb.cc" "${SURFTIMER_SRC}/sdk/protobuf/*.pb.h")
-file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/core/adminmanager.cpp" 
+file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/core/adminmanager.cpp"
 									"${SURFTIMER_SRC}/core/gamedata.cpp"
+									"${SURFTIMER_SRC}/core/concmdmanager.cpp"
 									"${SURFTIMER_SRC}/core/core.cpp"
+									"${SURFTIMER_SRC}/core/core.h"
 									"${SURFTIMER_SRC}/core/memory.cpp"
 									"${SURFTIMER_SRC}/core/interfaces.cpp"
+									"${SURFTIMER_SRC}/core/forwards.cpp"
 									"${SURFTIMER_SRC}/sdk/schema.cpp"
 									"${SURFTIMER_SRC}/sdk/entity/cbaseentity.cpp"
 									"${SURFTIMER_SRC}/sdk/entity/cgameresourceservice.cpp"
 )
 file(GLOB_RECURSE SURFTIMER_MODULES "${SURFTIMER_SRC}/core/adminmanager.cppm" 
 									"${SURFTIMER_SRC}/core/gamedata.cppm" 
+									"${SURFTIMER_SRC}/core/concmdmanager.cppm"
 									"${SURFTIMER_SRC}/core/memory.cppm"
 									"${SURFTIMER_SRC}/core/interfaces.cppm"
+									"${SURFTIMER_SRC}/core/forwards.cppm"
 									"${SURFTIMER_SRC}/core/core.cppm"
 )
 

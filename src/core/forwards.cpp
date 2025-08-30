@@ -1,4 +1,10 @@
-#include "forwards.h"
+module;
 
-FORWARD_INIT(CCoreForward);
+#include <core/core.h>
+
+module surf.core.forwards;
+
+template<>
+CCoreForward* CBaseForward<CCoreForward>::m_pFirst = nullptr;
+;
 FORWARD_INIT(CFeatureForward);

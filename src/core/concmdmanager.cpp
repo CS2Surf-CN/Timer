@@ -1,11 +1,35 @@
-#include "concmdmanager.h"
+module;
+
 #include <utils/utils.h>
+#include <platform.h>
+#include <tier1/convar.h>
 
-CONCMD::CConCmdManager g_manager;
+module surf.core.concmdmanager;
 
-CONCMD::CConCmdManager* CONCMD::GetManager() {
-	return &g_manager;
-}
+import surf.core;
+
+class CConCmdManager : CCoreForward {
+	virtual bool OnClientCommand(ISource2GameClients* pClient, CPlayerSlot slot, const CCommand& args) override;
+	virtual bool OnDispatchConCommand(ICvar* pCvar, ConCommandRef cmd, const CCommandContext& ctx, const CCommand& args) override;
+
+public:
+	struct CConCmdInfo {
+		ConCmd_Callback callback;
+		AdminFlag adminFlags = AdminFlag::None;
+		std::string description;
+		uint64 cmdFlags = FCVAR_NONE;
+	};
+
+	struct CSrvCmdInfo {
+		SrvCmd_Callback callback;
+		std::string description;
+		uint64 cmdFlags = FCVAR_NONE;
+	};
+
+	std::unordered_map<std::wstring, std::vector<CConCmdInfo>> m_umConCmds;
+	std::unordered_map<std::wstring, std::vector<CSrvCmdInfo>> m_umSrvCmds;
+	std::unordered_map<std::wstring, std::vector<ConCmdListener_Callback>> m_umConCmdListeners;
+} g_ConCmdManager;
 
 static void RegCmd(const std::string& cmd, const std::string& description, uint64 cmdFlag) {
 	ConCommandCreation_t command;
