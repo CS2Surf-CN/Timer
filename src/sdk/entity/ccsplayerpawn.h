@@ -51,10 +51,7 @@ public:
 		return (T*)(m_hController()->Get());
 	}
 
-	void Respawn() {
-		static auto iOffset = GAMEDATA::GetOffset("Respawn");
-		CALL_VIRTUAL(void, iOffset, this);
-	}
+	void Respawn();
 };
 
 class CBot {

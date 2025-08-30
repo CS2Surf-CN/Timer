@@ -4,7 +4,6 @@
 
 #include "cbaseentity.h"
 #include "ccsplayerpawn.h"
-#include <core/interfaces.h>
 
 class CCSPlayerPawn;
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <utldelegate.h>
-#include <entityinstance.h>
+#include <ehandle.h>
+#include <platform.h>
 
-#include <core/memory.h>
+class CEntityInstance;
 
 struct SchemaKey {
-	int32_t offset;
+	int offset;
 	bool networked;
 };
 
@@ -21,7 +21,7 @@ private:
 	CEntityInstance* m_pObj;
 
 public:
-	uint8_t unk[24];
+	uint8 unk[24];
 	ChangeAccessorFieldPathIndex_t m_PathIndex;
 };
 
@@ -33,7 +33,7 @@ namespace schema {
 	SchemaKey GetOffset(const char* className, const char* memberName);
 	SchemaKey GetOffset(const char* className, uint32 classKey, const char* memberName, uint32 memberKey);
 	void NetworkVarStateChanged(void* pNetworkVar, int iVfuncOffset, uint32 nLocalOffset, uint16 nArrayIndex = -1);
-	void ChainEntityNetworkStateChanged(uintptr_t pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex = -1);
+	void ChainEntityNetworkStateChanged(void* pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex = -1);
 	void EntityNetworkStateChanged(CEntityInstance* pEntity, uint32 nLocalOffset, uint16 nArrayIndex = -1);
 	void StructNetworkStateChanged(void* pNetworkStruct, uint32 nLocalOffset);
 	size_t GetClassSize(const char* className);
@@ -58,9 +58,9 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
-			return *reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + m_key.offset); \
+			return *reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + m_key.offset); \
 		} \
-		return *reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + varOffset); \
+		return *reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + varOffset); \
 	}
 
 #define SCHEMA_SETTER(type, varName, varOffset, arrayIndex) \
@@ -72,7 +72,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 			if (m_key.networked) { \
 				if (m_chain != 0) { \
-					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
+					schema::ChainEntityNetworkStateChanged((void*)((char*)(this) + m_chain), m_key.offset, arrayIndex); \
 				} else { \
 					if constexpr (!IsStruct) { \
 						schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset, arrayIndex); \
@@ -81,9 +81,9 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 					} \
 				} \
 			} \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + m_key.offset) = const_cast<type&>(val); \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + m_key.offset) = const_cast<type&>(val); \
 		} else { \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + varOffset) = const_cast<type&>(val); \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + varOffset) = const_cast<type&>(val); \
 		} \
 	}
 
@@ -95,7 +95,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 		static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 		if (m_key.networked) { \
 			if (m_chain != 0) { \
-				schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset); \
+				schema::ChainEntityNetworkStateChanged((void*)((char*)(this) + m_chain), m_key.offset); \
 			} else { \
 				if constexpr (!IsStruct) { \
 					schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset); \
@@ -104,7 +104,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 				} \
 			} \
 		} \
-		strncpy(reinterpret_cast<char*>((uintptr_t)(this) + m_key.offset), val, len); \
+		strncpy(reinterpret_cast<char*>((char*)(this) + m_key.offset), val, len); \
 	}
 
 #define SCHEMA_CNETWORKVAR_SETTER(type, varName, varOffset, arrayIndex, iVFunc) \
@@ -116,7 +116,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 			if (m_key.networked) { \
 				if (m_chain != 0) { \
-					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
+					schema::ChainEntityNetworkStateChanged((void*)((char*)(this) + m_chain), m_key.offset, arrayIndex); \
 				} else { \
 					if constexpr (!IsStruct) { \
 						schema::NetworkVarStateChanged(this, iVFunc, m_key.offset, arrayIndex); \
@@ -125,14 +125,14 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 					} \
 				} \
 			} \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + m_key.offset) = const_cast<type&>(val); \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + m_key.offset) = const_cast<type&>(val); \
 		} else { \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + varOffset) = const_cast<type&>(val); \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + varOffset) = const_cast<type&>(val); \
 		} \
 	}
 
 #define SCHEMA_FIELD_SETTER_IS_NOT_ENTITY(type, varName, varOffset) \
-	void varName(type val, uint16_t arrayIndex = 0xFFFF) { \
+	void varName(type val, uint16 arrayIndex = 0xFFFF) { \
 		if constexpr (varOffset == 0) { \
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
@@ -140,20 +140,20 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static const auto m_chain = schema::FindChainOffset(ThisClassName); \
 			if (m_key.networked) { \
 				if (m_chain != 0) { \
-					schema::NetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex); \
+					schema::NetworkStateChanged((char*)(this) + m_chain, m_key.offset, arrayIndex); \
 				} \
 			} \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + m_key.offset) = val; \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + m_key.offset) = val; \
 		} else { \
-			*reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + varOffset) = val; \
+			*reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + varOffset) = val; \
 		} \
 	}
 
 #define SCHEMA_FIELD_GETTER(type, varName, varOffset) std::add_lvalue_reference_t<type> varName() SCHEMA_GETTER(type, varName, varOffset) std::add_lvalue_reference_t<type> varName() const SCHEMA_GETTER(type, varName, varOffset)
 
-#define SCHEMA_FIELD_SETTER(type, varName, varOffset) void varName(type&& val, uint16_t arrayIndex = 0xFFFF) SCHEMA_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex) void varName(const type& val, uint16_t arrayIndex = 0xFFFF) SCHEMA_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex)
+#define SCHEMA_FIELD_SETTER(type, varName, varOffset) void varName(type&& val, uint16 arrayIndex = 0xFFFF) SCHEMA_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex) void varName(const type& val, uint16 arrayIndex = 0xFFFF) SCHEMA_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex)
 
-#define SCHEMA_FIELD_CNETWORKVAR_SETTER(type, varName, varOffset, iVFunc) void varName(type&& val, uint16_t arrayIndex = 0xFFFF) SCHEMA_CNETWORKVAR_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex, iVFunc) void varName(const type& val, uint16_t arrayIndex = 0xFFFF) SCHEMA_CNETWORKVAR_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex, iVFunc)
+#define SCHEMA_FIELD_CNETWORKVAR_SETTER(type, varName, varOffset, iVFunc) void varName(type&& val, uint16 arrayIndex = 0xFFFF) SCHEMA_CNETWORKVAR_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex, iVFunc) void varName(const type& val, uint16 arrayIndex = 0xFFFF) SCHEMA_CNETWORKVAR_SETTER(SCHEMA_VA(type), varName, varOffset, arrayIndex, iVFunc)
 
 #define SCHEMA_FIELD_POINTER_GETTER(type, varName, varOffset) \
 	type* varName() { \
@@ -161,9 +161,9 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 			static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
-			return reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + m_key.offset); \
+			return reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + m_key.offset); \
 		} \
-		return reinterpret_cast<std::add_pointer_t<type>>((uintptr_t)(this) + varOffset); \
+		return reinterpret_cast<std::add_pointer_t<type>>((char*)(this) + varOffset); \
 	}
 
 #define SCHEMA_FIELD_POINTER_SETTER(type, varName, varOffset) SCHEMA_FIELD_SETTER(SCHEMA_VA(type), varName, varOffset)
@@ -182,7 +182,7 @@ inline constexpr uint64_t hash_64_fnv1a_const(const char* const str, const uint6
 		static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName); \
 		static constexpr auto prop_hash = hash_32_fnv1a_const(#varName); \
 		static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, #varName, prop_hash); \
-		*reinterpret_cast<std::add_pointer_t<T>>((uintptr_t)(this) + m_key.offset) = fn; \
+		*reinterpret_cast<std::add_pointer_t<T>>((char*)(this) + m_key.offset) = fn; \
 	}
 
 #define SCHEMA_VA(...) __VA_ARGS__

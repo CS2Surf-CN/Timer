@@ -1,3 +1,5 @@
+import surf.core;
+
 #include "schema.h"
 #include "common.h"
 
@@ -107,10 +109,10 @@ SchemaKey schema::GetOffset(const char* className, uint32 classKey, const char* 
 
 void schema::NetworkVarStateChanged(void* pNetworkVar, int iVfuncOffset, uint32 nLocalOffset, uint16 nArrayIndex) {
 	NetworkStateChangedData data(nLocalOffset, nArrayIndex);
-	CALL_VIRTUAL(void, iVfuncOffset, pNetworkVar, &data);
+	MEM::CallVirtual(iVfuncOffset, pNetworkVar, &data);
 }
 
-void schema::ChainEntityNetworkStateChanged(uintptr_t pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex) {
+void schema::ChainEntityNetworkStateChanged(void* pChainEntity, uint32 nLocalOffset, uint16 nArrayIndex) {
 	CNetworkVarChainer* chainEnt = reinterpret_cast<CNetworkVarChainer*>(pChainEntity);
 	CEntityInstance* entity = chainEnt->GetObj();
 	if (entity && !(entity->m_pEntity->m_flags & EF_IS_CONSTRUCTION_IN_PROGRESS)) {
@@ -126,7 +128,7 @@ void schema::EntityNetworkStateChanged(CEntityInstance* pEntity, uint32 nLocalOf
 
 void schema::StructNetworkStateChanged(void* pNetworkStruct, uint32 nLocalOffset) {
 	NetworkStateChangedData data(nLocalOffset);
-	CALL_VIRTUAL(void, 1, pNetworkStruct, &data);
+	MEM::CallVirtual(1, pNetworkStruct, &data);
 }
 
 size_t schema::GetClassSize(const char* className) {

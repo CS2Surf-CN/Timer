@@ -1,7 +1,9 @@
 #pragma once
 
-#include <sdk/schema.h>
+#include <sdk/entity/cbaseentity.h>
 #include <sdk/usercmd.h>
+
+class CCSPlayerPawnBase;
 
 enum ObserverMode_t : uint8 {
 	OBS_MODE_NONE = 0x0,    // not in spectator mode

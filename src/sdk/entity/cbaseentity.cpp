@@ -1,16 +1,17 @@
+import surf.core;
+
 #include "cbaseentity.h"
-#include <core/memory.h>
 
 void CBaseEntity::AcceptInput(const char* pInputName, variant_t value, CEntityInstance* pActivator, CEntityInstance* pCaller) {
-	MEM::CALL::CEntityInstance_AcceptInput(this, pInputName, pActivator, pCaller, &value, 0);
+	//MEM::CALL::CEntityInstance_AcceptInput(this, pInputName, pActivator, pCaller, &value, 0);
 }
 
 void CBaseEntity::DispatchSpawn(CEntityKeyValues* pInitKeyValue) {
-	MEM::CALL::DispatchSpawn(this, pInitKeyValue);
+	//MEM::CALL::DispatchSpawn(this, pInitKeyValue);
 }
 
 void CBaseEntity::SetParent(CBaseEntity* pParent) {
-	MEM::CALL::SetParent(this, pParent);
+	//MEM::CALL::SetParent(this, pParent);
 }
 
 void CBaseEntity::SetName(const char* pszName, bool bCheckDuplicate) {
@@ -18,7 +19,7 @@ void CBaseEntity::SetName(const char* pszName, bool bCheckDuplicate) {
 		return;
 	}
 
-	MEM::CALL::SetEntityName(this->m_pEntity, pszName);
+	//MEM::CALL::SetEntityName(this->m_pEntity, pszName);
 }
 
 const Vector& CBaseEntity::GetAbsOrigin() {
@@ -65,10 +66,10 @@ const QAngle& CBaseEntity::GetAbsAngles() {
 
 bool CBaseEntity::IsPawn() {
 	static auto iOffset = GAMEDATA::GetOffset("IsEntityPawn");
-	return CALL_VIRTUAL(bool, iOffset, this);
+	return MEM::CallVirtual<bool>(iOffset, this);
 }
 
 bool CBaseEntity::IsController() {
 	static auto iOffset = GAMEDATA::GetOffset("IsEntityController");
-	return CALL_VIRTUAL(bool, iOffset, this);
+	return MEM::CallVirtual<bool>(iOffset, this);
 }

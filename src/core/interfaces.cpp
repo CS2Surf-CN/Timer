@@ -1,13 +1,19 @@
-#include "interfaces.h"
-#include "gamedata.h"
+module;
 
-#include <playerslot.h>
-#include <vector.h>
+#include <ISmmPlugin.h>
+#include <igamesystem.h>
+#include <igameevents.h>
 #include <igameeventsystem.h>
+#include <iserver.h>
+#include <icvar.h>
+
+module surf.core.interfaces;
+
+import surf.core.gamedata;
 
 bool IFACE::Setup(ISmmAPI* ismm, char* error, size_t maxlen) {
 	GET_V_IFACE_CURRENT(GetEngineFactory, g_pCVar, ICvar, CVAR_INTERFACE_VERSION);
-	GET_V_IFACE_CURRENT(GetEngineFactory, IFACE::pGameResourceServiceServer, CGameResourceService, GAMERESOURCESERVICESERVER_INTERFACE_VERSION);
+	GET_V_IFACE_CURRENT(GetEngineFactory, IFACE::pGameResourceService, CGameResourceService, GAMERESOURCESERVICESERVER_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetServerFactory, g_pSource2GameClients, ISource2GameClients, INTERFACEVERSION_SERVERGAMECLIENTS);
 	GET_V_IFACE_CURRENT(GetServerFactory, g_pSource2GameEntities, ISource2GameEntities, SOURCE2GAMEENTITIES_INTERFACE_VERSION);
 	GET_V_IFACE_CURRENT(GetEngineFactory, IFACE::pEngine, IVEngineServer2, INTERFACEVERSION_VENGINESERVER);

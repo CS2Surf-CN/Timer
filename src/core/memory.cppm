@@ -1,10 +1,9 @@
 module;
 
-//#include <pch.h>
-
+#include <eiface.h>
 #include <sdk/common.h>
-//#include <sdk/datatypes.h>
-//#include <sdk/server/weapon.h>
+#include <sdk/datatypes.h>
+#include <sdk/server/weapon.h>
 #include <libmem/libmem.hpp>
 #include <libmodule/module.h>
 #include <polyhook2/Detour/NatDetour.hpp>
@@ -14,6 +13,7 @@ module;
 
 export module surf.core.memory;
 
+class IGameEventListener2;
 class CBasePlayerController;
 class CCSPlayerController;
 class CCSPlayerPawn;
@@ -24,22 +24,22 @@ class CBaseTrigger;
 class GameSessionConfiguration_t {};
 
 export namespace MEM {
-	//namespace CALL {
-	//	void SwitchTeam(CCSPlayerController* controller, int team);
-	//	void SetPawn(CBasePlayerController* controller, CCSPlayerPawn* pawn, bool a3, bool a4, bool a5);
-	//	IGameEventListener2* GetLegacyGameEventListener(CPlayerSlot slot);
-	//	bool TraceShape(const Ray_t& ray, const Vector& vecStart, const Vector& vecEnd, const CTraceFilter& filter, CGameTrace* tr);
-	//	void TracePlayerBBox(const Vector& start, const Vector& end, const bbox_t& bounds, CTraceFilter* filter, trace_t& pm);
-	//	void SnapViewAngles(CBasePlayerPawn* pawn, const QAngle& angle);
-	//	void CEntityInstance_AcceptInput(CEntityInstance* pEnt, const char* pInputName, CEntityInstance* pActivator, CEntityInstance* pCaller, variant_t* value, int nOutputID);
-	//	CBaseEntity* CreateEntityByName(const char* pszName);
-	//	void DispatchSpawn(CBaseEntity* pEnt, CEntityKeyValues* pInitKeyValue);
-	//	CBaseTrigger* CreateAABBTrigger(const Vector& center, const Vector& mins, const Vector& maxs);
-	//	void SetParent(CBaseEntity* pEnt, CBaseEntity* pParent);
-	//	void SetEntityName(CEntityIdentity* pEnt, const char* pszName);
-	//	SndOpEventGuid_t EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params);
-	//	bool BotAddCommand(int team, bool isFromConsole = false, const char* profileName = nullptr, CSWeaponType weaponType = WEAPONTYPE_UNKNOWN, int difficulty = 0);
-	//} // namespace CALL
+	namespace CALL {
+		void SwitchTeam(CCSPlayerController* controller, int team);
+		void SetPawn(CBasePlayerController* controller, CCSPlayerPawn* pawn, bool a3, bool a4, bool a5);
+		IGameEventListener2* GetLegacyGameEventListener(CPlayerSlot slot);
+		bool TraceShape(const Ray_t& ray, const Vector& vecStart, const Vector& vecEnd, const CTraceFilter& filter, CGameTrace* tr);
+		void TracePlayerBBox(const Vector& start, const Vector& end, const bbox_t& bounds, CTraceFilter* filter, trace_t& pm);
+		void SnapViewAngles(CBasePlayerPawn* pawn, const QAngle& angle);
+		void CEntityInstance_AcceptInput(CEntityInstance* pEnt, const char* pInputName, CEntityInstance* pActivator, CEntityInstance* pCaller, variant_t* value, int nOutputID);
+		CBaseEntity* CreateEntityByName(const char* pszName);
+		void DispatchSpawn(CBaseEntity* pEnt, CEntityKeyValues* pInitKeyValue);
+		CBaseTrigger* CreateAABBTrigger(const Vector& center, const Vector& mins, const Vector& maxs);
+		void SetParent(CBaseEntity* pEnt, CBaseEntity* pParent);
+		void SetEntityName(CEntityIdentity* pEnt, const char* pszName);
+		SndOpEventGuid_t EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params);
+		bool BotAddCommand(int team, bool isFromConsole = false, const char* profileName = nullptr, CSWeaponType weaponType = WEAPONTYPE_UNKNOWN, int difficulty = 0);
+	} // namespace CALL
 
 	namespace MODULE {
 		inline std::shared_ptr<libmodule::CModule> engine2;

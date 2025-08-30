@@ -1,6 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <gametrace.h>
+#include <sdk/common.h>
+#include <platform.h>
+#include <soundflags.h>
 
 class CBasePlayerPawn;
 

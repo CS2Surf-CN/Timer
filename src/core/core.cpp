@@ -1,6 +1,7 @@
-class CGameEntitySystem;
+import surf.core.interfaces;
+
+#include <sdk/entity/cgameresourceservice.h>
 
 CGameEntitySystem* GameEntitySystem() {
-	return nullptr;
-	//return IFACE::pGameResourceServiceServer->GetGameEntitySystem();
+	return IFACE::pGameResourceService->GetGameEntitySystem();
 }

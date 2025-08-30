@@ -5,8 +5,10 @@ module;
 //#include <core/eventmanager.h>
 
 //#include <sdk/usercmd.h>
-//#include <sdk/entity/services.h>
-//#include <sdk/entity/ccsplayerpawn.h>
+#include <sdk/datatypes.h>
+#include <sdk/server/weapon.h>
+#include <sdk/entity/services.h>
+#include <sdk/entity/ccsplayerpawn.h>
 #include <utils/utils.h>
 #include <utils/typehelper.h>
 
@@ -35,71 +37,71 @@ bool g_bMapStarted = false;
 	SDK_ASSERT(fnSig); \
 	return MEM::SDKCall<FunctionTraits<decltype(&fnCurrent)>::ReturnType>(fnSig, __VA_ARGS__);
 
-//#pragma region calls
-//
-//namespace MEM::CALL {
-//	void SwitchTeam(CCSPlayerController* controller, int team) {
-//		CALL_SIG("CCSPlayerController_SwitchTeam", SwitchTeam, controller, team);
-//	}
-//
-//	void SetPawn(CBasePlayerController* controller, CCSPlayerPawn* pawn, bool a3, bool a4, bool a5) {
-//		CALL_SIG("CBasePlayerController_SetPawn", SetPawn, controller, pawn, a3, a4, a5);
-//	}
-//
-//	IGameEventListener2* GetLegacyGameEventListener(CPlayerSlot slot) {
-//		CALL_SIG("GetLegacyGameEventListener", GetLegacyGameEventListener, slot);
-//	}
-//
-//	bool TraceShape(const Ray_t& ray, const Vector& vecStart, const Vector& vecEnd, const CTraceFilter& filter, CGameTrace* tr) {
-//		CALL_SIG("TraceShape", TraceShape, IFACE::pEngineTrace, &ray, &vecStart, &vecEnd, &filter, tr);
-//	}
-//
-//	void TracePlayerBBox(const Vector& start, const Vector& end, const bbox_t& bounds, CTraceFilter* filter, trace_t& pm) {
-//		CALL_SIG("TracePlayerBBox", TracePlayerBBox, &start, &end, &bounds, filter, &pm);
-//	}
-//
-//	void SnapViewAngles(CBasePlayerPawn* pawn, const QAngle& angle) {
-//		CALL_SIG("SnapViewAngles", SnapViewAngles, pawn, &angle);
-//	}
-//
-//	void CEntityInstance_AcceptInput(CEntityInstance* pEnt, const char* pInputName, CEntityInstance* pActivator, CEntityInstance* pCaller, variant_t* value, int nOutputID) {
-//		CALL_SIG("CEntityInstance_AcceptInput", CEntityInstance_AcceptInput, pEnt, pInputName, pActivator, pCaller, value, nOutputID);
-//	}
-//
-//	CBaseEntity* CreateEntityByName(const char* pszName) {
-//		CALL_SIG("CBaseEntity::CreateEntityByName", CreateEntityByName, pszName, -1);
-//	}
-//
-//	void DispatchSpawn(CBaseEntity* pEnt, CEntityKeyValues* pInitKeyValue) {
-//		CALL_SIG("CBaseEntity::DispatchSpawn", DispatchSpawn, pEnt, pInitKeyValue);
-//	}
-//
-//	CBaseTrigger* CreateAABBTrigger(const Vector& center, const Vector& mins, const Vector& maxs) {
-//		CALL_SIG("CBaseTrigger::CreateAABBTrigger", CreateAABBTrigger, &center, &mins, &maxs);
-//	}
-//
-//	void SetParent(CBaseEntity* pEnt, CBaseEntity* pParent) {
-//		CALL_SIG("CBaseEntity::SetParent", SetParent, pEnt, pParent, 0, 0);
-//	}
-//
-//	void SetEntityName(CEntityIdentity* pEnt, const char* pszName) {
-//		CALL_SIG("CEntityIdentity::SetEntityName", SetEntityName, pEnt, pszName);
-//	}
-//
-//	SndOpEventGuid_t EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params) {
-//		CALL_SIG("EmitSound", EmitSound, &filter, ent, &params);
-//	}
-//
-//	bool BotAddCommand(int team, bool isFromConsole, const char* profileName, CSWeaponType weaponType, int difficulty) {
-//	#ifdef _WIN32
-//		CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, nullptr, team, isFromConsole, profileName, weaponType, difficulty);
-//	#else
-//		CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, team, isFromConsole, profileName, weaponType, difficulty);
-//	#endif
-//	}
-//}
-//
-//#pragma endregion
+#pragma region calls
+
+namespace MEM::CALL {
+	void SwitchTeam(CCSPlayerController* controller, int team) {
+		CALL_SIG("CCSPlayerController_SwitchTeam", SwitchTeam, controller, team);
+	}
+
+	void SetPawn(CBasePlayerController* controller, CCSPlayerPawn* pawn, bool a3, bool a4, bool a5) {
+		CALL_SIG("CBasePlayerController_SetPawn", SetPawn, controller, pawn, a3, a4, a5);
+	}
+
+	IGameEventListener2* GetLegacyGameEventListener(CPlayerSlot slot) {
+		CALL_SIG("GetLegacyGameEventListener", GetLegacyGameEventListener, slot);
+	}
+
+	bool TraceShape(const Ray_t& ray, const Vector& vecStart, const Vector& vecEnd, const CTraceFilter& filter, CGameTrace* tr) {
+		CALL_SIG("TraceShape", TraceShape, IFACE::pEngineTrace, &ray, &vecStart, &vecEnd, &filter, tr);
+	}
+
+	void TracePlayerBBox(const Vector& start, const Vector& end, const bbox_t& bounds, CTraceFilter* filter, trace_t& pm) {
+		CALL_SIG("TracePlayerBBox", TracePlayerBBox, &start, &end, &bounds, filter, &pm);
+	}
+
+	void SnapViewAngles(CBasePlayerPawn* pawn, const QAngle& angle) {
+		CALL_SIG("SnapViewAngles", SnapViewAngles, pawn, &angle);
+	}
+
+	void CEntityInstance_AcceptInput(CEntityInstance* pEnt, const char* pInputName, CEntityInstance* pActivator, CEntityInstance* pCaller, variant_t* value, int nOutputID) {
+		CALL_SIG("CEntityInstance_AcceptInput", CEntityInstance_AcceptInput, pEnt, pInputName, pActivator, pCaller, value, nOutputID);
+	}
+
+	CBaseEntity* CreateEntityByName(const char* pszName) {
+		CALL_SIG("CBaseEntity::CreateEntityByName", CreateEntityByName, pszName, -1);
+	}
+
+	void DispatchSpawn(CBaseEntity* pEnt, CEntityKeyValues* pInitKeyValue) {
+		CALL_SIG("CBaseEntity::DispatchSpawn", DispatchSpawn, pEnt, pInitKeyValue);
+	}
+
+	CBaseTrigger* CreateAABBTrigger(const Vector& center, const Vector& mins, const Vector& maxs) {
+		CALL_SIG("CBaseTrigger::CreateAABBTrigger", CreateAABBTrigger, &center, &mins, &maxs);
+	}
+
+	void SetParent(CBaseEntity* pEnt, CBaseEntity* pParent) {
+		CALL_SIG("CBaseEntity::SetParent", SetParent, pEnt, pParent, 0, 0);
+	}
+
+	void SetEntityName(CEntityIdentity* pEnt, const char* pszName) {
+		CALL_SIG("CEntityIdentity::SetEntityName", SetEntityName, pEnt, pszName);
+	}
+
+	SndOpEventGuid_t EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params) {
+		CALL_SIG("EmitSound", EmitSound, &filter, ent, &params);
+	}
+
+	bool BotAddCommand(int team, bool isFromConsole, const char* profileName, CSWeaponType weaponType, int difficulty) {
+	#ifdef _WIN32
+		CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, nullptr, team, isFromConsole, profileName, weaponType, difficulty);
+	#else
+		CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, team, isFromConsole, profileName, weaponType, difficulty);
+	#endif
+	}
+}
+
+#pragma endregion
 
 //#pragma region hooks
 //

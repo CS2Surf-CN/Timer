@@ -1,9 +1,7 @@
 #pragma once
-#pragma once
 
 #include "cbaseplayercontroller.h"
 #include "random.h"
-#include <core/memory.h>
 
 enum OverlapState : uint8 {
 	PERFECT = 0x1,

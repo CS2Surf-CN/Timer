@@ -1,7 +1,7 @@
+import surf.core;
+
 #include "cgameresourceservice.h"
 
-#include <core/gamedata.h>
-
 CGameEntitySystem* CGameResourceService::GetGameEntitySystem() {
-	return *reinterpret_cast<CGameEntitySystem**>((uintptr_t)(this) + GAMEDATA::GetOffset("GameEntitySystem"));
+	return *reinterpret_cast<CGameEntitySystem**>((char*)(this) + GAMEDATA::GetOffset("GameEntitySystem"));
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ehandle.h>
-#include <sdk/schema.h>
 #include <sdk/entity/ccollisionproperty.h>
 
 enum S2EdictState {
@@ -215,34 +214,15 @@ public:
 		this->m_nActualMoveType(movetype);
 	}
 
-	void CollisionRulesChanged() {
-		static auto iOffset = GAMEDATA::GetOffset("CollisionRulesChanged");
-		CALL_VIRTUAL(void, iOffset, this);
-	}
-
 	int GetTeam() {
 		return m_iTeamNum();
 	}
 
-	void StartTouch(CBaseEntity* pOther) {
-		static auto iOffset = GAMEDATA::GetOffset("CBaseEntity::StartTouch");
-		CALL_VIRTUAL(bool, iOffset, this, pOther);
-	}
-
-	void Touch(CBaseEntity* pOther) {
-		static auto iOffset = GAMEDATA::GetOffset("CBaseEntity::Touch");
-		CALL_VIRTUAL(bool, iOffset, this, pOther);
-	}
-
-	void EndTouch(CBaseEntity* pOther) {
-		static auto iOffset = GAMEDATA::GetOffset("CBaseEntity::EndTouch");
-		CALL_VIRTUAL(bool, iOffset, this, pOther);
-	}
-
-	void Teleport(const Vector* newPosition, const QAngle* newAngles, const Vector* newVelocity) {
-		static auto iOffset = GAMEDATA::GetOffset("CBaseEntity::Teleport");
-		CALL_VIRTUAL(bool, iOffset, this, newPosition, newAngles, newVelocity);
-	}
+	void CollisionRulesChanged();
+	void StartTouch(CBaseEntity* pOther);
+	void Touch(CBaseEntity* pOther);
+	void EndTouch(CBaseEntity* pOther);
+	void Teleport(const Vector* newPosition, const QAngle* newAngles, const Vector* newVelocity);
 
 	void Kill() {
 		this->AcceptInput("kill");

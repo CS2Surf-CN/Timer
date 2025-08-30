@@ -42,15 +42,15 @@ export struct CAdminInfo {
 	AdminFlag m_nFlag;
 };
 
-export namespace ADMIN {
-	class CCSPlayerController;
+export class CCSPlayerController;
 
+export namespace ADMIN {
 	bool IsAdmin(uint64 xuid);
-	bool IsAdmin(CCSPlayerController* controller);
+	bool IsAdmin(CCSPlayerController* pController);
 	CAdminInfo GetAdmin(uint64 xuid);
-	CAdminInfo GetAdmin(CCSPlayerController* controller);
+	CAdminInfo GetAdmin(CCSPlayerController* pController);
 	bool CheckAccess(uint64 xuid, AdminFlag flag);
-	bool CheckAccess(CCSPlayerController* controller, AdminFlag flag);
+	bool CheckAccess(CCSPlayerController* pController, AdminFlag flag);
 	void AddAdmin(uint64 xuid, AdminFlag flag);
 } // namespace ADMIN
 

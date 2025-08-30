@@ -1,7 +1,7 @@
 module;
 
 #include <unordered_map>
-//#include <sdk/entity/ccsplayercontroller.h>
+#include <sdk/entity/ccsplayercontroller.h>
 
 module surf.core.adminmanager;
 
@@ -22,11 +22,11 @@ bool ADMIN::IsAdmin(CCSPlayerController* pController) {
 		return true;
 	}
 
-	/*if (!pController->IsController() || !pController->InGame() || pController->IsBot()) {
+	if (!pController->IsController() || !pController->InGame() || pController->IsBot()) {
 		return false;
 	}
 
-	return IsAdmin(pController->m_steamID());*/
+	return IsAdmin(pController->m_steamID());
 }
 
 CAdminInfo ADMIN::GetAdmin(uint64 xuid) {
@@ -39,8 +39,7 @@ CAdminInfo ADMIN::GetAdmin(uint64 xuid) {
 }
 
 CAdminInfo ADMIN::GetAdmin(CCSPlayerController* pController) {
-	return {};
-	//return GetAdmin(pController->m_steamID());
+	return GetAdmin(pController->m_steamID());
 }
 
 bool ADMIN::CheckAccess(uint64 xuid, AdminFlag flag) {
@@ -53,9 +52,8 @@ bool ADMIN::CheckAccess(uint64 xuid, AdminFlag flag) {
 	return false;
 }
 
-bool ADMIN::CheckAccess(CCSPlayerController* controller, AdminFlag flag) {
-	return false;
-	//return CheckAccess(controller->m_steamID(), flag);
+bool ADMIN::CheckAccess(CCSPlayerController* pController, AdminFlag flag) {
+	return CheckAccess(pController->m_steamID(), flag);
 }
 
 void ADMIN::AddAdmin(uint64 xuid, AdminFlag flag) {
