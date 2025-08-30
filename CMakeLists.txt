@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.28)
 
 project(cs2surf)
 
@@ -34,11 +34,18 @@ file(GLOB_RECURSE SDK_SOURCES
 		"${SDK_ROOT}/tier1/keyvalues3.cpp"
 )
 file(GLOB_RECURSE PROTOBUF_SOURCES "${SURFTIMER_SRC}/sdk/protobuf/*.pb.cc" "${SURFTIMER_SRC}/sdk/protobuf/*.pb.h")
-file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/*.cpp" "${SURFTIMER_SRC}/*.h")
+file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/*.cpp")
+file(GLOB_RECURSE SURFTIMER_MODULES "${SURFTIMER_SRC}/*.cppm")
 
 add_definitions(-DHV_STATICLIB -DHAVE_MEMOVERRIDE_NEW_DELETE -DFMT_HEADER_ONLY -DNOMINMAX)
 
 add_library(${PROJECT_NAME} SHARED ${SDK_SOURCES} ${PROTOBUF_SOURCES} ${SURFTIMER_SOURCES})
+target_sources(${PROJECT_NAME} PRIVATE
+	FILE_SET "surftimer_modules"
+	TYPE CXX_MODULES
+	BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
+	FILES ${SURFTIMER_MODULES}
+)
 
 if(WIN32)
 	target_link_options(${PROJECT_NAME} PRIVATE "ntdll.lib")

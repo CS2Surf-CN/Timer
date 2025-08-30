@@ -1,4 +1,6 @@
-#include "adminmanager.h"
+import surf.core.adminmanager;
+
+std::unordered_map<uint64, CAdminInfo> ADMIN::m_umAdmins;
 
 bool ADMIN::IsAdmin(uint64 xuid) {
 	auto it = m_umAdmins.find(xuid);
