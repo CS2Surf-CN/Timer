@@ -1,17 +1,16 @@
 #pragma once
 
-#include <pch.h>
-
 #include <string>
 #include <filesystem>
 
-#include <sdk/serversideclient.h>
-#include <sdk/gamerules.h>
+//#include <sdk/serversideclient.h>
+//#include <sdk/gamerules.h>
+//
+//#include <utils/ctimer.h>
+//#include <utils/print.h>
 
-#include <utils/ctimer.h>
-#include <utils/print.h>
-
-import surf.core;
+#include <sdk/common.h>
+#include <core/core.h>
 
 #define JSON_GETTER(_json, key, ret) \
 	do { \
@@ -40,42 +39,53 @@ namespace UTIL {
 		}
 	} // namespace VECTOR
 
-	namespace PB {
-		template<typename T>
-		bool ReadFromBuffer(bf_read& buffer, T& pb) {
-			auto size = buffer.ReadVarInt32();
+	//namespace PB {
+	//	template<typename T>
+	//	bool ReadFromBuffer(bf_read& buffer, T& pb) {
+	//		auto size = buffer.ReadVarInt32();
 
-			if (size < 0 || size > 262140) {
-				return false;
-			}
+	//		if (size < 0 || size > 262140) {
+	//			return false;
+	//		}
 
-			if (size > buffer.GetNumBytesLeft()) {
-				return false;
-			}
+	//		if (size > buffer.GetNumBytesLeft()) {
+	//			return false;
+	//		}
 
-			if ((buffer.GetNumBitsRead() % 8) == 0) {
-				bool parseResult = pb.ParseFromArray(buffer.GetBasePointer() + buffer.GetNumBytesRead(), size);
-				buffer.SeekRelative(size * 8);
+	//		if ((buffer.GetNumBitsRead() % 8) == 0) {
+	//			bool parseResult = pb.ParseFromArray(buffer.GetBasePointer() + buffer.GetNumBytesRead(), size);
+	//			buffer.SeekRelative(size * 8);
 
-				return true;
-			}
+	//			return true;
+	//		}
 
-			void* parseBuffer = stackalloc(size);
-			if (!buffer.ReadBytes(parseBuffer, size)) {
-				return false;
-			}
+	//		void* parseBuffer = stackalloc(size);
+	//		if (!buffer.ReadBytes(parseBuffer, size)) {
+	//			return false;
+	//		}
 
-			if (!pb.ParseFromArray(parseBuffer, size)) {
-				return false;
-			}
+	//		if (!pb.ParseFromArray(parseBuffer, size)) {
+	//			return false;
+	//		}
 
-			return true;
+	//		return true;
+	//	}
+	//} // namespace PB
+
+	inline json LoadJsonc(std::string sFilePath) {
+		std::ifstream file(sFilePath);
+		if (!file.good()) {
+			return {};
 		}
-	} // namespace PB
 
-	std::string GetWorkingDirectory();
-	std::string GetPublicIP();
-	json LoadJsonc(std::string sFilePath);
+		return json::parse(file, nullptr, true, true);
+	}
+
+	inline std::string GetWorkingDirectory() {
+		return PATH::Join(std::filesystem::current_path().string(), "..", "..", GAME_NAME, "addons", "cs2surf");
+	}
+
+	/*std::string GetPublicIP();
 	std::wstring ToWideString(const char* pszCharStr);
 	void ReplaceString(std::string& str, const char* from, const char* to);
 
@@ -103,5 +113,5 @@ namespace UTIL {
 	void SendConVarValue(CPlayerSlot slot, ConVarRefAbstract* cvar, const char* value);
 	void SendMultipleConVarValues(CPlayerSlot slot, const char** cvars, const char** values, u32 size);
 	void SendMultipleConVarValues(CPlayerSlot slot, ConVarRefAbstract** cvars, const char** values, u32 size);
-#pragma endregion
+#pragma endregion*/
 } // namespace UTIL

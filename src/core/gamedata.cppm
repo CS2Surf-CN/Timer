@@ -1,21 +1,14 @@
 module;
 
 #include <string>
-#include <unordered_map>
-#include <json.h>
 
 export module surf.core.gamedata;
-export using json = nlohmann::json;
 
 // for one gamedata cfg now
 export namespace GAMEDATA {
 	void Append(std::string sFilePath);
-	//int GetOffset(std::string name);
-	//void* GetMemSig(std::string name);
-	//void* GetAddress(std::string name);
-
-	inline json m_Json;
-	inline std::string m_sFilePath;
-	inline std::unordered_map<std::string, void*> m_pMemSig;
+	int GetOffset(std::string name);
+	void* GetMemSig(std::string name);
+	void* GetAddress(std::string name);
 }; // namespace GAMEDATA
 
