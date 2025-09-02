@@ -51,13 +51,31 @@ template <typename T>
 /// @return The VmtHook object.
 [[nodiscard]] VmtHook SAFETYHOOK_API create_vmt(void* object);
 
+/// @brief Easy to use API for creating a VmtOriginalHook.
+/// @param pVtable The vtable to hook.
+/// @return The VmtOriginalHook object.
+[[nodiscard]] VmtOriginalHook SAFETYHOOK_API create_vmt_original(void* pVtable);
+
 /// @brief Easy to use API for creating a VmHook.
 /// @param vmt The VmtHook to use to create the VmHook.
 /// @param index The index of the method to hook.
 /// @param destination The destination function.
 /// @return The VmHook object.
-template <typename T> [[nodiscard]] VmHook create_vm(VmtHook& vmt, size_t index, T destination) {
+template <typename T> [[nodiscard]] VmHook create_vmhook(VmtHook& vmt, size_t index, T destination) {
     if (auto hook = vmt.hook_method(index, destination)) {
+        return std::move(*hook);
+    } else {
+        return {};
+    }
+}
+
+/// @brief Easy to use API for creating a VmHook.
+/// @param vmt The VmtOriginalHook to use to create the VmHook.
+/// @param index The index of the method to hook.
+/// @param destination The destination function.
+/// @return The VmHook object.
+template <typename T> [[nodiscard]] VmHook create_vmhook_original(VmtOriginalHook& vmt, size_t index, T destination) {
+    if (auto hook = vmt.hook_method(index, reinterpret_cast<void*>(destination))) {
         return std::move(*hook);
     } else {
         return {};

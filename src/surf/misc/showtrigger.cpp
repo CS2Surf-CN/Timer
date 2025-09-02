@@ -1,5 +1,4 @@
 #include "showtrigger.h"
-#include <libmem/libmem_helper.h>
 #include <core/memory.h>
 #include <core/interfaces.h>
 #include <utils/utils.h>

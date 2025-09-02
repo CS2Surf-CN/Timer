@@ -1,6 +1,5 @@
 #include <pch.h>
 #include <core/memory.h>
-#include <libmem/libmem_helper.h>
 
 class CNoNavPlugin : CCoreForward {
 	virtual void OnPluginStart() override;

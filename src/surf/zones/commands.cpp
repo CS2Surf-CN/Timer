@@ -180,10 +180,7 @@ CCMD_CALLBACK(Command_BuildMappingZones) {
 		}
 	});
 
-	pMenu->AddItem("否", MENU_HANDLER_L(pPlayer) {
-		pPlayer->m_pZoneService->Print("已取消.");
-		event.hMenu.CloseAll();
-	});
+	pMenu->AddItem("否", MENU_HANDLER_L(pPlayer) { event.hMenu.CloseAll(); });
 
 	pMenu->SetOnExit(MENU_HANDLER_L(pPlayer) {
 		pPlayer->m_pZoneService->Print("已取消.");

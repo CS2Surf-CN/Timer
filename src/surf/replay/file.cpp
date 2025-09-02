@@ -1,6 +1,7 @@
 #include "surf_replay.h"
-#include <thread>
 #include <utils/utils.h>
+#include <thread>
+#include <fstream>
 #include <fmt/format.h>
 #include <zlib/zlib.h>
 

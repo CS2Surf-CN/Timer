@@ -5,10 +5,8 @@
 #include <sdk/common.h>
 #include <sdk/datatypes.h>
 #include <sdk/server/weapon.h>
-#include <libmem/libmem.hpp>
-#include <libmem/libmem_helper.h>
 #include <libmodule/module.h>
-#include <polyhook2/Detour/NatDetour.hpp>
+#include <safetyhook.hpp>
 #include <utils/vtablehelper.h>
 
 #include <list>
@@ -84,36 +82,34 @@ namespace MEM {
 
 	class CHookManager {
 	public:
-		// [{pDetour, pCallback}]
-		std::list<std::pair<std::unique_ptr<PLH::NatDetour>, std::uintptr_t>> m_DetourList;
-
-		// [{pVMT, pCallback}]
-		std::list<std::pair<std::unique_ptr<libmem::Vmt>, std::uintptr_t>> m_VMTHookList;
+		std::list<safetyhook::InlineHook> m_DetourList;
+		std::list<safetyhook::VmtOriginalHook> m_VMTHookList;
 	};
 
 	extern CHookManager* GetHookManager();
 
 	template<typename TOriginal, typename TCallback, typename TTram>
 	bool AddDetour(TOriginal pOriginal, TCallback pCallback, TTram& pTrampoline) {
-		auto pDetour = std::make_unique<PLH::NatDetour>((uint64_t)pOriginal, (uint64_t)pCallback, (uint64_t*)&pTrampoline);
-		if (!pDetour->hook()) {
+		auto detour = safetyhook::create_inline(pOriginal, pCallback);
+		if (!detour.enable()) {
 			SDK_ASSERT(false);
 			return false;
 		}
 
-		GetHookManager()->m_DetourList.emplace_back(std::pair {std::move(pDetour), (uintptr_t)pCallback});
+		pTrampoline = detour.original<TTram>();
+
+		GetHookManager()->m_DetourList.emplace_back(std::move(detour));
 		return true;
 	}
 
 	template<typename TOriginal, typename TTram>
 	bool RemoveDetour(TOriginal pCallback, TTram& pTrampoline) {
-		auto pTarget = reinterpret_cast<uintptr_t>(pCallback);
-		auto& pDetourList = GetHookManager()->m_DetourList;
-		auto it = std::ranges::find_if(pDetourList, [pTarget](const auto& pair) { return pair.second == pTarget; });
+		auto& detourList = GetHookManager()->m_DetourList;
+		auto it = std::ranges::find_if(detourList, [pTrampoline](const auto& detour) { return detour.destination_address() == reinterpret_cast<uintptr_t>(pTrampoline); });
 
-		if (it != pDetourList.end()) {
-			it->first->unHook();
-			pDetourList.erase(it);
+		if (it != detourList.end()) {
+			it->disable();
+			detourList.erase(it);
 			pTrampoline = nullptr;
 			return true;
 		}
@@ -123,23 +119,40 @@ namespace MEM {
 
 	template<typename TCallback, typename TTram>
 	bool AddVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
-#ifdef SDK_DEBUG
+		safetyhook::VmtOriginalHook* pVMT {};
 		auto& hooklist = GetHookManager()->m_VMTHookList;
-		for (const auto& [vmt, _] : hooklist) {
-			auto vtb = *(libmem::Address**)vmt->Convert();
-			void* pCurrentFn = *reinterpret_cast<void**>(vtb + vfnIndex);
-			if (pCurrentFn == (void*)pCallback && vtb == pVtable) {
-				SDK_ASSERT(false);
+		for (auto& vmt : hooklist) {
+			auto vtb = vmt.GetVTable();
+			if (vtb == pVtable) {
+				pVMT = &vmt;
+#ifndef SDK_DEBUG
+				break;
+#else
+				if (auto pVFunc = vmt.GetVFunc(vfnIndex); pVFunc == reinterpret_cast<void*>(pCallback)) {
+					SDK_ASSERT(false);
+				}
+#endif
 			}
 		}
-#endif
 
-		std::unique_ptr<libmem::Vmt> pVMT = std::make_unique<libmem::Vmt>(static_cast<libmem::Address*>(pVtable));
-		pTrampoline = pVMT->GetOriginal<TTram>(vfnIndex);
-		pVMT->Hook(vfnIndex, (libmem::Address)pCallback);
+		auto doHook = [&](auto& vmt) -> bool {
+			if (auto hRes = vmt.hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
+				pTrampoline = hRes.value().original<TTram>();
+				return true;
+			}
+			return false;
+		};
 
-		GetHookManager()->m_VMTHookList.emplace_back(std::pair {std::move(pVMT), (uintptr_t)pCallback});
+		if (pVMT) {
+			return doHook(*pVMT);
+		}
 
+		auto vmt = safetyhook::create_vmt_original(pVtable);
+		if (!doHook(vmt)) {
+			return false;
+		}
+
+		GetHookManager()->m_VMTHookList.emplace_back(std::move(vmt));
 		return true;
 	}
 
@@ -161,8 +174,11 @@ namespace MEM {
 		}
 
 		if (bDetour) {
-			libmem::Vmt vmt((libmem::Address*)pVtable);
-			auto pVfunc = vmt.GetOriginal(vfnIndex);
+			auto pVfunc = reinterpret_cast<uint8_t**>(pVtable)[vfnIndex];
+			if (!safetyhook::is_executable(pVfunc)) {
+				return false;
+			}
+
 			MEM::AddDetour(pVfunc, pCallback, pTrampoline);
 		} else {
 			MEM::AddVMTHook(pVtable, vfnIndex, pCallback, pTrampoline);
@@ -174,13 +190,21 @@ namespace MEM {
 	template<typename TCallback, typename TTram>
 	bool RemoveVMTHook(void* pVtable, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) {
 		auto pTarget = reinterpret_cast<uintptr_t>(pCallback);
-		auto& pVMTHookList = GetHookManager()->m_VMTHookList;
-		auto it = std::ranges::find_if(pVMTHookList, [pVtable, pTarget](const auto& pair) { return (void*)pair.first->GetVTable() == pVtable && pair.second == pTarget; });
+		auto& vmtHookList = GetHookManager()->m_VMTHookList;
+		auto it = std::ranges::find_if(vmtHookList, [pVtable, vfnIndex, pTarget](auto& vmt) { return vmt.GetVTable() == pVtable && vmt.GetVFunc(vfnIndex) == (void*)pTarget; });
 
-		if (it != pVMTHookList.end()) {
-			it->first->Unhook(vfnIndex);
-			pVMTHookList.erase(it);
+		if (it != vmtHookList.end()) {
+			auto& vmt = *it;
+			if (!vmt.remove(vfnIndex)) {
+				return false;
+			}
+
 			pTrampoline = nullptr;
+
+			if (vmt.empty()) {
+				vmtHookList.erase(it);
+			}
+
 			return true;
 		}
 
@@ -256,13 +280,10 @@ namespace MEM {
 	template<size_t nOffset = 0>
 	inline void PatchNOP(void* pAddress, size_t nLen) {
 		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
-		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, nLen, libmem::Prot::XRW);
-		if (old_mem_prot) {
+		if (auto res = safetyhook::unprotect(adr_patch, nLen); res) {
 			for (size_t i = 0; i < nLen; ++i) {
 				adr_patch[i] = 0x90;
 			}
-
-			libmem::ProtMemory((libmem::Address)adr_patch, nLen, *old_mem_prot);
 		}
 	}
 
@@ -271,13 +292,10 @@ namespace MEM {
 		const uint8_t bytes[] = {static_cast<uint8_t>(args)...};
 		uint8_t* adr_patch = static_cast<uint8_t*>(pAddress) + nOffset;
 		const size_t patch_size = sizeof...(args);
-		auto old_mem_prot = libmem::ProtMemory((libmem::Address)adr_patch, patch_size, libmem::Prot::XRW);
-		if (old_mem_prot) {
+		if (auto res = safetyhook::unprotect(adr_patch, patch_size); res) {
 			for (size_t i = 0; i < patch_size; ++i) {
 				adr_patch[i] = bytes[i];
 			}
-
-			libmem::ProtMemory((libmem::Address)adr_patch, patch_size, *old_mem_prot);
 		}
 	}
 } // namespace MEM

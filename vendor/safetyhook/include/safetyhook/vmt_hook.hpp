@@ -6,6 +6,7 @@
 #ifndef SAFETYHOOK_USE_CXXMODULES
 #include <cstdint>
 #include <expected>
+#include <list>
 #include <unordered_map>
 #else
 import std.compat;
@@ -80,6 +81,7 @@ public:
 
 private:
     friend class VmtHook;
+    friend class VmtOriginalHook;
 
     uint8_t* m_original_vm{};
     uint8_t* m_new_vm{};
@@ -166,5 +168,62 @@ private:
     uint8_t** m_new_vmt{};
 
     void destroy();
+};
+
+/// @brief A hook class that override original VMT for a given vfunc index.
+class SAFETYHOOK_API VmtOriginalHook final {
+public:
+    /// @brief Error type for VmtHook.
+    enum Error { BAD_VTABLE, BAD_VFUNC, BAD_ALLOC, NOT_FOUND };
+
+    VmtOriginalHook(const VmtOriginalHook&) = delete;
+    VmtOriginalHook& operator=(const VmtOriginalHook&) = delete;
+
+    VmtOriginalHook(VmtOriginalHook&&) noexcept = default;
+    VmtOriginalHook& operator=(VmtOriginalHook&&) noexcept = default;
+
+    /// @brief Creates a new VmtOriginalHook object.
+    /// @param object The vtable to hook.
+    /// @return The VmtOriginalHook object or a VmtOriginalHook::Error if an error occurred.
+    [[nodiscard]] static std::expected<VmtOriginalHook, Error> create(void* pVtable);
+
+    VmtOriginalHook() = default;
+    VmtOriginalHook(void* pVtable);
+    ~VmtOriginalHook();
+
+    /// @brief Removes the hook.
+    /// @param index The vfunc to remove the hook from.
+    std::expected<void, Error> remove(size_t index);
+
+    /// @brief Removes all the hook from vtable.
+    void reset();
+
+    /// @brief Hooks a method in the VMT.
+    /// @param index The index of the method to hook.
+    /// @param new_function The new function to use.
+    [[nodiscard]] std::expected<VmHook, Error> hook_method(size_t index, void* new_function);
+
+    void* GetVTable() {
+        return reinterpret_cast<void*>(m_pVtable);
+    }
+
+    void* GetVFunc(size_t index) {
+        return reinterpret_cast<void*>(m_pVtable[index]);
+    }
+
+    bool empty() const {
+        return m_pHookEntries.empty();
+    }
+
+private:
+    struct VmtEntry_t {
+        uint8_t* m_pOriginalFunc{};
+        size_t m_nIndex{};
+    };
+
+    VmtEntry_t* SearchVMT(size_t index);
+
+    uint8_t** m_pVtable{};
+    std::list<std::unique_ptr<VmtEntry_t>> m_pHookEntries{};
 };
 } // namespace safetyhook

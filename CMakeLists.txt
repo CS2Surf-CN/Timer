@@ -10,7 +10,6 @@ include_directories(
 	${SURFTIMER_SRC}
 	${SURFTIMER_SRC}/sdk/protobuf
 	./vendor/libhv/include
-	./vendor/libmem/include
 	./vendor/libmodule/include
 	./vendor/nlohmann
 	./vendor/fmt/include
@@ -20,7 +19,6 @@ include_directories(
 )
 
 file(GLOB SURFTIMER_LIBS 
-	"./vendor/libmem/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	"./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	"./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
 	"./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
