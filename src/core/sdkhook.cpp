@@ -12,8 +12,8 @@ private:
 	virtual void OnEntityDeleted(CEntityInstance* pEntity) override;
 
 public:
-	bool IsVMTHooked(void* pVtable);
-	bool IsVMTHooked(void* pVtable, uint32_t iOffset);
+	bool IsVMTHooked(void* pVtable) const;
+	bool IsVMTHooked(void* pVtable, uint32_t iOffset) const;
 	void HookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener);
 	void UnhookVMT(CBaseEntity* pEnt, std::string gdOffsetName, SDKHookType type, bool post, void* pInternalCallback, void* pListener);
 	void UnhookVMT(CBaseEntity* pEnt);
@@ -142,13 +142,17 @@ namespace SDKHOOK {
 	}
 } // namespace SDKHOOK
 
-bool SDKHookManager::IsVMTHooked(void* pVtable) {
-	return m_umVMTHooked.find(pVtable) != m_umVMTHooked.end();
+bool SDKHookManager::IsVMTHooked(void* pVtable) const {
+	return m_umVMTHooked.contains(pVtable);
 }
 
-bool SDKHookManager::IsVMTHooked(void* pVtable, uint32_t iOffset) {
-	if (auto it = m_umVMTHooked.find(pVtable); it != m_umVMTHooked.end() && it->second.contains(iOffset)) {
-		return it->second.at(iOffset) > 0;
+bool SDKHookManager::IsVMTHooked(void* pVtable, uint32_t iOffset) const {
+	if (!m_umVMTHooked.contains(pVtable)) {
+		return false;
+	}
+
+	if (auto counter = m_umVMTHooked.at(pVtable); counter.contains(iOffset)) {
+		return counter.at(iOffset) > 0;
 	}
 
 	return false;

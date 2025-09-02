@@ -412,6 +412,7 @@ static bool SetupVMTHooks() {
 	HOOK_VMT(IFACE::pGameEventManager, IGameEventManager2::FireEvent, Hook_OnFireEvent, MEM::TRAMPOLINE::g_fnFireGameEvent);
 
 	HOOK_VMT(g_pNetworkServerService, INetworkServerService::StartupServer, Hook_StartupServer, MEM::TRAMPOLINE::g_fnStartupServer);
+
 	HOOK_VMT(g_pCVar, ICvar::DispatchConCommand, Hook_DispatchConCommand, MEM::TRAMPOLINE::g_fnDispatchConCommand);
 
 	HOOK_VMT_OVERRIDE(IFACE::pGameEventSystem, IGameEventSystem, PostEventAbstract, Hook_PostEvent, MEM::TRAMPOLINE::g_fnPostEventAbstract, 

@@ -10,20 +10,20 @@ include_directories(
 	${SURFTIMER_SRC}
 	${SURFTIMER_SRC}/sdk/protobuf
 	./vendor/libhv/include
-	./vendor/libmem/include
 	./vendor/libmodule/include
 	./vendor/nlohmann
 	./vendor/fmt/include
 	./vendor/polyhook/include
+	./vendor/safetyhook/include
 	./vendor/zlib/include
 )
 
 file(GLOB SURFTIMER_LIBS 
-    "./vendor/libmem/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-    "./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/safetyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 
 file(GLOB_RECURSE SDK_SOURCES 
@@ -36,7 +36,7 @@ file(GLOB_RECURSE SDK_SOURCES
 file(GLOB_RECURSE PROTOBUF_SOURCES "${SURFTIMER_SRC}/sdk/protobuf/*.pb.cc" "${SURFTIMER_SRC}/sdk/protobuf/*.pb.h")
 file(GLOB_RECURSE SURFTIMER_SOURCES "${SURFTIMER_SRC}/*.cpp" "${SURFTIMER_SRC}/*.h")
 
-add_definitions(-DHV_STATICLIB -DHAVE_MEMOVERRIDE_NEW_DELETE -DFMT_HEADER_ONLY -DNOMINMAX)
+add_definitions(-DHV_STATICLIB -DZYDIS_STATIC_BUILD -DHAVE_MEMOVERRIDE_NEW_DELETE -DFMT_HEADER_ONLY -DNOMINMAX)
 
 add_library(${PROJECT_NAME} SHARED ${SDK_SOURCES} ${PROTOBUF_SOURCES} ${SURFTIMER_SOURCES})
 

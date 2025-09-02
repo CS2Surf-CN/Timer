@@ -10,11 +10,16 @@ private:
 CMaxVelocityFix g_MaxVelocityFix;
 
 void CMaxVelocityFix::OnPluginStart() {
-	float* min = (float*)GAMEDATA::GetAddress("m_vecVelocity_min");
-	libmem::ProtMemory((libmem::Address)min, sizeof(float), libmem::Prot::XRW);
-	*min = -m_vecVelocity_maxValue;
-
-	float* max = (float*)GAMEDATA::GetAddress("m_vecVelocity_max");
-	libmem::ProtMemory((libmem::Address)max, sizeof(float), libmem::Prot::XRW);
-	*max = m_vecVelocity_maxValue;
+	{
+		float* pFlValue = (float*)GAMEDATA::GetAddress("m_vecVelocity_min");
+		if (auto res = safetyhook::unprotect(reinterpret_cast<uint8_t*>(pFlValue), sizeof(float)); res) {
+			safetyhook::store(reinterpret_cast<uint8_t*>(pFlValue), -m_vecVelocity_maxValue);
+		}
+	}
+	{
+		float* pFlValue = (float*)GAMEDATA::GetAddress("m_vecVelocity_max");
+		if (auto res = safetyhook::unprotect(reinterpret_cast<uint8_t*>(pFlValue), sizeof(float)); res) {
+			safetyhook::store(reinterpret_cast<uint8_t*>(pFlValue), m_vecVelocity_maxValue);
+		}
+	}
 }
