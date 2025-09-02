@@ -96,7 +96,7 @@ namespace MEM {
 			return false;
 		}
 
-		pTrampoline = detour.original<TTram>();
+		pTrampoline = detour.template original<TTram>();
 
 		GetHookManager()->m_DetourList.emplace_back(std::move(detour));
 		return true;
@@ -137,7 +137,7 @@ namespace MEM {
 
 		auto doHook = [&](auto& vmt) -> bool {
 			if (auto hRes = vmt.hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
-				pTrampoline = hRes.value().original<TTram>();
+				pTrampoline = hRes.value().template original<TTram>();
 				return true;
 			}
 			return false;
