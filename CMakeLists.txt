@@ -4,26 +4,30 @@ project(cs2surf)
 
 include("shared.cmake")
 
-set(SURFTIMER_SRC "./src")
+set(SURFTIMER_SRC "${CMAKE_CURRENT_LIST_DIR}/src")
+set(SURFTIMER_VENDOR "${CMAKE_CURRENT_LIST_DIR}/vendor")
 
 include_directories(
 	${SURFTIMER_SRC}
 	${SURFTIMER_SRC}/sdk/protobuf
-	./vendor/libhv/include
-	./vendor/libmodule/include
-	./vendor/nlohmann
-	./vendor/fmt/include
-	./vendor/polyhook/include
-	./vendor/safetyhook/include
-	./vendor/zlib/include
+	${SURFTIMER_VENDOR}/libhv/include
+	${SURFTIMER_VENDOR}/libmodule/include
+	${SURFTIMER_VENDOR}/nlohmann
+	${SURFTIMER_VENDOR}/fmt/include
+	${SURFTIMER_VENDOR}/safetyhook/include
+	${SURFTIMER_VENDOR}/zlib/include
 )
 
 file(GLOB SURFTIMER_LIBS 
-	"./vendor/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-	"./vendor/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-	"./vendor/polyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-	"./vendor/safetyhook/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
-	"./vendor/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${SURFTIMER_VENDOR}/libmodule/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${SURFTIMER_VENDOR}/libhv/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${SURFTIMER_VENDOR}/zlib/lib/*${CMAKE_STATIC_LIBRARY_SUFFIX}"
+)
+
+set(SURFTIMER_ORDERED_LIBS 
+	"${SURFTIMER_VENDOR}/safetyhook/lib/safetyhook${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${SURFTIMER_VENDOR}/safetyhook/lib/Zydis${CMAKE_STATIC_LIBRARY_SUFFIX}"
+	"${SURFTIMER_VENDOR}/safetyhook/lib/Zycore${CMAKE_STATIC_LIBRARY_SUFFIX}"
 )
 
 file(GLOB_RECURSE SDK_SOURCES 
@@ -41,13 +45,12 @@ add_definitions(-DHV_STATICLIB -DZYDIS_STATIC_BUILD -DHAVE_MEMOVERRIDE_NEW_DELET
 add_library(${PROJECT_NAME} SHARED ${SDK_SOURCES} ${PROTOBUF_SOURCES} ${SURFTIMER_SOURCES})
 
 if(WIN32)
-	target_link_options(${PROJECT_NAME} PRIVATE "ntdll.lib")
 else()
 	find_package(OpenSSL REQUIRED)
 	target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${SURFTIMER_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SURFTIMER_LIBS} ${SURFTIMER_ORDERED_LIBS})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "${SURFTIMER_SRC}/pch.h")
 
