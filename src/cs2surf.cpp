@@ -19,6 +19,10 @@
 
 #include <vendor/MultiAddonManager/public/imultiaddonmanager.h>
 
+#define _GLIBCXX_USE_LEGACY_BASIC_STRING 1
+#include <utils/legacy_basic_string.h>
+#include <utils/legacy_string.h>
+
 IMultiAddonManager* g_pMultiAddonManager;
 
 CSurfPlugin g_SurfPlugin;
@@ -31,6 +35,11 @@ CSurfPlugin* SurfPlugin() {
 
 bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late) {
 	PLUGIN_SAVEVARS();
+
+	std::legacy_basic_string<char> das;
+	std::legacy_string dsa;
+	std::basic_string<char> aabb;
+	std::string aaaa;
 
 	GAMEDATA::Append("cs2surf-core.games.jsonc");
 
