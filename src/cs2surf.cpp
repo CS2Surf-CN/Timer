@@ -38,6 +38,7 @@ bool CSurfPlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, b
 
 	std::legacy_basic_string<char> das;
 	std::legacy_string dsa;
+	dsa.find("dsadsa");
 	std::basic_string<char> aabb;
 	std::string aaaa;
 
