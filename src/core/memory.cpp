@@ -80,15 +80,19 @@ void MEM::CALL::SetEntityName(CEntityIdentity* pEnt, const char* pszName) {
 	CALL_SIG("CEntityIdentity::SetEntityName", SetEntityName, pEnt, pszName);
 }
 
-SndOpEventGuid_t MEM::CALL::EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params) {
-	CALL_SIG("EmitSound", EmitSound, &filter, ent, &params);
-}
-
 bool MEM::CALL::BotAddCommand(int team, bool isFromConsole, const char* profileName, CSWeaponType weaponType, int difficulty) {
 #ifdef _WIN32
 	CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, nullptr, team, isFromConsole, profileName, weaponType, difficulty);
 #else
 	CALL_SIG("CCSBotManager::BotAddCommand", BotAddCommand, team, isFromConsole, profileName, weaponType, difficulty);
+#endif
+}
+
+void* MEM::CALL::EmitSoundByHandle(StartSoundEventInfo_t* pStartSoundEventInfo, const IRecipientFilter* pFilter, CEntityIndex iEnt, const EmitSound_t* pSound) {
+#ifdef _WIN32
+	CALL_SIG("SoundEmitterSystem::EmitSoundByHandle", EmitSoundByHandle, nullptr, pStartSoundEventInfo, pFilter, iEnt, pSound);
+#else
+	CALL_SIG("SoundEmitterSystem::EmitSoundByHandle", EmitSoundByHandle, pStartSoundEventInfo, pFilter, iEnt, pSound);
 #endif
 }
 

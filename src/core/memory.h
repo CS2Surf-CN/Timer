@@ -17,6 +17,8 @@ class CCSPlayerPawn;
 class CEntityInstance;
 class CEntityKeyValues;
 class CBaseTrigger;
+struct StartSoundEventInfo_t;
+struct EmitSound_t;
 
 class GameSessionConfiguration_t {};
 
@@ -34,8 +36,8 @@ namespace MEM {
 		CBaseTrigger* CreateAABBTrigger(const Vector& center, const Vector& mins, const Vector& maxs);
 		void SetParent(CBaseEntity* pEnt, CBaseEntity* pParent);
 		void SetEntityName(CEntityIdentity* pEnt, const char* pszName);
-		SndOpEventGuid_t EmitSound(IRecipientFilter& filter, CEntityIndex ent, const EmitSound_t& params);
 		bool BotAddCommand(int team, bool isFromConsole = false, const char* profileName = nullptr, CSWeaponType weaponType = WEAPONTYPE_UNKNOWN, int difficulty = 0);
+		void* EmitSoundByHandle(StartSoundEventInfo_t* pStartSoundEventInfo, const IRecipientFilter* pFilter, CEntityIndex iEnt, const EmitSound_t* pSound);
 	} // namespace CALL
 
 	namespace MODULE {

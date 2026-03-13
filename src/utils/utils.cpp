@@ -2,6 +2,7 @@
 #include <fstream>
 #include <steam/isteamgameserver.h>
 #include <core/interfaces.h>
+#include <core/soundmanager.h>
 #include <public/iserver.h>
 #include <sdk/entity/ccsplayercontroller.h>
 #include <sdk/entity/ccsplayerpawn.h>
@@ -203,10 +204,7 @@ void UTIL::PlaySoundToClient(CPlayerSlot player, const char* sound, f32 volume) 
 	}
 
 	CSingleRecipientFilter filter(player.Get());
-	EmitSound_t soundParams;
-	soundParams.m_pSoundName = sound;
-	soundParams.m_flVolume = volume;
-	MEM::CALL::EmitSound(filter, player.Get() + 1, soundParams);
+	SOUND::EmitSoundFilter(filter, sound, volume);
 }
 
 CBaseEntity* UTIL::FindEntityByClassname(CEntityInstance* start, const char* name) {

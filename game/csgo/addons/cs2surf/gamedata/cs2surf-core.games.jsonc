@@ -305,12 +305,10 @@
 			"windows": "48 89 5C 24 10 57 48 83 EC 20 48 8B D9 4C 8B C2",
 			"linux": "55 48 89 F2 48 89 E5 41 55 41 54 53"
 		},
-		// search for "land_%s", this is called after that string is referenced (the one with 4 parameters).
-		// (function that calls it also contains "T_Default.SuitLand").
-		"EmitSound": {
+		"SoundEmitterSystem::EmitSoundByHandle": {
 			"library": "server",
-			"windows": "4C 8B DC 49 89 5B ? 49 89 6B ? 49 89 73 ? 49 89 7B ? 41 56 48 83 EC ? 49 C7 43 ? ? ? ? ? 48 8D 05 ? ? ? ? 49 89 43 ? 41 8B F8",
-			"linux": "55 48 8D 05 ? ? ? ? 48 89 E5 41 57 49 89 CF 41 56 41 89 D6"
+			"windows": "4C 8B DC 4D 89 43 ? 55",
+			"linux": "48 B8 ? ? ? ? ? ? ? ? 55 48 89 E5 41 57 41 56 41 55 41 54 53 48 89 FB 48 81 EC ? ? ? ? 48 89 07"
 		},
 		// "Error - cannot add bots after game is over."
 		"BotNavIgnore": {
