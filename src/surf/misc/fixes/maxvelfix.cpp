@@ -7,7 +7,7 @@ private:
 	virtual void OnPluginStart() override;
 };
 
-CMaxVelocityFix g_MaxVelocityFix;
+// CMaxVelocityFix g_MaxVelocityFix;
 
 void CMaxVelocityFix::OnPluginStart() {
 	{
