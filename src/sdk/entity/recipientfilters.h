@@ -7,8 +7,7 @@
 
 class CRecipientFilter : public IRecipientFilter {
 public:
-	CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false)
-		: m_nBufType(nBufType), m_bInitMessage(bInitMessage) {}
+	CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false) : m_nBufType(nBufType), m_bInitMessage(bInitMessage) {}
 
 	CRecipientFilter(IRecipientFilter* source, CPlayerSlot exceptSlot = {-1}) {
 		m_Recipients = source->GetRecipients();
@@ -22,16 +21,20 @@ public:
 
 	~CRecipientFilter() override {}
 
-	NetChannelBufType_t GetNetworkBufType() const override {
+	NetChannelBufType_t GetNetworkBufType(void) const override {
 		return m_nBufType;
 	}
 
-	bool IsInitMessage() const override {
+	bool IsInitMessage(void) const override {
 		return m_bInitMessage;
 	}
 
-	const CPlayerBitVec& GetRecipients() const override {
+	const CPlayerBitVec& GetRecipients(void) const override {
 		return m_Recipients;
+	}
+
+	virtual CPlayerSlot GetPredictedPlayerSlot() const override {
+		return m_slotPlayerExcludedDueToPrediction;
 	}
 
 	void SetRecipients(uint64 nRecipients) {
@@ -77,34 +80,34 @@ public:
 		m_bInitMessage = src.m_bInitMessage;
 	}
 
-	void Reset() {
+	void Reset(void) {
 		m_Recipients.ClearAll();
 		m_bInitMessage = false;
 	}
 
-	void MakeInitMessage() {
+	void MakeInitMessage(void) {
 		m_bInitMessage = true;
 	}
 
-	void MakeReliable() {
-		m_nBufType = NetChannelBufType_t::BUF_RELIABLE;
-	}
+	void MakeReliable(void);
 
-	void RemoveAllRecipients() {
+	void AddAllPlayers(void);
+
+	void RemoveAllRecipients(void) {
 		m_Recipients.ClearAll();
 	}
 
-	void AddAllPlayers();
-
 protected:
 	CPlayerBitVec m_Recipients;
-	NetChannelBufType_t m_nBufType;
+	CPlayerSlot m_slotPlayerExcludedDueToPrediction = -1;
+	NetChannelBufType_t m_nBufType = BUF_DEFAULT;
 	bool m_bInitMessage;
+	bool m_bDoNotSuppressPrediction; // unused
 };
 
 class CBroadcastRecipientFilter : public CRecipientFilter {
 public:
-	CBroadcastRecipientFilter() {
+	CBroadcastRecipientFilter(void) {
 		AddAllPlayers();
 	}
 };

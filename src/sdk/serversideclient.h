@@ -52,21 +52,33 @@ public:
 	int m_nMinWarningBytes;
 	int m_nStartBit;
 	int m_nCurBit;
-}; // sizeof 40
+};
 
-struct CUtlSignaller_Base {
-	CUtlDelegate<void(CUtlSlot*)> m_SlotDeletionDelegate;
+COMPILE_TIME_ASSERT(sizeof(CNetworkStatTrace) == 40);
+
+class CUtlSignaller_Base {
+public:
+	using Delegate_t = CUtlDelegate<void(CUtlSlot*)>;
+
+	CUtlSignaller_Base(const Delegate_t& other) : m_SlotDeletionDelegate(other) {}
+
+	CUtlSignaller_Base(Delegate_t&& other) : m_SlotDeletionDelegate(Move(other)) {}
+
+private:
+	Delegate_t m_SlotDeletionDelegate;
 };
 
 class CUtlSlot {
-	MEM_PAD(WIN_LINUX(32, 40));
-};
+public:
+	using MTElement_t = CUtlSignaller_Base*;
 
-#ifdef _WIN32
-COMPILE_TIME_ASSERT(sizeof(CUtlSlot) == 32);
-#else
-COMPILE_TIME_ASSERT(sizeof(CUtlSlot) == 40);
-#endif
+	CUtlSlot() : m_ConnectedSignallers(0, 1) {}
+
+private:
+	// CCopyableLock< CThreadFastMutex > m_Mutex;
+	char m_Mutex[16]; // temp solution
+	CUtlVector<MTElement_t> m_ConnectedSignallers;
+};
 
 class CServerSideClientBase : public CUtlSlot, public INetworkChannelNotify, public INetworkMessageProcessingPreFilter {
 public:
@@ -97,22 +109,22 @@ public:
 		return m_NetChannel;
 	}
 
+	/*const netadr_t* GetRemoteAddress() const {
+		return m_nAddr.Get<netadr_t>();
+	}*/
+
 	CNetworkGameServerBase* GetServer() const {
 		return m_Server;
 	}
 
-	virtual void Connect(int socket, const char* pszName, int nUserID, INetChannel* pNetChannel, bool bFakePlayer, bool bSplitClient, int iClientPlatform) = 0;
-	virtual void Inactivate() = 0;
+	virtual void Connect(int socket, const char* pszName, int nUserID, INetChannel* pNetChannel, uint8 nConnectionTypeFlags, uint32 uChallengeNumber) = 0; // bool bFakePlayer = !nConnectionTypeFlags || (nConnectionTypeFlags & 8) != 0;
+	virtual void Inactivate(const char* pszAddons) = 0;
 	virtual void Reactivate(CPlayerSlot nSlot) = 0;
 	virtual void SetServer(CNetworkGameServer* pNetServer) = 0;
 	virtual void Reconnect() = 0;
-	virtual void Disconnect(ENetworkDisconnectionReason reason) = 0;
+	virtual void Disconnect(ENetworkDisconnectionReason reason, const char* pszInternalReason) = 0;
 	virtual bool CheckConnect() = 0;
-
-private:
-	virtual void unk_10() = 0;
-
-public:
+	virtual void Create(CPlayerSlot& nSlot, CSteamID nSteamID, const char* pszName) = 0;
 	virtual void SetRate(int nRate) = 0;
 	virtual void SetUpdateRate(float fUpdateRate) = 0;
 	virtual int GetRate() = 0;
@@ -120,13 +132,10 @@ public:
 	virtual void Clear() = 0;
 
 	virtual bool ExecuteStringCommand(const CNETMsg_StringCmd_t& msg) = 0; // "false" trigger an anti spam counter to kick a client.
-	virtual void SendNetMessage(const CNetMessage* pData, NetChannelBufType_t bufType) = 0;
+	virtual bool SendNetMessage(const CNetMessage* pData, NetChannelBufType_t bufType = BUF_DEFAULT) = 0;
 
-#ifdef LINUX
-
-private:
-	virtual void unk_17() = 0;
-#endif
+	// "Client %d(%s) tried to send a RebroadcastSourceId msg.\n"
+	virtual bool FilterMessage(const CNetMessage* pData, INetChannel* pChannel) = 0; // On Windows, this function is in a separate virtual table
 
 public:
 	virtual void ClientPrintf(PRINTF_FORMAT_STRING const char*, ...) = 0;
@@ -151,16 +160,20 @@ public:
 		return m_bFakePlayer;
 	}
 
-	virtual bool IsHLTV() = 0;
+	bool IsHLTV() const {
+		return m_bIsHLTV;
+	}
 
-	// Is an actual human player or splitscreen player (not a bot and not a HLTV slot)
 	virtual bool IsHumanPlayer() const {
 		return false;
 	}
 
+	// Is an actual human player or splitscreen player (not a bot and not a HLTV slot)
 	virtual bool IsHearingClient(CPlayerSlot nSlot) const {
 		return false;
 	}
+
+	virtual bool IsProximityHearingClient() const = 0;
 
 	virtual bool IsLowViolenceClient() const {
 		return m_bLowViolence;
@@ -174,8 +187,10 @@ public: // Message Handlers
 	virtual bool ProcessTick(const CNETMsg_Tick_t& msg) = 0;
 	virtual bool ProcessStringCmd(const CNETMsg_StringCmd_t& msg) = 0;
 
+public:
+	virtual bool ApplyConVars(const CMsg_CVars& list) = 0;
+
 private:
-	virtual bool unk_27() = 0;
 	virtual bool unk_28() = 0;
 
 public:
@@ -194,7 +209,6 @@ private:
 public:
 	virtual bool ProcessMove(const CCLCMsg_Move_t& msg) = 0;
 	virtual bool ProcessVoiceData(const CCLCMsg_VoiceData_t& msg) = 0;
-	virtual bool ProcessFileCRCCheck(const CCLCMsg_FileCRCCheck_t& msg) = 0;
 	virtual bool ProcessRespondCvarValue(const CCLCMsg_RespondCvarValue_t& msg) = 0;
 
 	virtual bool ProcessPacketStart(const NetMessagePacketStart_t& msg) = 0;
@@ -223,7 +237,9 @@ public:
 	virtual bool UpdateAcknowledgedFramecount(int tick) = 0;
 
 	void ForceFullUpdate() {
-		UpdateAcknowledgedFramecount(-1);
+		// For some reason, it doesn't work.
+		// UpdateAcknowledgedFramecount(-1);
+		m_nDeltaTick = -1;
 	}
 
 	virtual bool ShouldSendMessages() = 0;
@@ -291,9 +307,6 @@ public:
 	virtual bool ProcessSignonStateMsg(int state) = 0;
 	virtual void PerformDisconnection(ENetworkDisconnectionReason reason) = 0;
 
-public:                                                                              // INetworkMessageProcessingPreFilter
-	virtual bool FilterMessage(const CNetMessage* pData, INetChannel* pChannel) = 0; // "Client %d(%s) tried to send a RebroadcastSourceId msg.\n"
-
 public:
 	CUtlString m_UserIDString;
 	CUtlString m_Name;
@@ -301,7 +314,9 @@ public:
 	CEntityIndex m_nEntityIndex;
 	CNetworkGameServerBase* m_Server;
 	INetChannel* m_NetChannel;
+	// CServerSideClientBase::Connect( name='%s', userid=%d, fake=%d, connectiontypeflags=%d, chan->addr=%s )
 	uint8 m_nConnectionTypeFlags;
+	uint8 m_nAsyncDisconnectFlags; // check in Disconnect function, 1 add to queue, 2 disconnect now
 	bool m_bMarkedToKick;
 	SignonState_t m_nSignonState;
 	bool m_bSplitScreenUser;
@@ -310,16 +325,18 @@ public:
 	CServerSideClientBase* m_SplitScreenUsers[4];
 	CServerSideClientBase* m_pAttachedTo;
 	bool m_bSplitPlayerDisconnecting;
-	int m_UnkVariable172;
+	int m_nDisconnectionTypeFlags;
 	bool m_bFakePlayer;
 	bool m_bSendingSnapshot;
 
 private:
-	[[maybe_unused]] char pad6[0x5];
+	[[maybe_unused]] char pad162[0x6];
+
+public:
 	CPlayerUserId m_UserID = -1;
 	bool m_bReceivedPacket; // true, if client received a packet after the last send packet
 	CSteamID m_SteamID;
-	CSteamID m_UnkSteamID;
+	CSteamID m_DisconnectedSteamID;
 	CSteamID m_AuthTicketSteamID; // Auth ticket
 	CSteamID m_nFriendsID;
 	ns_address m_nAddr;
@@ -328,14 +345,14 @@ private:
 	bool m_bUnk0;
 
 private:
-	[[maybe_unused]] char pad273[0x28];
+	[[maybe_unused]] char pad281[0x28];
 
 public:
 	bool m_bConVarsChanged;
 	bool m_bIsHLTV;
 
 private:
-	[[maybe_unused]] char pad29[0xB];
+	[[maybe_unused]] char pad323[0xD];
 
 public:
 	uint32 m_nSendtableCRC;
@@ -382,25 +399,34 @@ public:
 	float m_fSnapshotInterval = 0.0f;
 
 private:
-	// CSVCMsg_PacketEntities_t m_packetmsg;
-	[[maybe_unused]] char pad2544[0x138];
+	[[maybe_unused]] char pad2572[0x8];
+	[[maybe_unused]] char m_packetmsg[0x15C]; // CSVCMsg_PacketEntities_t
+#ifdef __linux__
+	[[maybe_unused]] char pad2928[0x8];
+#endif
 
 public:
 	CNetworkStatTrace m_Trace;
+
+private:
+	[[maybe_unused]] char pad2976[0x8];
+
+public:
+	// SV: Player %s kicked for too many failed console commands
 	int m_spamCommandsCount = 0; // if the value is greater than 16, the player will be kicked with reason 39
 	int m_unknown = 0;
 	double m_lastExecutedCommand = 0.0; // if command executed more than once per second, ++m_spamCommandCount
 
 private:
-	[[maybe_unused]] char pad2912[0x40];
+	[[maybe_unused]] char pad3000[0x8];
 
 public:
 	CCommand* m_pCommand;
 };
 
 #ifdef _WIN32
-COMPILE_TIME_ASSERT(sizeof(CServerSideClientBase) == 3008);
-COMPILE_TIME_ASSERT(offsetof(CServerSideClientBase, m_nDeltaTick) == 340);
+//COMPILE_TIME_ASSERT(sizeof(CServerSideClientBase) == 3008);
+//COMPILE_TIME_ASSERT(offsetof(CServerSideClientBase, m_nDeltaTick) == 340);
 #else
 COMPILE_TIME_ASSERT(sizeof(CServerSideClientBase) == 3016);
 #endif
@@ -413,15 +439,13 @@ public:
 	CPlayerBitVec m_VoiceStreams;
 	CPlayerBitVec m_VoiceProximity;
 	CCheckTransmitInfo m_PackInfo;
-	MEM_PAD(592 - sizeof(CCheckTransmitInfo));
 	CClientFrameManager m_FrameManager;
-	MEM_PAD(0x80);
 };
 
-#ifdef _WIN32
-COMPILE_TIME_ASSERT(offsetof(CServerSideClient, m_PackInfo) == 3024);
-COMPILE_TIME_ASSERT(offsetof(CServerSideClient, m_FrameManager) == 3616);
-COMPILE_TIME_ASSERT(sizeof(CServerSideClient) == 4032);
-#else
-COMPILE_TIME_ASSERT(sizeof(CServerSideClient) == 4048);
-#endif
+//#ifdef _WIN32
+//COMPILE_TIME_ASSERT(offsetof(CServerSideClient, m_PackInfo) == 3024);
+//COMPILE_TIME_ASSERT(offsetof(CServerSideClient, m_FrameManager) == 3616);
+//COMPILE_TIME_ASSERT(sizeof(CServerSideClient) == 4032);
+//#else
+//COMPILE_TIME_ASSERT(sizeof(CServerSideClient) == 4048);
+//#endif

@@ -7,6 +7,8 @@
 
 class CGameSystem : public CBaseGameSystem {
 public:
+	DECLARE_GAME_SYSTEM();
+
 	GS_EVENT(BuildGameSessionManifest);
 
 	virtual void Shutdown() override;
