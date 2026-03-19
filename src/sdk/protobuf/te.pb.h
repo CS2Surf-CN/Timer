@@ -52,9 +52,6 @@ extern CMsgEffectDataDefaultTypeInternal _CMsgEffectData_default_instance_;
 class CMsgTEArmorRicochet;
 struct CMsgTEArmorRicochetDefaultTypeInternal;
 extern CMsgTEArmorRicochetDefaultTypeInternal _CMsgTEArmorRicochet_default_instance_;
-class CMsgTEBSPDecal;
-struct CMsgTEBSPDecalDefaultTypeInternal;
-extern CMsgTEBSPDecalDefaultTypeInternal _CMsgTEBSPDecal_default_instance_;
 class CMsgTEBaseBeam;
 struct CMsgTEBaseBeamDefaultTypeInternal;
 extern CMsgTEBaseBeamDefaultTypeInternal _CMsgTEBaseBeam_default_instance_;
@@ -112,12 +109,6 @@ extern CMsgTEMuzzleFlashDefaultTypeInternal _CMsgTEMuzzleFlash_default_instance_
 class CMsgTEPhysicsProp;
 struct CMsgTEPhysicsPropDefaultTypeInternal;
 extern CMsgTEPhysicsPropDefaultTypeInternal _CMsgTEPhysicsProp_default_instance_;
-class CMsgTEPlayerDecal;
-struct CMsgTEPlayerDecalDefaultTypeInternal;
-extern CMsgTEPlayerDecalDefaultTypeInternal _CMsgTEPlayerDecal_default_instance_;
-class CMsgTEProjectedDecal;
-struct CMsgTEProjectedDecalDefaultTypeInternal;
-extern CMsgTEProjectedDecalDefaultTypeInternal _CMsgTEProjectedDecal_default_instance_;
 class CMsgTEShatterSurface;
 struct CMsgTEShatterSurfaceDefaultTypeInternal;
 extern CMsgTEShatterSurfaceDefaultTypeInternal _CMsgTEShatterSurface_default_instance_;
@@ -133,7 +124,6 @@ extern CMsgTEWorldDecalDefaultTypeInternal _CMsgTEWorldDecal_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::CMsgEffectData* Arena::CreateMaybeMessage<::CMsgEffectData>(Arena*);
 template<> ::CMsgTEArmorRicochet* Arena::CreateMaybeMessage<::CMsgTEArmorRicochet>(Arena*);
-template<> ::CMsgTEBSPDecal* Arena::CreateMaybeMessage<::CMsgTEBSPDecal>(Arena*);
 template<> ::CMsgTEBaseBeam* Arena::CreateMaybeMessage<::CMsgTEBaseBeam>(Arena*);
 template<> ::CMsgTEBeamEntPoint* Arena::CreateMaybeMessage<::CMsgTEBeamEntPoint>(Arena*);
 template<> ::CMsgTEBeamEnts* Arena::CreateMaybeMessage<::CMsgTEBeamEnts>(Arena*);
@@ -153,8 +143,6 @@ template<> ::CMsgTEImpact* Arena::CreateMaybeMessage<::CMsgTEImpact>(Arena*);
 template<> ::CMsgTELargeFunnel* Arena::CreateMaybeMessage<::CMsgTELargeFunnel>(Arena*);
 template<> ::CMsgTEMuzzleFlash* Arena::CreateMaybeMessage<::CMsgTEMuzzleFlash>(Arena*);
 template<> ::CMsgTEPhysicsProp* Arena::CreateMaybeMessage<::CMsgTEPhysicsProp>(Arena*);
-template<> ::CMsgTEPlayerDecal* Arena::CreateMaybeMessage<::CMsgTEPlayerDecal>(Arena*);
-template<> ::CMsgTEProjectedDecal* Arena::CreateMaybeMessage<::CMsgTEProjectedDecal>(Arena*);
 template<> ::CMsgTEShatterSurface* Arena::CreateMaybeMessage<::CMsgTEShatterSurface>(Arena*);
 template<> ::CMsgTESmoke* Arena::CreateMaybeMessage<::CMsgTESmoke>(Arena*);
 template<> ::CMsgTESparks* Arena::CreateMaybeMessage<::CMsgTESparks>(Arena*);
@@ -168,7 +156,6 @@ enum ETEProtobufIds : int {
   TE_BeamEntsId = 403,
   TE_BeamPointsId = 404,
   TE_BeamRingId = 405,
-  TE_BSPDecalId = 407,
   TE_BubblesId = 408,
   TE_BubbleTrailId = 409,
   TE_DecalId = 410,
@@ -185,8 +172,6 @@ enum ETEProtobufIds : int {
   TE_LargeFunnelId = 421,
   TE_SparksId = 422,
   TE_PhysicsPropId = 423,
-  TE_PlayerDecalId = 424,
-  TE_ProjectedDecalId = 425,
   TE_SmokeId = 426
 };
 bool ETEProtobufIds_IsValid(int value);
@@ -1550,241 +1535,6 @@ class CMsgTEBeamRing :
 };
 // -------------------------------------------------------------------
 
-class CMsgTEBSPDecal :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:CMsgTEBSPDecal) */ {
- public:
-  inline CMsgTEBSPDecal() : CMsgTEBSPDecal(nullptr) {}
-  ~CMsgTEBSPDecal() override;
-  explicit PROTOBUF_CONSTEXPR CMsgTEBSPDecal(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  CMsgTEBSPDecal(const CMsgTEBSPDecal& from);
-  CMsgTEBSPDecal(CMsgTEBSPDecal&& from) noexcept
-    : CMsgTEBSPDecal() {
-    *this = ::std::move(from);
-  }
-
-  inline CMsgTEBSPDecal& operator=(const CMsgTEBSPDecal& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline CMsgTEBSPDecal& operator=(CMsgTEBSPDecal&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const CMsgTEBSPDecal& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const CMsgTEBSPDecal* internal_default_instance() {
-    return reinterpret_cast<const CMsgTEBSPDecal*>(
-               &_CMsgTEBSPDecal_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    6;
-
-  friend void swap(CMsgTEBSPDecal& a, CMsgTEBSPDecal& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(CMsgTEBSPDecal* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(CMsgTEBSPDecal* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  CMsgTEBSPDecal* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<CMsgTEBSPDecal>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const CMsgTEBSPDecal& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const CMsgTEBSPDecal& from) {
-    CMsgTEBSPDecal::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(CMsgTEBSPDecal* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "CMsgTEBSPDecal";
-  }
-  protected:
-  explicit CMsgTEBSPDecal(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kOriginFieldNumber = 1,
-    kNormalFieldNumber = 2,
-    kSaxisFieldNumber = 3,
-    kIndexFieldNumber = 5,
-    kEntityFieldNumber = 4,
-  };
-  // optional .CMsgVector origin = 1;
-  bool has_origin() const;
-  private:
-  bool _internal_has_origin() const;
-  public:
-  void clear_origin();
-  const ::CMsgVector& origin() const;
-  PROTOBUF_NODISCARD ::CMsgVector* release_origin();
-  ::CMsgVector* mutable_origin();
-  void set_allocated_origin(::CMsgVector* origin);
-  private:
-  const ::CMsgVector& _internal_origin() const;
-  ::CMsgVector* _internal_mutable_origin();
-  public:
-  void unsafe_arena_set_allocated_origin(
-      ::CMsgVector* origin);
-  ::CMsgVector* unsafe_arena_release_origin();
-
-  // optional .CMsgVector normal = 2;
-  bool has_normal() const;
-  private:
-  bool _internal_has_normal() const;
-  public:
-  void clear_normal();
-  const ::CMsgVector& normal() const;
-  PROTOBUF_NODISCARD ::CMsgVector* release_normal();
-  ::CMsgVector* mutable_normal();
-  void set_allocated_normal(::CMsgVector* normal);
-  private:
-  const ::CMsgVector& _internal_normal() const;
-  ::CMsgVector* _internal_mutable_normal();
-  public:
-  void unsafe_arena_set_allocated_normal(
-      ::CMsgVector* normal);
-  ::CMsgVector* unsafe_arena_release_normal();
-
-  // optional .CMsgVector saxis = 3;
-  bool has_saxis() const;
-  private:
-  bool _internal_has_saxis() const;
-  public:
-  void clear_saxis();
-  const ::CMsgVector& saxis() const;
-  PROTOBUF_NODISCARD ::CMsgVector* release_saxis();
-  ::CMsgVector* mutable_saxis();
-  void set_allocated_saxis(::CMsgVector* saxis);
-  private:
-  const ::CMsgVector& _internal_saxis() const;
-  ::CMsgVector* _internal_mutable_saxis();
-  public:
-  void unsafe_arena_set_allocated_saxis(
-      ::CMsgVector* saxis);
-  ::CMsgVector* unsafe_arena_release_saxis();
-
-  // optional uint32 index = 5;
-  bool has_index() const;
-  private:
-  bool _internal_has_index() const;
-  public:
-  void clear_index();
-  uint32_t index() const;
-  void set_index(uint32_t value);
-  private:
-  uint32_t _internal_index() const;
-  void _internal_set_index(uint32_t value);
-  public:
-
-  // optional int32 entity = 4 [default = -1];
-  bool has_entity() const;
-  private:
-  bool _internal_has_entity() const;
-  public:
-  void clear_entity();
-  int32_t entity() const;
-  void set_entity(int32_t value);
-  private:
-  int32_t _internal_entity() const;
-  void _internal_set_entity(int32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:CMsgTEBSPDecal)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::CMsgVector* origin_;
-    ::CMsgVector* normal_;
-    ::CMsgVector* saxis_;
-    uint32_t index_;
-    int32_t entity_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_te_2eproto;
-};
-// -------------------------------------------------------------------
-
 class CMsgTEBubbles :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:CMsgTEBubbles) */ {
  public:
@@ -1840,7 +1590,7 @@ class CMsgTEBubbles :
                &_CMsgTEBubbles_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    6;
 
   friend void swap(CMsgTEBubbles& a, CMsgTEBubbles& b) {
     a.Swap(&b);
@@ -2070,7 +1820,7 @@ class CMsgTEBubbleTrail :
                &_CMsgTEBubbleTrail_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    7;
 
   friend void swap(CMsgTEBubbleTrail& a, CMsgTEBubbleTrail& b) {
     a.Swap(&b);
@@ -2300,7 +2050,7 @@ class CMsgTEDecal :
                &_CMsgTEDecal_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    8;
 
   friend void swap(CMsgTEDecal& a, CMsgTEDecal& b) {
     a.Swap(&b);
@@ -2530,7 +2280,7 @@ class CMsgEffectData :
                &_CMsgEffectData_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    9;
 
   friend void swap(CMsgEffectData& a, CMsgEffectData& b) {
     a.Swap(&b);
@@ -2980,7 +2730,7 @@ class CMsgTEEffectDispatch :
                &_CMsgTEEffectDispatch_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    10;
 
   friend void swap(CMsgTEEffectDispatch& a, CMsgTEEffectDispatch& b) {
     a.Swap(&b);
@@ -3145,7 +2895,7 @@ class CMsgTEEnergySplash :
                &_CMsgTEEnergySplash_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    11;
 
   friend void swap(CMsgTEEnergySplash& a, CMsgTEEnergySplash& b) {
     a.Swap(&b);
@@ -3345,7 +3095,7 @@ class CMsgTEFizz :
                &_CMsgTEFizz_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    12;
 
   friend void swap(CMsgTEFizz& a, CMsgTEFizz& b) {
     a.Swap(&b);
@@ -3535,7 +3285,7 @@ class CMsgTEShatterSurface :
                &_CMsgTEShatterSurface_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    13;
 
   friend void swap(CMsgTEShatterSurface& a, CMsgTEShatterSurface& b) {
     a.Swap(&b);
@@ -3850,7 +3600,7 @@ class CMsgTEGlowSprite :
                &_CMsgTEGlowSprite_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    14;
 
   friend void swap(CMsgTEGlowSprite& a, CMsgTEGlowSprite& b) {
     a.Swap(&b);
@@ -4060,7 +3810,7 @@ class CMsgTEImpact :
                &_CMsgTEImpact_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    15;
 
   friend void swap(CMsgTEImpact& a, CMsgTEImpact& b) {
     a.Swap(&b);
@@ -4260,7 +4010,7 @@ class CMsgTEMuzzleFlash :
                &_CMsgTEMuzzleFlash_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    16;
 
   friend void swap(CMsgTEMuzzleFlash& a, CMsgTEMuzzleFlash& b) {
     a.Swap(&b);
@@ -4475,7 +4225,7 @@ class CMsgTEBloodStream :
                &_CMsgTEBloodStream_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    17;
 
   friend void swap(CMsgTEBloodStream& a, CMsgTEBloodStream& b) {
     a.Swap(&b);
@@ -4690,7 +4440,7 @@ class CMsgTEExplosion :
                &_CMsgTEExplosion_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    18;
 
   friend void swap(CMsgTEExplosion& a, CMsgTEExplosion& b) {
     a.Swap(&b);
@@ -4763,37 +4513,34 @@ class CMsgTEExplosion :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kEffectNameFieldNumber = 10,
+    kSoundNameFieldNumber = 10,
     kOriginFieldNumber = 1,
     kNormalFieldNumber = 4,
     kDebrisOriginFieldNumber = 13,
-    kFramerateFieldNumber = 2,
     kFlagsFieldNumber = 3,
-    kMaterialtypeFieldNumber = 5,
     kRadiusFieldNumber = 6,
     kMagnitudeFieldNumber = 7,
-    kScaleFieldNumber = 8,
     kAffectRagdollsFieldNumber = 9,
     kCreateDebrisFieldNumber = 12,
     kExplosionTypeFieldNumber = 11,
     kDebrisSurfacepropFieldNumber = 14,
   };
-  // optional string effect_name = 10;
-  bool has_effect_name() const;
+  // optional string sound_name = 10;
+  bool has_sound_name() const;
   private:
-  bool _internal_has_effect_name() const;
+  bool _internal_has_sound_name() const;
   public:
-  void clear_effect_name();
-  const std::string& effect_name() const;
+  void clear_sound_name();
+  const std::string& sound_name() const;
   template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_effect_name(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_effect_name();
-  PROTOBUF_NODISCARD std::string* release_effect_name();
-  void set_allocated_effect_name(std::string* effect_name);
+  void set_sound_name(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_sound_name();
+  PROTOBUF_NODISCARD std::string* release_sound_name();
+  void set_allocated_sound_name(std::string* sound_name);
   private:
-  const std::string& _internal_effect_name() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_effect_name(const std::string& value);
-  std::string* _internal_mutable_effect_name();
+  const std::string& _internal_sound_name() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_sound_name(const std::string& value);
+  std::string* _internal_mutable_sound_name();
   public:
 
   // optional .CMsgVector origin = 1;
@@ -4850,19 +4597,6 @@ class CMsgTEExplosion :
       ::CMsgVector* debris_origin);
   ::CMsgVector* unsafe_arena_release_debris_origin();
 
-  // optional uint32 framerate = 2;
-  bool has_framerate() const;
-  private:
-  bool _internal_has_framerate() const;
-  public:
-  void clear_framerate();
-  uint32_t framerate() const;
-  void set_framerate(uint32_t value);
-  private:
-  uint32_t _internal_framerate() const;
-  void _internal_set_framerate(uint32_t value);
-  public:
-
   // optional uint32 flags = 3;
   bool has_flags() const;
   private:
@@ -4874,19 +4608,6 @@ class CMsgTEExplosion :
   private:
   uint32_t _internal_flags() const;
   void _internal_set_flags(uint32_t value);
-  public:
-
-  // optional uint32 materialtype = 5;
-  bool has_materialtype() const;
-  private:
-  bool _internal_has_materialtype() const;
-  public:
-  void clear_materialtype();
-  uint32_t materialtype() const;
-  void set_materialtype(uint32_t value);
-  private:
-  uint32_t _internal_materialtype() const;
-  void _internal_set_materialtype(uint32_t value);
   public:
 
   // optional uint32 radius = 6;
@@ -4913,19 +4634,6 @@ class CMsgTEExplosion :
   private:
   uint32_t _internal_magnitude() const;
   void _internal_set_magnitude(uint32_t value);
-  public:
-
-  // optional float scale = 8;
-  bool has_scale() const;
-  private:
-  bool _internal_has_scale() const;
-  public:
-  void clear_scale();
-  float scale() const;
-  void set_scale(float value);
-  private:
-  float _internal_scale() const;
-  void _internal_set_scale(float value);
   public:
 
   // optional bool affect_ragdolls = 9;
@@ -4990,16 +4698,13 @@ class CMsgTEExplosion :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr effect_name_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr sound_name_;
     ::CMsgVector* origin_;
     ::CMsgVector* normal_;
     ::CMsgVector* debris_origin_;
-    uint32_t framerate_;
     uint32_t flags_;
-    uint32_t materialtype_;
     uint32_t radius_;
     uint32_t magnitude_;
-    float scale_;
     bool affect_ragdolls_;
     bool create_debris_;
     uint32_t explosion_type_;
@@ -5065,7 +4770,7 @@ class CMsgTEDust :
                &_CMsgTEDust_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    19;
 
   friend void swap(CMsgTEDust& a, CMsgTEDust& b) {
     a.Swap(&b);
@@ -5280,7 +4985,7 @@ class CMsgTELargeFunnel :
                &_CMsgTELargeFunnel_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    20;
 
   friend void swap(CMsgTELargeFunnel& a, CMsgTELargeFunnel& b) {
     a.Swap(&b);
@@ -5460,7 +5165,7 @@ class CMsgTESparks :
                &_CMsgTESparks_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    21;
 
   friend void swap(CMsgTESparks& a, CMsgTESparks& b) {
     a.Swap(&b);
@@ -5675,7 +5380,7 @@ class CMsgTEPhysicsProp :
                &_CMsgTEPhysicsProp_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    22;
 
   friend void swap(CMsgTEPhysicsProp& a, CMsgTEPhysicsProp& b) {
     a.Swap(&b);
@@ -5985,416 +5690,6 @@ class CMsgTEPhysicsProp :
 };
 // -------------------------------------------------------------------
 
-class CMsgTEPlayerDecal :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:CMsgTEPlayerDecal) */ {
- public:
-  inline CMsgTEPlayerDecal() : CMsgTEPlayerDecal(nullptr) {}
-  ~CMsgTEPlayerDecal() override;
-  explicit PROTOBUF_CONSTEXPR CMsgTEPlayerDecal(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  CMsgTEPlayerDecal(const CMsgTEPlayerDecal& from);
-  CMsgTEPlayerDecal(CMsgTEPlayerDecal&& from) noexcept
-    : CMsgTEPlayerDecal() {
-    *this = ::std::move(from);
-  }
-
-  inline CMsgTEPlayerDecal& operator=(const CMsgTEPlayerDecal& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline CMsgTEPlayerDecal& operator=(CMsgTEPlayerDecal&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const CMsgTEPlayerDecal& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const CMsgTEPlayerDecal* internal_default_instance() {
-    return reinterpret_cast<const CMsgTEPlayerDecal*>(
-               &_CMsgTEPlayerDecal_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    24;
-
-  friend void swap(CMsgTEPlayerDecal& a, CMsgTEPlayerDecal& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(CMsgTEPlayerDecal* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(CMsgTEPlayerDecal* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  CMsgTEPlayerDecal* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<CMsgTEPlayerDecal>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const CMsgTEPlayerDecal& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const CMsgTEPlayerDecal& from) {
-    CMsgTEPlayerDecal::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(CMsgTEPlayerDecal* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "CMsgTEPlayerDecal";
-  }
-  protected:
-  explicit CMsgTEPlayerDecal(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kOriginFieldNumber = 1,
-    kPlayerFieldNumber = 2,
-    kEntityFieldNumber = 3,
-  };
-  // optional .CMsgVector origin = 1;
-  bool has_origin() const;
-  private:
-  bool _internal_has_origin() const;
-  public:
-  void clear_origin();
-  const ::CMsgVector& origin() const;
-  PROTOBUF_NODISCARD ::CMsgVector* release_origin();
-  ::CMsgVector* mutable_origin();
-  void set_allocated_origin(::CMsgVector* origin);
-  private:
-  const ::CMsgVector& _internal_origin() const;
-  ::CMsgVector* _internal_mutable_origin();
-  public:
-  void unsafe_arena_set_allocated_origin(
-      ::CMsgVector* origin);
-  ::CMsgVector* unsafe_arena_release_origin();
-
-  // optional int32 player = 2 [default = -1];
-  bool has_player() const;
-  private:
-  bool _internal_has_player() const;
-  public:
-  void clear_player();
-  int32_t player() const;
-  void set_player(int32_t value);
-  private:
-  int32_t _internal_player() const;
-  void _internal_set_player(int32_t value);
-  public:
-
-  // optional int32 entity = 3 [default = -1];
-  bool has_entity() const;
-  private:
-  bool _internal_has_entity() const;
-  public:
-  void clear_entity();
-  int32_t entity() const;
-  void set_entity(int32_t value);
-  private:
-  int32_t _internal_entity() const;
-  void _internal_set_entity(int32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:CMsgTEPlayerDecal)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::CMsgVector* origin_;
-    int32_t player_;
-    int32_t entity_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_te_2eproto;
-};
-// -------------------------------------------------------------------
-
-class CMsgTEProjectedDecal :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:CMsgTEProjectedDecal) */ {
- public:
-  inline CMsgTEProjectedDecal() : CMsgTEProjectedDecal(nullptr) {}
-  ~CMsgTEProjectedDecal() override;
-  explicit PROTOBUF_CONSTEXPR CMsgTEProjectedDecal(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  CMsgTEProjectedDecal(const CMsgTEProjectedDecal& from);
-  CMsgTEProjectedDecal(CMsgTEProjectedDecal&& from) noexcept
-    : CMsgTEProjectedDecal() {
-    *this = ::std::move(from);
-  }
-
-  inline CMsgTEProjectedDecal& operator=(const CMsgTEProjectedDecal& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline CMsgTEProjectedDecal& operator=(CMsgTEProjectedDecal&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
-    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
-  }
-  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
-    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const CMsgTEProjectedDecal& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const CMsgTEProjectedDecal* internal_default_instance() {
-    return reinterpret_cast<const CMsgTEProjectedDecal*>(
-               &_CMsgTEProjectedDecal_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    25;
-
-  friend void swap(CMsgTEProjectedDecal& a, CMsgTEProjectedDecal& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(CMsgTEProjectedDecal* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(CMsgTEProjectedDecal* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  CMsgTEProjectedDecal* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<CMsgTEProjectedDecal>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const CMsgTEProjectedDecal& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const CMsgTEProjectedDecal& from) {
-    CMsgTEProjectedDecal::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(CMsgTEProjectedDecal* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "CMsgTEProjectedDecal";
-  }
-  protected:
-  explicit CMsgTEProjectedDecal(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kOriginFieldNumber = 1,
-    kAnglesFieldNumber = 2,
-    kIndexFieldNumber = 3,
-    kDistanceFieldNumber = 4,
-  };
-  // optional .CMsgVector origin = 1;
-  bool has_origin() const;
-  private:
-  bool _internal_has_origin() const;
-  public:
-  void clear_origin();
-  const ::CMsgVector& origin() const;
-  PROTOBUF_NODISCARD ::CMsgVector* release_origin();
-  ::CMsgVector* mutable_origin();
-  void set_allocated_origin(::CMsgVector* origin);
-  private:
-  const ::CMsgVector& _internal_origin() const;
-  ::CMsgVector* _internal_mutable_origin();
-  public:
-  void unsafe_arena_set_allocated_origin(
-      ::CMsgVector* origin);
-  ::CMsgVector* unsafe_arena_release_origin();
-
-  // optional .CMsgQAngle angles = 2;
-  bool has_angles() const;
-  private:
-  bool _internal_has_angles() const;
-  public:
-  void clear_angles();
-  const ::CMsgQAngle& angles() const;
-  PROTOBUF_NODISCARD ::CMsgQAngle* release_angles();
-  ::CMsgQAngle* mutable_angles();
-  void set_allocated_angles(::CMsgQAngle* angles);
-  private:
-  const ::CMsgQAngle& _internal_angles() const;
-  ::CMsgQAngle* _internal_mutable_angles();
-  public:
-  void unsafe_arena_set_allocated_angles(
-      ::CMsgQAngle* angles);
-  ::CMsgQAngle* unsafe_arena_release_angles();
-
-  // optional uint32 index = 3;
-  bool has_index() const;
-  private:
-  bool _internal_has_index() const;
-  public:
-  void clear_index();
-  uint32_t index() const;
-  void set_index(uint32_t value);
-  private:
-  uint32_t _internal_index() const;
-  void _internal_set_index(uint32_t value);
-  public:
-
-  // optional float distance = 4;
-  bool has_distance() const;
-  private:
-  bool _internal_has_distance() const;
-  public:
-  void clear_distance();
-  float distance() const;
-  void set_distance(float value);
-  private:
-  float _internal_distance() const;
-  void _internal_set_distance(float value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:CMsgTEProjectedDecal)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::CMsgVector* origin_;
-    ::CMsgQAngle* angles_;
-    uint32_t index_;
-    float distance_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_te_2eproto;
-};
-// -------------------------------------------------------------------
-
 class CMsgTESmoke :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:CMsgTESmoke) */ {
  public:
@@ -6450,7 +5745,7 @@ class CMsgTESmoke :
                &_CMsgTESmoke_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    26;
+    23;
 
   friend void swap(CMsgTESmoke& a, CMsgTESmoke& b) {
     a.Swap(&b);
@@ -6630,7 +5925,7 @@ class CMsgTEWorldDecal :
                &_CMsgTEWorldDecal_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    24;
 
   friend void swap(CMsgTEWorldDecal& a, CMsgTEWorldDecal& b) {
     a.Swap(&b);
@@ -8188,327 +7483,6 @@ inline void CMsgTEBeamRing::_internal_set_endentity(uint32_t value) {
 inline void CMsgTEBeamRing::set_endentity(uint32_t value) {
   _internal_set_endentity(value);
   // @@protoc_insertion_point(field_set:CMsgTEBeamRing.endentity)
-}
-
-// -------------------------------------------------------------------
-
-// CMsgTEBSPDecal
-
-// optional .CMsgVector origin = 1;
-inline bool CMsgTEBSPDecal::_internal_has_origin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.origin_ != nullptr);
-  return value;
-}
-inline bool CMsgTEBSPDecal::has_origin() const {
-  return _internal_has_origin();
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::_internal_origin() const {
-  const ::CMsgVector* p = _impl_.origin_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgVector&>(
-      ::_CMsgVector_default_instance_);
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::origin() const {
-  // @@protoc_insertion_point(field_get:CMsgTEBSPDecal.origin)
-  return _internal_origin();
-}
-inline void CMsgTEBSPDecal::unsafe_arena_set_allocated_origin(
-    ::CMsgVector* origin) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  _impl_.origin_ = origin;
-  if (origin) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEBSPDecal.origin)
-}
-inline ::CMsgVector* CMsgTEBSPDecal::release_origin() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::unsafe_arena_release_origin() {
-  // @@protoc_insertion_point(field_release:CMsgTEBSPDecal.origin)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::_internal_mutable_origin() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.origin_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgVector>(GetArenaForAllocation());
-    _impl_.origin_ = p;
-  }
-  return _impl_.origin_;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::mutable_origin() {
-  ::CMsgVector* _msg = _internal_mutable_origin();
-  // @@protoc_insertion_point(field_mutable:CMsgTEBSPDecal.origin)
-  return _msg;
-}
-inline void CMsgTEBSPDecal::set_allocated_origin(::CMsgVector* origin) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  if (origin) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(origin));
-    if (message_arena != submessage_arena) {
-      origin = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, origin, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.origin_ = origin;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEBSPDecal.origin)
-}
-
-// optional .CMsgVector normal = 2;
-inline bool CMsgTEBSPDecal::_internal_has_normal() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.normal_ != nullptr);
-  return value;
-}
-inline bool CMsgTEBSPDecal::has_normal() const {
-  return _internal_has_normal();
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::_internal_normal() const {
-  const ::CMsgVector* p = _impl_.normal_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgVector&>(
-      ::_CMsgVector_default_instance_);
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::normal() const {
-  // @@protoc_insertion_point(field_get:CMsgTEBSPDecal.normal)
-  return _internal_normal();
-}
-inline void CMsgTEBSPDecal::unsafe_arena_set_allocated_normal(
-    ::CMsgVector* normal) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.normal_);
-  }
-  _impl_.normal_ = normal;
-  if (normal) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEBSPDecal.normal)
-}
-inline ::CMsgVector* CMsgTEBSPDecal::release_normal() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::CMsgVector* temp = _impl_.normal_;
-  _impl_.normal_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::unsafe_arena_release_normal() {
-  // @@protoc_insertion_point(field_release:CMsgTEBSPDecal.normal)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::CMsgVector* temp = _impl_.normal_;
-  _impl_.normal_ = nullptr;
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::_internal_mutable_normal() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.normal_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgVector>(GetArenaForAllocation());
-    _impl_.normal_ = p;
-  }
-  return _impl_.normal_;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::mutable_normal() {
-  ::CMsgVector* _msg = _internal_mutable_normal();
-  // @@protoc_insertion_point(field_mutable:CMsgTEBSPDecal.normal)
-  return _msg;
-}
-inline void CMsgTEBSPDecal::set_allocated_normal(::CMsgVector* normal) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.normal_);
-  }
-  if (normal) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(normal));
-    if (message_arena != submessage_arena) {
-      normal = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, normal, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.normal_ = normal;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEBSPDecal.normal)
-}
-
-// optional .CMsgVector saxis = 3;
-inline bool CMsgTEBSPDecal::_internal_has_saxis() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.saxis_ != nullptr);
-  return value;
-}
-inline bool CMsgTEBSPDecal::has_saxis() const {
-  return _internal_has_saxis();
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::_internal_saxis() const {
-  const ::CMsgVector* p = _impl_.saxis_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgVector&>(
-      ::_CMsgVector_default_instance_);
-}
-inline const ::CMsgVector& CMsgTEBSPDecal::saxis() const {
-  // @@protoc_insertion_point(field_get:CMsgTEBSPDecal.saxis)
-  return _internal_saxis();
-}
-inline void CMsgTEBSPDecal::unsafe_arena_set_allocated_saxis(
-    ::CMsgVector* saxis) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.saxis_);
-  }
-  _impl_.saxis_ = saxis;
-  if (saxis) {
-    _impl_._has_bits_[0] |= 0x00000004u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEBSPDecal.saxis)
-}
-inline ::CMsgVector* CMsgTEBSPDecal::release_saxis() {
-  _impl_._has_bits_[0] &= ~0x00000004u;
-  ::CMsgVector* temp = _impl_.saxis_;
-  _impl_.saxis_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::unsafe_arena_release_saxis() {
-  // @@protoc_insertion_point(field_release:CMsgTEBSPDecal.saxis)
-  _impl_._has_bits_[0] &= ~0x00000004u;
-  ::CMsgVector* temp = _impl_.saxis_;
-  _impl_.saxis_ = nullptr;
-  return temp;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::_internal_mutable_saxis() {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  if (_impl_.saxis_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgVector>(GetArenaForAllocation());
-    _impl_.saxis_ = p;
-  }
-  return _impl_.saxis_;
-}
-inline ::CMsgVector* CMsgTEBSPDecal::mutable_saxis() {
-  ::CMsgVector* _msg = _internal_mutable_saxis();
-  // @@protoc_insertion_point(field_mutable:CMsgTEBSPDecal.saxis)
-  return _msg;
-}
-inline void CMsgTEBSPDecal::set_allocated_saxis(::CMsgVector* saxis) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.saxis_);
-  }
-  if (saxis) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(saxis));
-    if (message_arena != submessage_arena) {
-      saxis = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, saxis, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000004u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000004u;
-  }
-  _impl_.saxis_ = saxis;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEBSPDecal.saxis)
-}
-
-// optional int32 entity = 4 [default = -1];
-inline bool CMsgTEBSPDecal::_internal_has_entity() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool CMsgTEBSPDecal::has_entity() const {
-  return _internal_has_entity();
-}
-inline void CMsgTEBSPDecal::clear_entity() {
-  _impl_.entity_ = -1;
-  _impl_._has_bits_[0] &= ~0x00000010u;
-}
-inline int32_t CMsgTEBSPDecal::_internal_entity() const {
-  return _impl_.entity_;
-}
-inline int32_t CMsgTEBSPDecal::entity() const {
-  // @@protoc_insertion_point(field_get:CMsgTEBSPDecal.entity)
-  return _internal_entity();
-}
-inline void CMsgTEBSPDecal::_internal_set_entity(int32_t value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
-  _impl_.entity_ = value;
-}
-inline void CMsgTEBSPDecal::set_entity(int32_t value) {
-  _internal_set_entity(value);
-  // @@protoc_insertion_point(field_set:CMsgTEBSPDecal.entity)
-}
-
-// optional uint32 index = 5;
-inline bool CMsgTEBSPDecal::_internal_has_index() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool CMsgTEBSPDecal::has_index() const {
-  return _internal_has_index();
-}
-inline void CMsgTEBSPDecal::clear_index() {
-  _impl_.index_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000008u;
-}
-inline uint32_t CMsgTEBSPDecal::_internal_index() const {
-  return _impl_.index_;
-}
-inline uint32_t CMsgTEBSPDecal::index() const {
-  // @@protoc_insertion_point(field_get:CMsgTEBSPDecal.index)
-  return _internal_index();
-}
-inline void CMsgTEBSPDecal::_internal_set_index(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000008u;
-  _impl_.index_ = value;
-}
-inline void CMsgTEBSPDecal::set_index(uint32_t value) {
-  _internal_set_index(value);
-  // @@protoc_insertion_point(field_set:CMsgTEBSPDecal.index)
 }
 
 // -------------------------------------------------------------------
@@ -11917,37 +10891,9 @@ inline void CMsgTEExplosion::set_allocated_origin(::CMsgVector* origin) {
   // @@protoc_insertion_point(field_set_allocated:CMsgTEExplosion.origin)
 }
 
-// optional uint32 framerate = 2;
-inline bool CMsgTEExplosion::_internal_has_framerate() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
-  return value;
-}
-inline bool CMsgTEExplosion::has_framerate() const {
-  return _internal_has_framerate();
-}
-inline void CMsgTEExplosion::clear_framerate() {
-  _impl_.framerate_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000010u;
-}
-inline uint32_t CMsgTEExplosion::_internal_framerate() const {
-  return _impl_.framerate_;
-}
-inline uint32_t CMsgTEExplosion::framerate() const {
-  // @@protoc_insertion_point(field_get:CMsgTEExplosion.framerate)
-  return _internal_framerate();
-}
-inline void CMsgTEExplosion::_internal_set_framerate(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000010u;
-  _impl_.framerate_ = value;
-}
-inline void CMsgTEExplosion::set_framerate(uint32_t value) {
-  _internal_set_framerate(value);
-  // @@protoc_insertion_point(field_set:CMsgTEExplosion.framerate)
-}
-
 // optional uint32 flags = 3;
 inline bool CMsgTEExplosion::_internal_has_flags() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000010u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_flags() const {
@@ -11955,7 +10901,7 @@ inline bool CMsgTEExplosion::has_flags() const {
 }
 inline void CMsgTEExplosion::clear_flags() {
   _impl_.flags_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000020u;
+  _impl_._has_bits_[0] &= ~0x00000010u;
 }
 inline uint32_t CMsgTEExplosion::_internal_flags() const {
   return _impl_.flags_;
@@ -11965,7 +10911,7 @@ inline uint32_t CMsgTEExplosion::flags() const {
   return _internal_flags();
 }
 inline void CMsgTEExplosion::_internal_set_flags(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000020u;
+  _impl_._has_bits_[0] |= 0x00000010u;
   _impl_.flags_ = value;
 }
 inline void CMsgTEExplosion::set_flags(uint32_t value) {
@@ -12060,37 +11006,9 @@ inline void CMsgTEExplosion::set_allocated_normal(::CMsgVector* normal) {
   // @@protoc_insertion_point(field_set_allocated:CMsgTEExplosion.normal)
 }
 
-// optional uint32 materialtype = 5;
-inline bool CMsgTEExplosion::_internal_has_materialtype() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
-  return value;
-}
-inline bool CMsgTEExplosion::has_materialtype() const {
-  return _internal_has_materialtype();
-}
-inline void CMsgTEExplosion::clear_materialtype() {
-  _impl_.materialtype_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000040u;
-}
-inline uint32_t CMsgTEExplosion::_internal_materialtype() const {
-  return _impl_.materialtype_;
-}
-inline uint32_t CMsgTEExplosion::materialtype() const {
-  // @@protoc_insertion_point(field_get:CMsgTEExplosion.materialtype)
-  return _internal_materialtype();
-}
-inline void CMsgTEExplosion::_internal_set_materialtype(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000040u;
-  _impl_.materialtype_ = value;
-}
-inline void CMsgTEExplosion::set_materialtype(uint32_t value) {
-  _internal_set_materialtype(value);
-  // @@protoc_insertion_point(field_set:CMsgTEExplosion.materialtype)
-}
-
 // optional uint32 radius = 6;
 inline bool CMsgTEExplosion::_internal_has_radius() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000020u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_radius() const {
@@ -12098,7 +11016,7 @@ inline bool CMsgTEExplosion::has_radius() const {
 }
 inline void CMsgTEExplosion::clear_radius() {
   _impl_.radius_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000080u;
+  _impl_._has_bits_[0] &= ~0x00000020u;
 }
 inline uint32_t CMsgTEExplosion::_internal_radius() const {
   return _impl_.radius_;
@@ -12108,7 +11026,7 @@ inline uint32_t CMsgTEExplosion::radius() const {
   return _internal_radius();
 }
 inline void CMsgTEExplosion::_internal_set_radius(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000080u;
+  _impl_._has_bits_[0] |= 0x00000020u;
   _impl_.radius_ = value;
 }
 inline void CMsgTEExplosion::set_radius(uint32_t value) {
@@ -12118,7 +11036,7 @@ inline void CMsgTEExplosion::set_radius(uint32_t value) {
 
 // optional uint32 magnitude = 7;
 inline bool CMsgTEExplosion::_internal_has_magnitude() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000040u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_magnitude() const {
@@ -12126,7 +11044,7 @@ inline bool CMsgTEExplosion::has_magnitude() const {
 }
 inline void CMsgTEExplosion::clear_magnitude() {
   _impl_.magnitude_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000100u;
+  _impl_._has_bits_[0] &= ~0x00000040u;
 }
 inline uint32_t CMsgTEExplosion::_internal_magnitude() const {
   return _impl_.magnitude_;
@@ -12136,7 +11054,7 @@ inline uint32_t CMsgTEExplosion::magnitude() const {
   return _internal_magnitude();
 }
 inline void CMsgTEExplosion::_internal_set_magnitude(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000100u;
+  _impl_._has_bits_[0] |= 0x00000040u;
   _impl_.magnitude_ = value;
 }
 inline void CMsgTEExplosion::set_magnitude(uint32_t value) {
@@ -12144,37 +11062,9 @@ inline void CMsgTEExplosion::set_magnitude(uint32_t value) {
   // @@protoc_insertion_point(field_set:CMsgTEExplosion.magnitude)
 }
 
-// optional float scale = 8;
-inline bool CMsgTEExplosion::_internal_has_scale() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
-  return value;
-}
-inline bool CMsgTEExplosion::has_scale() const {
-  return _internal_has_scale();
-}
-inline void CMsgTEExplosion::clear_scale() {
-  _impl_.scale_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000200u;
-}
-inline float CMsgTEExplosion::_internal_scale() const {
-  return _impl_.scale_;
-}
-inline float CMsgTEExplosion::scale() const {
-  // @@protoc_insertion_point(field_get:CMsgTEExplosion.scale)
-  return _internal_scale();
-}
-inline void CMsgTEExplosion::_internal_set_scale(float value) {
-  _impl_._has_bits_[0] |= 0x00000200u;
-  _impl_.scale_ = value;
-}
-inline void CMsgTEExplosion::set_scale(float value) {
-  _internal_set_scale(value);
-  // @@protoc_insertion_point(field_set:CMsgTEExplosion.scale)
-}
-
 // optional bool affect_ragdolls = 9;
 inline bool CMsgTEExplosion::_internal_has_affect_ragdolls() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000080u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_affect_ragdolls() const {
@@ -12182,7 +11072,7 @@ inline bool CMsgTEExplosion::has_affect_ragdolls() const {
 }
 inline void CMsgTEExplosion::clear_affect_ragdolls() {
   _impl_.affect_ragdolls_ = false;
-  _impl_._has_bits_[0] &= ~0x00000400u;
+  _impl_._has_bits_[0] &= ~0x00000080u;
 }
 inline bool CMsgTEExplosion::_internal_affect_ragdolls() const {
   return _impl_.affect_ragdolls_;
@@ -12192,7 +11082,7 @@ inline bool CMsgTEExplosion::affect_ragdolls() const {
   return _internal_affect_ragdolls();
 }
 inline void CMsgTEExplosion::_internal_set_affect_ragdolls(bool value) {
-  _impl_._has_bits_[0] |= 0x00000400u;
+  _impl_._has_bits_[0] |= 0x00000080u;
   _impl_.affect_ragdolls_ = value;
 }
 inline void CMsgTEExplosion::set_affect_ragdolls(bool value) {
@@ -12200,77 +11090,77 @@ inline void CMsgTEExplosion::set_affect_ragdolls(bool value) {
   // @@protoc_insertion_point(field_set:CMsgTEExplosion.affect_ragdolls)
 }
 
-// optional string effect_name = 10;
-inline bool CMsgTEExplosion::_internal_has_effect_name() const {
+// optional string sound_name = 10;
+inline bool CMsgTEExplosion::_internal_has_sound_name() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
   return value;
 }
-inline bool CMsgTEExplosion::has_effect_name() const {
-  return _internal_has_effect_name();
+inline bool CMsgTEExplosion::has_sound_name() const {
+  return _internal_has_sound_name();
 }
-inline void CMsgTEExplosion::clear_effect_name() {
-  _impl_.effect_name_.ClearToEmpty();
+inline void CMsgTEExplosion::clear_sound_name() {
+  _impl_.sound_name_.ClearToEmpty();
   _impl_._has_bits_[0] &= ~0x00000001u;
 }
-inline const std::string& CMsgTEExplosion::effect_name() const {
-  // @@protoc_insertion_point(field_get:CMsgTEExplosion.effect_name)
-  return _internal_effect_name();
+inline const std::string& CMsgTEExplosion::sound_name() const {
+  // @@protoc_insertion_point(field_get:CMsgTEExplosion.sound_name)
+  return _internal_sound_name();
 }
 template <typename ArgT0, typename... ArgT>
 inline PROTOBUF_ALWAYS_INLINE
-void CMsgTEExplosion::set_effect_name(ArgT0&& arg0, ArgT... args) {
+void CMsgTEExplosion::set_sound_name(ArgT0&& arg0, ArgT... args) {
  _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.effect_name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:CMsgTEExplosion.effect_name)
+ _impl_.sound_name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:CMsgTEExplosion.sound_name)
 }
-inline std::string* CMsgTEExplosion::mutable_effect_name() {
-  std::string* _s = _internal_mutable_effect_name();
-  // @@protoc_insertion_point(field_mutable:CMsgTEExplosion.effect_name)
+inline std::string* CMsgTEExplosion::mutable_sound_name() {
+  std::string* _s = _internal_mutable_sound_name();
+  // @@protoc_insertion_point(field_mutable:CMsgTEExplosion.sound_name)
   return _s;
 }
-inline const std::string& CMsgTEExplosion::_internal_effect_name() const {
-  return _impl_.effect_name_.Get();
+inline const std::string& CMsgTEExplosion::_internal_sound_name() const {
+  return _impl_.sound_name_.Get();
 }
-inline void CMsgTEExplosion::_internal_set_effect_name(const std::string& value) {
+inline void CMsgTEExplosion::_internal_set_sound_name(const std::string& value) {
   _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.effect_name_.Set(value, GetArenaForAllocation());
+  _impl_.sound_name_.Set(value, GetArenaForAllocation());
 }
-inline std::string* CMsgTEExplosion::_internal_mutable_effect_name() {
+inline std::string* CMsgTEExplosion::_internal_mutable_sound_name() {
   _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.effect_name_.Mutable(GetArenaForAllocation());
+  return _impl_.sound_name_.Mutable(GetArenaForAllocation());
 }
-inline std::string* CMsgTEExplosion::release_effect_name() {
-  // @@protoc_insertion_point(field_release:CMsgTEExplosion.effect_name)
-  if (!_internal_has_effect_name()) {
+inline std::string* CMsgTEExplosion::release_sound_name() {
+  // @@protoc_insertion_point(field_release:CMsgTEExplosion.sound_name)
+  if (!_internal_has_sound_name()) {
     return nullptr;
   }
   _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.effect_name_.Release();
+  auto* p = _impl_.sound_name_.Release();
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.effect_name_.IsDefault()) {
-    _impl_.effect_name_.Set("", GetArenaForAllocation());
+  if (_impl_.sound_name_.IsDefault()) {
+    _impl_.sound_name_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   return p;
 }
-inline void CMsgTEExplosion::set_allocated_effect_name(std::string* effect_name) {
-  if (effect_name != nullptr) {
+inline void CMsgTEExplosion::set_allocated_sound_name(std::string* sound_name) {
+  if (sound_name != nullptr) {
     _impl_._has_bits_[0] |= 0x00000001u;
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  _impl_.effect_name_.SetAllocated(effect_name, GetArenaForAllocation());
+  _impl_.sound_name_.SetAllocated(sound_name, GetArenaForAllocation());
 #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.effect_name_.IsDefault()) {
-    _impl_.effect_name_.Set("", GetArenaForAllocation());
+  if (_impl_.sound_name_.IsDefault()) {
+    _impl_.sound_name_.Set("", GetArenaForAllocation());
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEExplosion.effect_name)
+  // @@protoc_insertion_point(field_set_allocated:CMsgTEExplosion.sound_name)
 }
 
 // optional uint32 explosion_type = 11;
 inline bool CMsgTEExplosion::_internal_has_explosion_type() const {
-  bool value = (_impl_._has_bits_[0] & 0x00001000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000200u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_explosion_type() const {
@@ -12278,7 +11168,7 @@ inline bool CMsgTEExplosion::has_explosion_type() const {
 }
 inline void CMsgTEExplosion::clear_explosion_type() {
   _impl_.explosion_type_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00001000u;
+  _impl_._has_bits_[0] &= ~0x00000200u;
 }
 inline uint32_t CMsgTEExplosion::_internal_explosion_type() const {
   return _impl_.explosion_type_;
@@ -12288,7 +11178,7 @@ inline uint32_t CMsgTEExplosion::explosion_type() const {
   return _internal_explosion_type();
 }
 inline void CMsgTEExplosion::_internal_set_explosion_type(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00001000u;
+  _impl_._has_bits_[0] |= 0x00000200u;
   _impl_.explosion_type_ = value;
 }
 inline void CMsgTEExplosion::set_explosion_type(uint32_t value) {
@@ -12298,7 +11188,7 @@ inline void CMsgTEExplosion::set_explosion_type(uint32_t value) {
 
 // optional bool create_debris = 12;
 inline bool CMsgTEExplosion::_internal_has_create_debris() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000800u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000100u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_create_debris() const {
@@ -12306,7 +11196,7 @@ inline bool CMsgTEExplosion::has_create_debris() const {
 }
 inline void CMsgTEExplosion::clear_create_debris() {
   _impl_.create_debris_ = false;
-  _impl_._has_bits_[0] &= ~0x00000800u;
+  _impl_._has_bits_[0] &= ~0x00000100u;
 }
 inline bool CMsgTEExplosion::_internal_create_debris() const {
   return _impl_.create_debris_;
@@ -12316,7 +11206,7 @@ inline bool CMsgTEExplosion::create_debris() const {
   return _internal_create_debris();
 }
 inline void CMsgTEExplosion::_internal_set_create_debris(bool value) {
-  _impl_._has_bits_[0] |= 0x00000800u;
+  _impl_._has_bits_[0] |= 0x00000100u;
   _impl_.create_debris_ = value;
 }
 inline void CMsgTEExplosion::set_create_debris(bool value) {
@@ -12413,7 +11303,7 @@ inline void CMsgTEExplosion::set_allocated_debris_origin(::CMsgVector* debris_or
 
 // optional fixed32 debris_surfaceprop = 14;
 inline bool CMsgTEExplosion::_internal_has_debris_surfaceprop() const {
-  bool value = (_impl_._has_bits_[0] & 0x00002000u) != 0;
+  bool value = (_impl_._has_bits_[0] & 0x00000400u) != 0;
   return value;
 }
 inline bool CMsgTEExplosion::has_debris_surfaceprop() const {
@@ -12421,7 +11311,7 @@ inline bool CMsgTEExplosion::has_debris_surfaceprop() const {
 }
 inline void CMsgTEExplosion::clear_debris_surfaceprop() {
   _impl_.debris_surfaceprop_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00002000u;
+  _impl_._has_bits_[0] &= ~0x00000400u;
 }
 inline uint32_t CMsgTEExplosion::_internal_debris_surfaceprop() const {
   return _impl_.debris_surfaceprop_;
@@ -12431,7 +11321,7 @@ inline uint32_t CMsgTEExplosion::debris_surfaceprop() const {
   return _internal_debris_surfaceprop();
 }
 inline void CMsgTEExplosion::_internal_set_debris_surfaceprop(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00002000u;
+  _impl_._has_bits_[0] |= 0x00000400u;
   _impl_.debris_surfaceprop_ = value;
 }
 inline void CMsgTEExplosion::set_debris_surfaceprop(uint32_t value) {
@@ -13691,387 +12581,6 @@ inline void CMsgTEPhysicsProp::set_dmgtype(int32_t value) {
 
 // -------------------------------------------------------------------
 
-// CMsgTEPlayerDecal
-
-// optional .CMsgVector origin = 1;
-inline bool CMsgTEPlayerDecal::_internal_has_origin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.origin_ != nullptr);
-  return value;
-}
-inline bool CMsgTEPlayerDecal::has_origin() const {
-  return _internal_has_origin();
-}
-inline const ::CMsgVector& CMsgTEPlayerDecal::_internal_origin() const {
-  const ::CMsgVector* p = _impl_.origin_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgVector&>(
-      ::_CMsgVector_default_instance_);
-}
-inline const ::CMsgVector& CMsgTEPlayerDecal::origin() const {
-  // @@protoc_insertion_point(field_get:CMsgTEPlayerDecal.origin)
-  return _internal_origin();
-}
-inline void CMsgTEPlayerDecal::unsafe_arena_set_allocated_origin(
-    ::CMsgVector* origin) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  _impl_.origin_ = origin;
-  if (origin) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEPlayerDecal.origin)
-}
-inline ::CMsgVector* CMsgTEPlayerDecal::release_origin() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgVector* CMsgTEPlayerDecal::unsafe_arena_release_origin() {
-  // @@protoc_insertion_point(field_release:CMsgTEPlayerDecal.origin)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-  return temp;
-}
-inline ::CMsgVector* CMsgTEPlayerDecal::_internal_mutable_origin() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.origin_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgVector>(GetArenaForAllocation());
-    _impl_.origin_ = p;
-  }
-  return _impl_.origin_;
-}
-inline ::CMsgVector* CMsgTEPlayerDecal::mutable_origin() {
-  ::CMsgVector* _msg = _internal_mutable_origin();
-  // @@protoc_insertion_point(field_mutable:CMsgTEPlayerDecal.origin)
-  return _msg;
-}
-inline void CMsgTEPlayerDecal::set_allocated_origin(::CMsgVector* origin) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  if (origin) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(origin));
-    if (message_arena != submessage_arena) {
-      origin = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, origin, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.origin_ = origin;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEPlayerDecal.origin)
-}
-
-// optional int32 player = 2 [default = -1];
-inline bool CMsgTEPlayerDecal::_internal_has_player() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  return value;
-}
-inline bool CMsgTEPlayerDecal::has_player() const {
-  return _internal_has_player();
-}
-inline void CMsgTEPlayerDecal::clear_player() {
-  _impl_.player_ = -1;
-  _impl_._has_bits_[0] &= ~0x00000002u;
-}
-inline int32_t CMsgTEPlayerDecal::_internal_player() const {
-  return _impl_.player_;
-}
-inline int32_t CMsgTEPlayerDecal::player() const {
-  // @@protoc_insertion_point(field_get:CMsgTEPlayerDecal.player)
-  return _internal_player();
-}
-inline void CMsgTEPlayerDecal::_internal_set_player(int32_t value) {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  _impl_.player_ = value;
-}
-inline void CMsgTEPlayerDecal::set_player(int32_t value) {
-  _internal_set_player(value);
-  // @@protoc_insertion_point(field_set:CMsgTEPlayerDecal.player)
-}
-
-// optional int32 entity = 3 [default = -1];
-inline bool CMsgTEPlayerDecal::_internal_has_entity() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CMsgTEPlayerDecal::has_entity() const {
-  return _internal_has_entity();
-}
-inline void CMsgTEPlayerDecal::clear_entity() {
-  _impl_.entity_ = -1;
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
-inline int32_t CMsgTEPlayerDecal::_internal_entity() const {
-  return _impl_.entity_;
-}
-inline int32_t CMsgTEPlayerDecal::entity() const {
-  // @@protoc_insertion_point(field_get:CMsgTEPlayerDecal.entity)
-  return _internal_entity();
-}
-inline void CMsgTEPlayerDecal::_internal_set_entity(int32_t value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.entity_ = value;
-}
-inline void CMsgTEPlayerDecal::set_entity(int32_t value) {
-  _internal_set_entity(value);
-  // @@protoc_insertion_point(field_set:CMsgTEPlayerDecal.entity)
-}
-
-// -------------------------------------------------------------------
-
-// CMsgTEProjectedDecal
-
-// optional .CMsgVector origin = 1;
-inline bool CMsgTEProjectedDecal::_internal_has_origin() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.origin_ != nullptr);
-  return value;
-}
-inline bool CMsgTEProjectedDecal::has_origin() const {
-  return _internal_has_origin();
-}
-inline const ::CMsgVector& CMsgTEProjectedDecal::_internal_origin() const {
-  const ::CMsgVector* p = _impl_.origin_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgVector&>(
-      ::_CMsgVector_default_instance_);
-}
-inline const ::CMsgVector& CMsgTEProjectedDecal::origin() const {
-  // @@protoc_insertion_point(field_get:CMsgTEProjectedDecal.origin)
-  return _internal_origin();
-}
-inline void CMsgTEProjectedDecal::unsafe_arena_set_allocated_origin(
-    ::CMsgVector* origin) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  _impl_.origin_ = origin;
-  if (origin) {
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEProjectedDecal.origin)
-}
-inline ::CMsgVector* CMsgTEProjectedDecal::release_origin() {
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgVector* CMsgTEProjectedDecal::unsafe_arena_release_origin() {
-  // @@protoc_insertion_point(field_release:CMsgTEProjectedDecal.origin)
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  ::CMsgVector* temp = _impl_.origin_;
-  _impl_.origin_ = nullptr;
-  return temp;
-}
-inline ::CMsgVector* CMsgTEProjectedDecal::_internal_mutable_origin() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  if (_impl_.origin_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgVector>(GetArenaForAllocation());
-    _impl_.origin_ = p;
-  }
-  return _impl_.origin_;
-}
-inline ::CMsgVector* CMsgTEProjectedDecal::mutable_origin() {
-  ::CMsgVector* _msg = _internal_mutable_origin();
-  // @@protoc_insertion_point(field_mutable:CMsgTEProjectedDecal.origin)
-  return _msg;
-}
-inline void CMsgTEProjectedDecal::set_allocated_origin(::CMsgVector* origin) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.origin_);
-  }
-  if (origin) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(origin));
-    if (message_arena != submessage_arena) {
-      origin = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, origin, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000001u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000001u;
-  }
-  _impl_.origin_ = origin;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEProjectedDecal.origin)
-}
-
-// optional .CMsgQAngle angles = 2;
-inline bool CMsgTEProjectedDecal::_internal_has_angles() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
-  PROTOBUF_ASSUME(!value || _impl_.angles_ != nullptr);
-  return value;
-}
-inline bool CMsgTEProjectedDecal::has_angles() const {
-  return _internal_has_angles();
-}
-inline const ::CMsgQAngle& CMsgTEProjectedDecal::_internal_angles() const {
-  const ::CMsgQAngle* p = _impl_.angles_;
-  return p != nullptr ? *p : reinterpret_cast<const ::CMsgQAngle&>(
-      ::_CMsgQAngle_default_instance_);
-}
-inline const ::CMsgQAngle& CMsgTEProjectedDecal::angles() const {
-  // @@protoc_insertion_point(field_get:CMsgTEProjectedDecal.angles)
-  return _internal_angles();
-}
-inline void CMsgTEProjectedDecal::unsafe_arena_set_allocated_angles(
-    ::CMsgQAngle* angles) {
-  if (GetArenaForAllocation() == nullptr) {
-    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.angles_);
-  }
-  _impl_.angles_ = angles;
-  if (angles) {
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:CMsgTEProjectedDecal.angles)
-}
-inline ::CMsgQAngle* CMsgTEProjectedDecal::release_angles() {
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::CMsgQAngle* temp = _impl_.angles_;
-  _impl_.angles_ = nullptr;
-#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
-  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
-  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  if (GetArenaForAllocation() == nullptr) { delete old; }
-#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
-  if (GetArenaForAllocation() != nullptr) {
-    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
-  }
-#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
-  return temp;
-}
-inline ::CMsgQAngle* CMsgTEProjectedDecal::unsafe_arena_release_angles() {
-  // @@protoc_insertion_point(field_release:CMsgTEProjectedDecal.angles)
-  _impl_._has_bits_[0] &= ~0x00000002u;
-  ::CMsgQAngle* temp = _impl_.angles_;
-  _impl_.angles_ = nullptr;
-  return temp;
-}
-inline ::CMsgQAngle* CMsgTEProjectedDecal::_internal_mutable_angles() {
-  _impl_._has_bits_[0] |= 0x00000002u;
-  if (_impl_.angles_ == nullptr) {
-    auto* p = CreateMaybeMessage<::CMsgQAngle>(GetArenaForAllocation());
-    _impl_.angles_ = p;
-  }
-  return _impl_.angles_;
-}
-inline ::CMsgQAngle* CMsgTEProjectedDecal::mutable_angles() {
-  ::CMsgQAngle* _msg = _internal_mutable_angles();
-  // @@protoc_insertion_point(field_mutable:CMsgTEProjectedDecal.angles)
-  return _msg;
-}
-inline void CMsgTEProjectedDecal::set_allocated_angles(::CMsgQAngle* angles) {
-  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
-  if (message_arena == nullptr) {
-    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.angles_);
-  }
-  if (angles) {
-    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
-        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
-                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(angles));
-    if (message_arena != submessage_arena) {
-      angles = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
-          message_arena, angles, submessage_arena);
-    }
-    _impl_._has_bits_[0] |= 0x00000002u;
-  } else {
-    _impl_._has_bits_[0] &= ~0x00000002u;
-  }
-  _impl_.angles_ = angles;
-  // @@protoc_insertion_point(field_set_allocated:CMsgTEProjectedDecal.angles)
-}
-
-// optional uint32 index = 3;
-inline bool CMsgTEProjectedDecal::_internal_has_index() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
-  return value;
-}
-inline bool CMsgTEProjectedDecal::has_index() const {
-  return _internal_has_index();
-}
-inline void CMsgTEProjectedDecal::clear_index() {
-  _impl_.index_ = 0u;
-  _impl_._has_bits_[0] &= ~0x00000004u;
-}
-inline uint32_t CMsgTEProjectedDecal::_internal_index() const {
-  return _impl_.index_;
-}
-inline uint32_t CMsgTEProjectedDecal::index() const {
-  // @@protoc_insertion_point(field_get:CMsgTEProjectedDecal.index)
-  return _internal_index();
-}
-inline void CMsgTEProjectedDecal::_internal_set_index(uint32_t value) {
-  _impl_._has_bits_[0] |= 0x00000004u;
-  _impl_.index_ = value;
-}
-inline void CMsgTEProjectedDecal::set_index(uint32_t value) {
-  _internal_set_index(value);
-  // @@protoc_insertion_point(field_set:CMsgTEProjectedDecal.index)
-}
-
-// optional float distance = 4;
-inline bool CMsgTEProjectedDecal::_internal_has_distance() const {
-  bool value = (_impl_._has_bits_[0] & 0x00000008u) != 0;
-  return value;
-}
-inline bool CMsgTEProjectedDecal::has_distance() const {
-  return _internal_has_distance();
-}
-inline void CMsgTEProjectedDecal::clear_distance() {
-  _impl_.distance_ = 0;
-  _impl_._has_bits_[0] &= ~0x00000008u;
-}
-inline float CMsgTEProjectedDecal::_internal_distance() const {
-  return _impl_.distance_;
-}
-inline float CMsgTEProjectedDecal::distance() const {
-  // @@protoc_insertion_point(field_get:CMsgTEProjectedDecal.distance)
-  return _internal_distance();
-}
-inline void CMsgTEProjectedDecal::_internal_set_distance(float value) {
-  _impl_._has_bits_[0] |= 0x00000008u;
-  _impl_.distance_ = value;
-}
-inline void CMsgTEProjectedDecal::set_distance(float value) {
-  _internal_set_distance(value);
-  // @@protoc_insertion_point(field_set:CMsgTEProjectedDecal.distance)
-}
-
-// -------------------------------------------------------------------
-
 // CMsgTESmoke
 
 // optional .CMsgVector origin = 1;
@@ -14398,12 +12907,6 @@ inline void CMsgTEWorldDecal::set_index(uint32_t value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

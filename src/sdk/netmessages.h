@@ -27,7 +27,7 @@ class CCLCMsg_Move_t : public CNetMessagePB<CCLCMsg_Move> {};
 
 class CCLCMsg_VoiceData_t : public CNetMessagePB<CCLCMsg_VoiceData> {};
 
-class CCLCMsg_FileCRCCheck_t : public CNetMessagePB<CCLCMsg_FileCRCCheck> {};
+//class CCLCMsg_FileCRCCheck_t : public CNetMessagePB<CCLCMsg_FileCRCCheck> {};
 
 class CCLCMsg_RespondCvarValue_t : public CNetMessagePB<CCLCMsg_RespondCvarValue> {};
 
