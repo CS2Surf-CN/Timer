@@ -11,6 +11,5 @@ void CMovementUnlocker::OnPluginStart() {
 	static auto fn = GAMEDATA::GetMemSig("ServerMovementUnlock");
 	SDK_ASSERT(fn);
 
-	// FIXME
-	//WIN_LINUX(MEM::PatchAddress(fn, 0xEB), MEM::PatchAddress(fn, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
+	WIN_LINUX(MEM::PatchAddress(fn, 0xE9, 0xB0, 0x00, 0x00, 0x00, 0x90), MEM::PatchAddress(fn, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90));
 }

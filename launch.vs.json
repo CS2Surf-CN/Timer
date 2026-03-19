@@ -34,9 +34,27 @@
 				"+game_type 0",
 				"+map de_dust2",
 				"+developer 5",
-				"+exec server.cfg",
+				"+servercfgfile cs2surf.cfg",
 				"+sv_cheats 1",
-				"+host_workshop_map 3073875025"
+				"+host_workshop_map 3448505317"
+			]
+		},
+		{
+			"type": "dll",
+			"name": "Local-SurfTimer-ZED",
+			"project": "CMakeLists.txt",
+			"exe": "${env.CS2_BIN}",
+			"args": [
+				"-insecure",
+				"-dedicated",
+				"-disable_workshop_command_filtering",
+				"+game_mode 0",
+				"+game_type 0",
+				"+map de_dust2",
+				"+developer 5",
+				"+servercfgfile zedsurf.cfg",
+				"+sv_cheats 1",
+				"+host_workshop_map 3448505317"
 			]
 		},
 		{

@@ -166,8 +166,10 @@ public:
 	CMoveData* currentMoveData {};
 	CMoveData moveDataPre;
 	CMoveData moveDataPost;
-	Vector landingVelocity;
+	Vector landingVelocity = vec3_origin;
 	bool jumped {};
+	bool hasValidDesiredViewAngle {};
+	QAngle lastValidDesiredViewAngle = vec3_angle;
 
 	float m_fCurrentMaxSpeed = 260.0f;
 };
@@ -233,6 +235,12 @@ public:
 
 	virtual void OnProcessMovementPost(CCSPlayer_MovementServices* ms, const CMoveData* mv) {}
 
+	virtual bool OnSetupMove(CCSPlayer_MovementServices* ms, CUserCmd* cmd, CMoveData* mv) {
+		return true;
+	}
+
+	virtual void OnSetupMovePost(CCSPlayer_MovementServices* ms, CUserCmd* cmd, CMoveData* mv) {}
+
 	virtual bool OnPhysicsSimulate(CCSPlayerController* pController) {
 		return true;
 	}
@@ -254,6 +262,7 @@ namespace MOVEMENT {
 		inline void* g_fnCategorizePosition;
 		inline void* g_fnJump;
 		inline void* g_fnProcessMovement;
+		inline void* g_fnSetupMove;
 		inline void* g_fnPhysicsSimulate;
 		inline void* g_fnPlayerMove;
 	} // namespace TRAMPOLINE

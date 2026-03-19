@@ -217,6 +217,30 @@ static void Hook_OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveData* mv
 	FORWARD_POST(CMovementForward, OnProcessMovementPost, ms, mv);
 }
 
+static void Hook_OnSetupMove(CCSPlayer_MovementServices* ms, CUserCmd* cmd, CMoveData* mv) {
+	CMovementPlayer* player = MOVEMENT::GetPlayerManager()->ToPlayer(ms);
+	if (!player) {
+		return MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnSetupMove, ms, cmd, mv);
+	}
+
+	player->currentMoveData = mv;
+	player->moveDataPre = CMoveData(*mv);
+
+	bool block = false;
+	for (auto p = CMovementForward::m_pFirst; p; p = p->m_pNext) {
+		if (!p->OnSetupMove(ms, cmd, mv)) {
+			block = true;
+		}
+	}
+	if (block) {
+		return;
+	}
+
+	MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnSetupMove, ms, cmd, mv);
+
+	FORWARD_POST(CMovementForward, OnSetupMovePost, ms, cmd, mv);
+}
+
 static void Hook_OnPhysicsSimulate(CCSPlayerController* pController) {
 	if (pController->m_bIsHLTV()) {
 		return;
@@ -254,6 +278,7 @@ void MOVEMENT::SetupHooks() {
 	HOOK_SIG("CCSPlayer_MovementServices::CategorizePosition", Hook_OnCategorizePosition, MOVEMENT::TRAMPOLINE::g_fnCategorizePosition);
 	HOOK_SIG("CCSPlayer_MovementServices::OnJump", Hook_OnJump, MOVEMENT::TRAMPOLINE::g_fnJump);
 	HOOK_SIG("CCSPlayer_MovementServices::ProcessMovement", Hook_OnProcessMovement, MOVEMENT::TRAMPOLINE::g_fnProcessMovement);
+	HOOK_SIG("CCSPlayer_MovementServices::SetupMove", Hook_OnSetupMove, MOVEMENT::TRAMPOLINE::g_fnSetupMove);
 	HOOK_SIG("CCSPlayerController::PhysicsSimulate", Hook_OnPhysicsSimulate, MOVEMENT::TRAMPOLINE::g_fnPhysicsSimulate);
 }
 

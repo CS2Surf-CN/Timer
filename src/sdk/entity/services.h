@@ -61,15 +61,68 @@ public:
 
 	SCHEMA_FIELD_POINTER(CInButtonState, m_nButtons);
 	SCHEMA_FIELD_POINTER(uint32_t, m_pButtonPressedCmdNumber);
-	SCHEMA_FIELD_POINTER(float, m_arrForceSubtickMoveWhen);
+
+	float* m_arrForceSubtickMoveWhen() {
+		if constexpr (0 == 0) {
+			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName);
+			static constexpr auto prop_hash = hash_32_fnv1a_const("m_arrForceSubtickMoveWhen");
+			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, "m_arrForceSubtickMoveWhen", prop_hash);
+			return reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + m_key.offset);
+		}
+		return reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + 0);
+	}
+
+	void m_arrForceSubtickMoveWhen(float&& val, uint16_t arrayIndex = 0xFFFF) {
+		if constexpr (0 == 0) {
+			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName);
+			static constexpr auto prop_hash = hash_32_fnv1a_const("m_arrForceSubtickMoveWhen");
+			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, "m_arrForceSubtickMoveWhen", prop_hash);
+			static const auto m_chain = schema::FindChainOffset(ThisClassName);
+			if (m_key.networked) {
+				if (m_chain != 0) {
+					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex);
+				} else {
+					if constexpr (!IsStruct) {
+						schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset, arrayIndex);
+					} else {
+						schema::StructNetworkStateChanged((void*)this, m_key.offset);
+					}
+				}
+			}
+			reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + m_key.offset)[arrayIndex == 0xFFFF ? 0 : arrayIndex] = const_cast<float&>(val);
+		} else {
+			reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + 0)[arrayIndex == 0xFFFF ? 0 : arrayIndex] = const_cast<float&>(val);
+		}
+	}
+
+	void m_arrForceSubtickMoveWhen(const float& val, uint16_t arrayIndex = 0xFFFF) {
+		if constexpr (0 == 0) {
+			static constexpr auto datatable_hash = hash_32_fnv1a_const(ThisClassName);
+			static constexpr auto prop_hash = hash_32_fnv1a_const("m_arrForceSubtickMoveWhen");
+			static const auto m_key = schema::GetOffset(ThisClassName, datatable_hash, "m_arrForceSubtickMoveWhen", prop_hash);
+			static const auto m_chain = schema::FindChainOffset(ThisClassName);
+			if (m_key.networked) {
+				if (m_chain != 0) {
+					schema::ChainEntityNetworkStateChanged((uintptr_t)(this) + m_chain, m_key.offset, arrayIndex);
+				} else {
+					if constexpr (!IsStruct) {
+						schema::EntityNetworkStateChanged((CEntityInstance*)this, m_key.offset, arrayIndex);
+					} else {
+						schema::StructNetworkStateChanged((void*)this, m_key.offset);
+					}
+				}
+			}
+			reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + m_key.offset)[arrayIndex == 0xFFFF ? 0 : arrayIndex] = const_cast<float&>(val);
+		} else {
+			reinterpret_cast<std::add_pointer_t<float>>((uintptr_t)(this) + 0)[arrayIndex == 0xFFFF ? 0 : arrayIndex] = const_cast<float&>(val);
+		}
+	};
 };
 
 class CPlayer_MovementServices_Humanoid : public CPlayer_MovementServices {
 public:
 	DECLARE_SCHEMA_CLASS(CPlayer_MovementServices_Humanoid);
 
-	SCHEMA_FIELD(bool, m_bDucking);
-	SCHEMA_FIELD(bool, m_bDucked);
 	SCHEMA_FIELD(float, m_flSurfaceFriction);
 };
 
@@ -84,6 +137,8 @@ public:
 	SCHEMA_FIELD(float, m_flDuckSpeed);
 	SCHEMA_FIELD(float, m_flDuckAmount);
 	SCHEMA_FIELD(float, m_flStamina);
+	SCHEMA_FIELD(bool, m_bDucking);
+	SCHEMA_FIELD(bool, m_bDucked);
 };
 
 class CPlayer_UseServices : public CPlayerPawnComponent {
