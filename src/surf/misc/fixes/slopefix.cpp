@@ -6,7 +6,7 @@ private:
 	virtual void OnStartTouchGround(CMovementPlayer* player) override;
 };
 
-CSlopeFix g_SlopeFix;
+//CSlopeFix g_SlopeFix;
 
 // copy from cs2kz
 void CSlopeFix::OnStartTouchGround(CMovementPlayer* player) {

@@ -20,7 +20,7 @@ private:
 	virtual bool OnCategorizePosition(CCSPlayer_MovementServices* ms, CMoveData* mv, bool bStayOnGround) override;
 };
 
-CRampfix g_Rampfix;
+//CRampfix g_Rampfix;
 
 bool CRampfix::OnProcessMovement(CCSPlayer_MovementServices* ms, CMoveData* mv) {
 	CSurfPlayer* player = SURF::GetPlayerManager()->ToPlayer(ms);

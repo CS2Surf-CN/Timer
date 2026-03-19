@@ -391,8 +391,8 @@ static bool SetupDetours() {
 	HOOK_SIG("CCSPlayer_WeaponServices::Weapon_Drop", Hook_OnWeaponDrop, MEM::TRAMPOLINE::g_fnWeaponDrop);
 	HOOK_SIG("CCSPlayer_WeaponServices::Weapon_Switch", Hook_OnWeaponSwitch, MEM::TRAMPOLINE::g_fnWeaponSwitch);
 	HOOK_SIG("CCSPlayerPawn::OnTakeDamage", Hook_OnTakeDamage, MEM::TRAMPOLINE::g_fnTakeDamage);
-	HOOK_SIG("CServerSideClient::SendSnapshotBefore", Hook_OnClientSendSnapshotBefore, MEM::TRAMPOLINE::g_fnClientSendSnapshotBefore);
-	HOOK_SIG("CPlayer_ObserverServices::SetObserverTarget", Hook_OnSetObserverTarget, MEM::TRAMPOLINE::g_fnSetObserverTarget);
+	//HOOK_SIG("CServerSideClient::SendSnapshotBefore", Hook_OnClientSendSnapshotBefore, MEM::TRAMPOLINE::g_fnClientSendSnapshotBefore);
+	//HOOK_SIG("CPlayer_ObserverServices::SetObserverTarget", Hook_OnSetObserverTarget, MEM::TRAMPOLINE::g_fnSetObserverTarget);
 	// clang-format on
 
 	return true;

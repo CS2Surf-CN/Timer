@@ -28,8 +28,7 @@ public:
 
 	CMoveDataBase(const CMoveDataBase& source)
 		// clang-format off
-		: m_bFirstRunOfFunctions {source.m_bFirstRunOfFunctions},
-		m_bHasZeroFrametime {source.m_bHasZeroFrametime},
+		: m_bHasZeroFrametime {source.m_bHasZeroFrametime},
 		m_bIsLateCommand {source.m_bIsLateCommand}, 
 		m_nPlayerHandle {source.m_nPlayerHandle},
 		m_vecAbsViewAngles {source.m_vecAbsViewAngles},
@@ -40,10 +39,11 @@ public:
 		m_flUpMove {source.m_flUpMove},
 		m_vecVelocity {source.m_vecVelocity}, 
 		m_vecAngles {source.m_vecAngles},
+		m_vecUnknown {source.m_vecUnknown},
 		m_bHasSubtickInputs {source.m_bHasSubtickInputs},
 		unknown {source.unknown},
 		m_collisionNormal {source.m_collisionNormal},
-		m_groundNormal {source.m_groundNormal}, 
+		m_groundNormal {source.m_groundNormal},
 		m_vecAbsOrigin {source.m_vecAbsOrigin},
 		m_nTickCount {source.m_nTickCount},
 		m_nTargetTick {source.m_nTargetTick},
@@ -80,7 +80,6 @@ public:
 	}
 
 public:
-	bool m_bFirstRunOfFunctions: 1;
 	bool m_bHasZeroFrametime: 1;
 	bool m_bIsLateCommand: 1;
 	CHandle<CCSPlayerPawn> m_nPlayerHandle;
@@ -92,13 +91,14 @@ public:
 	float m_flUpMove;
 	Vector m_vecVelocity;
 	QAngle m_vecAngles;
+	Vector m_vecUnknown; // Unused. Probably pulled from engine upstream.
 	CUtlVector<SubtickMove> m_SubtickMoves;
 	CUtlVector<SubtickMove> m_AttackSubtickMoves;
 	bool m_bHasSubtickInputs;
 	float unknown; // Set to 1.0 during SetupMove, never change during gameplay. Is apparently used for weapon services stuff.
 	CUtlVector<touchlist_t> m_TouchList;
 	Vector m_collisionNormal;
-	Vector m_groundNormal; // unsure
+	Vector m_groundNormal;
 	Vector m_vecAbsOrigin;
 	int32_t m_nTickCount;
 	int32_t m_nTargetTick;
@@ -108,16 +108,36 @@ public:
 
 class CMoveData : public CMoveDataBase {
 public:
+	CMoveData() = default;
+
+	CMoveData(const CMoveData& source)
+		: CMoveDataBase(source), m_outWishVel {source.m_outWishVel}, m_vecOldAngles {source.m_vecOldAngles},
+		  m_vecInputRotated {source.m_vecInputRotated}, m_vecContinousAcceleration {source.m_vecContinousAcceleration},
+		  m_vecFrameVelocityDelta {source.m_vecFrameVelocityDelta}, m_flMaxSpeed {source.m_flMaxSpeed} {
+	}
+
 	Vector m_outWishVel;
 	QAngle m_vecOldAngles;
+	// World space input vector. Used to compare against last the movement services' previous rotation for ground movement stuff.
+	Vector m_vecInputRotated;
+	// u/s^2.
+	Vector m_vecContinousAcceleration;
+	// Immediate delta in u/s. Air acceleration bypasses per second acceleration, applies up to half of its impulse to the velocity and the rest goes
+	// straight into this.
+	Vector m_vecFrameVelocityDelta;
 	float m_flMaxSpeed;
 	float m_flClientMaxSpeed;
-	float m_flFrictionDecel; // Related to ground acceleration subtick stuff with sv_stopspeed and friction
+	float m_flFrictionDecel;
+	// 2026-01-21 update adds these fields to calculate exactly when during the tick the player hit the ground using physics equations
+	// rather than just assuming they landed at the end of the tick, somewhat similar to how CS2KZ landingTimeActual formula works.
+	float m_flPreAirMovePosZ;
+	float m_flPreAirMoveVelZ;
+	float m_flPreAirMoveAccelZ;
 	bool m_bInAir;
 	bool m_bGameCodeMovedPlayer; // true if usercmd cmd number == (m_nGameCodeHasMovedPlayerAfterCommand + 1)
 };
 
-static_assert(sizeof(CMoveData) == 256, "Class didn't match expected size");
+static_assert(sizeof(CMoveData) == 320, "Class didn't match expected size");
 
 class CMovementPlayer : public CPlayer {
 public:

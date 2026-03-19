@@ -165,12 +165,21 @@ namespace MEM {
 	}
 
 	template<typename TCallback, typename TTram>
-	bool AddVMTHookEx(libmodule::CModule* pModule, std::string sClassName, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline, bool bDetour = false) {
+	bool AddVMTHookEx(libmodule::CModule* pModule, const std::string_view sClassName, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline, bool bDetour = false) {
 		if (!pModule) {
 			return false;
 		}
 
-		void* pVtable = pModule->GetVirtualTableByName(sClassName);
+		auto extractClassName = [](const std::string_view input) {
+			std::string res = input.data();
+			size_t pos = res.find("::");
+			if (pos != std::string::npos) {
+				return res.substr(0, pos);
+			}
+			return res;
+		};
+
+		void* pVtable = pModule->GetVirtualTableByName(extractClassName(sClassName));
 		if (!pVtable) {
 			return false;
 		}

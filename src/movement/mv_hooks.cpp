@@ -247,7 +247,8 @@ static void Hook_OnPhysicsSimulate(CCSPlayerController* pController) {
 }
 
 void MOVEMENT::SetupHooks() {
-	HOOK_SIG("CPlayer_MovementServices::RunCmds", Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds);
+	DETOUR_VMT("CPlayer_MovementServices::RunCommand", MEM::MODULE::server, Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds);
+
 	HOOK_SIG("CCSPlayer_MovementServices::TryPlayerMove", Hook_OnTryPlayerMove, MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove);
 	HOOK_SIG("CCSPlayer_MovementServices::PlayerMove", Hook_OnPlayerMove, MOVEMENT::TRAMPOLINE::g_fnPlayerMove);
 	HOOK_SIG("CCSPlayer_MovementServices::CategorizePosition", Hook_OnCategorizePosition, MOVEMENT::TRAMPOLINE::g_fnCategorizePosition);

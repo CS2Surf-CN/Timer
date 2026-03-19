@@ -29,6 +29,7 @@
 			"args": [
 				"-insecure",
 				"-dedicated",
+				"-disable_workshop_command_filtering",
 				"+game_mode 0",
 				"+game_type 0",
 				"+map de_dust2",

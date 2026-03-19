@@ -67,6 +67,10 @@
 		"CBaseEntity::Teleport": {
 			"windows": 162,
 			"linux": 161
+		},
+		"CPlayer_MovementServices::RunCommand": {
+			"windows": 21,
+			"linux": 22
 		}
 	},
 	"Addresses": {
@@ -243,12 +247,6 @@
 			"library": "server",
 			"windows": "48 8B 1D ? ? ? ? 48 85 DB 0F 84 ? ? ? ? BD",
 			"linux": "4C 8B 35 ? ? ? ? 4D 85 F6 75 ? E9"
-		},
-		// win: CPlayer_MovementServices vtable offset 19
-		"CPlayer_MovementServices::RunCmds": {
-			"library": "server",
-			"windows": "40 55 56 57 48 83 EC ? 0F 29 74 24",
-			"linux": "55 48 89 E5 41 57 41 56 41 55 49 89 F5 41 54 53 48 89 FB 48 83 EC ? E8 ? ? ? ? 4C 89 EE"
 		},
 		// "CCSPlayer_MovementServices::TryPlayerMove() Trace ended stuck"
 		"CCSPlayer_MovementServices::TryPlayerMove": {
