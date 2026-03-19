@@ -2,9 +2,10 @@
 #include <movement/movement.h>
 #include <utils/utils.h>
 
-constexpr auto TARGET_TICK = 100.0f;
+// copy from cs2kz
 
-constexpr auto SUBTICK_INTERPOLATE = ENGINE_FIXED_TICK_RATE / TARGET_TICK;
+constexpr auto TICK_TO_SIMULATE = 100.0f;
+constexpr auto SUBTICK_INTERPOLATE = ENGINE_FIXED_TICK_RATE / TICK_TO_SIMULATE;
 
 #define KZ_INTERPOLATE_VIEWANGLE 0
 
