@@ -137,8 +137,8 @@ namespace MEM {
 			}
 		}
 
-		auto doHook = [&](safetyhook::VmtOriginalHook* vmt) -> bool {
-			if (auto hRes = vmt->hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
+		auto doHook = [](safetyhook::VmtOriginalHook& vmt, uint32_t vfnIndex, TCallback pCallback, TTram& pTrampoline) -> bool {
+			if (auto hRes = vmt.hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
 				pTrampoline = hRes.value().template original<TTram>();
 				return true;
 			}
@@ -146,11 +146,11 @@ namespace MEM {
 		};
 
 		if (pVMT) {
-			return doHook(pVMT);
+			return doHook(*pVMT, vfnIndex, pCallback, pTrampoline);
 		}
 
 		auto vmt = safetyhook::create_vmt_original(pVtable);
-		if (!doHook(&vmt)) {
+		if (!doHook(vmt, vfnIndex, pCallback, pTrampoline)) {
 			return false;
 		}
 
