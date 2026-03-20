@@ -136,6 +136,7 @@ ToggleDebugOverlayFn g_fnAddDebugOverlayBits = nullptr;
 ToggleDebugOverlayFn g_fnRemoveDebugOverlayBits = nullptr;
 
 void CShowTrigger::OnPluginStart() {
+	return;
 	SDK_ASSERT(g_fnAddDebugOverlayBits = (ToggleDebugOverlayFn)GAMEDATA::GetAddress("AddDebugOverlayBits"));
 	SDK_ASSERT(g_fnRemoveDebugOverlayBits = (ToggleDebugOverlayFn)GAMEDATA::GetAddress("RemoveDebugOverlayBits"));
 }
@@ -148,6 +149,7 @@ void CShowTrigger::OnActivateServer(CNetworkGameServerBase* pGameServer) {
 }
 
 void CShowTrigger::TransmitTriggers(const std::vector<CHandle<CBaseTrigger>>& vTriggers, bool bTransmit) {
+	return;
 	for (const auto& hTrigger : vTriggers) {
 		CBaseTrigger* pTrigger = hTrigger.Get();
 		if (!pTrigger) {

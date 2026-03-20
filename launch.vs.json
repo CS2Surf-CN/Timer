@@ -12,14 +12,18 @@
 			"args": [
 				"-insecure",
 				"-dedicated",
+				"-disable_workshop_command_filtering",
 				"+game_mode 0",
 				"+game_type 0",
-				"+developer 5",
 				"+map de_dust2",
-				"+exec server.cfg",
+				"+developer 5",
+				"+servercfgfile cs2surf.cfg",
 				"+sv_cheats 1",
-				"+host_workshop_map 3073875025"
-			]
+				"+host_workshop_map 3448505317"
+			],
+			"env": {
+				"LD_LIBRARY_PATH": "${env.GAME_BIN}"
+			}
 		},
 		{
 			"type": "dll",

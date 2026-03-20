@@ -128,19 +128,20 @@ static void Hook_OnCategorizePosition(CCSPlayer_MovementServices* ms, CMoveData*
 		return;
 	}
 
-	MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnCategorizePosition, ms, mv, bStayOnGround);
-
-	CMovementPlayer* player = MOVEMENT::GetPlayerManager()->ToPlayer(ms);
-	if (!player) {
-		return;
-	}
-
-	auto playerPawn = player->GetPlayerPawn();
+	auto playerPawn = ms->GetPawn();
 	if (!playerPawn) {
 		return;
 	}
 
 	bool oldOnGround = !!(playerPawn->m_fFlags() & FL_ONGROUND);
+
+	MEM::SDKCall<void>(MOVEMENT::TRAMPOLINE::g_fnCategorizePosition, ms, mv, bStayOnGround);
+
+	CMovementPlayer* player = MOVEMENT::GetPlayerManager()->ToPlayer(playerPawn);
+	if (!player) {
+		return;
+	}
+	
 	bool ground = !!(playerPawn->m_fFlags() & FL_ONGROUND);
 	if (oldOnGround != ground) {
 		if (ground) {
@@ -271,7 +272,7 @@ static void Hook_OnPhysicsSimulate(CCSPlayerController* pController) {
 }
 
 void MOVEMENT::SetupHooks() {
-	DETOUR_VMT("CPlayer_MovementServices::RunCommand", MEM::MODULE::server, Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds);
+	MEM::AddVMTHookEx(MEM::MODULE::server.get(), "CCSPlayer_MovementServices", GAMEDATA::GetOffset("CPlayer_MovementServices::RunCommand"), Hook_OnMovementServicesRunCmds, MOVEMENT::TRAMPOLINE::g_fnMovementServicesRunCmds, false);
 
 	HOOK_SIG("CCSPlayer_MovementServices::TryPlayerMove", Hook_OnTryPlayerMove, MOVEMENT::TRAMPOLINE::g_fnTryPlayerMove);
 	HOOK_SIG("CCSPlayer_MovementServices::PlayerMove", Hook_OnPlayerMove, MOVEMENT::TRAMPOLINE::g_fnPlayerMove);

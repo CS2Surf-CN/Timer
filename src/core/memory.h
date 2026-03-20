@@ -137,8 +137,8 @@ namespace MEM {
 			}
 		}
 
-		auto doHook = [&](auto& vmt) -> bool {
-			if (auto hRes = vmt.hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
+		auto doHook = [&](safetyhook::VmtOriginalHook* vmt) -> bool {
+			if (auto hRes = vmt->hook_method(vfnIndex, reinterpret_cast<void*>(pCallback)); hRes) {
 				pTrampoline = hRes.value().template original<TTram>();
 				return true;
 			}
@@ -146,11 +146,11 @@ namespace MEM {
 		};
 
 		if (pVMT) {
-			return doHook(*pVMT);
+			return doHook(pVMT);
 		}
 
 		auto vmt = safetyhook::create_vmt_original(pVtable);
-		if (!doHook(vmt)) {
+		if (!doHook(&vmt)) {
 			return false;
 		}
 
@@ -170,16 +170,17 @@ namespace MEM {
 			return false;
 		}
 
-		auto extractClassName = [](const std::string_view input) {
+		auto doExtractClassName = [](const std::string_view input) {
 			std::string res = input.data();
 			size_t pos = res.find("::");
 			if (pos != std::string::npos) {
-				return res.substr(0, pos);
+				res = res.substr(0, pos);
 			}
 			return res;
 		};
 
-		void* pVtable = pModule->GetVirtualTableByName(extractClassName(sClassName));
+		auto sClassnameTruely = doExtractClassName(sClassName);
+		void* pVtable = pModule->GetVirtualTableByName(sClassnameTruely);
 		if (!pVtable) {
 			return false;
 		}

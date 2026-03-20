@@ -27,7 +27,8 @@
 			},
 			"environment": {
 				"GAME_ROOT": "/home/cs2/game",
-				"CS2_BIN": "$env{GAME_ROOT}/bin/linuxsteamrt64/cs2",
+				"GAME_BIN": "$env{GAME_ROOT}/bin/linuxsteamrt64",
+				"CS2_BIN": "$env{GAME_BIN}/cs2",
 				"SURF_BIN_DIR": "$env{SURF_ROOT}/bin"
 			},
 			"vendor": {

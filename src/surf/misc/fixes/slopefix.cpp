@@ -6,7 +6,7 @@ private:
 	virtual void OnStartTouchGround(CMovementPlayer* player) override;
 };
 
-//CSlopeFix g_SlopeFix;
+CSlopeFix g_SlopeFix;
 
 // copy from cs2kz
 void CSlopeFix::OnStartTouchGround(CMovementPlayer* player) {
@@ -30,16 +30,18 @@ void CSlopeFix::OnStartTouchGround(CMovementPlayer* player) {
 
 	// TODO: Unhardcode sv_standable_normal
 	if (standableZ <= trace.m_vHitNormal.z && trace.m_vHitNormal.z < 1.0f) {
+		Vector vecLastVel = player->moveDataPost.m_vecVelocity;
+
 		// Copy the ClipVelocity function from sdk2013
 		float backoff;
 		float change;
 		Vector newVelocity;
 
-		backoff = DotProduct(player->landingVelocity, trace.m_vHitNormal) * 1;
+		backoff = DotProduct(vecLastVel, trace.m_vHitNormal) * 1;
 
 		for (u32 i = 0; i < 3; i++) {
 			change = trace.m_vHitNormal[i] * backoff;
-			newVelocity[i] = player->landingVelocity[i] - change;
+			newVelocity[i] = vecLastVel[i] - change;
 		}
 
 		f32 adjust = DotProduct(newVelocity, trace.m_vHitNormal);
@@ -51,8 +53,6 @@ void CSlopeFix::OnStartTouchGround(CMovementPlayer* player) {
 		if (newVelocity.Length2D() >= player->landingVelocity.Length2D()) {
 			player->currentMoveData->m_vecVelocity.x = newVelocity.x;
 			player->currentMoveData->m_vecVelocity.y = newVelocity.y;
-			player->landingVelocity.x = newVelocity.x;
-			player->landingVelocity.y = newVelocity.y;
 		}
 	}
 }
